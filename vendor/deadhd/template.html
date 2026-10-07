@@ -1,0 +1,1586 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="refresh" content="15">
+<title>__PROGRESS_TITLE__</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Do+Hyeon&family=Gaegu:wght@700&family=Gowun+Batang:wght@400;700&family=Gowun+Dodum&family=Noto+Sans+KR:wght@400;700;900&family=Noto+Serif+KR:wght@400;700;900&family=IBM+Plex+Sans+KR:wght@400;600;700&family=Gothic+A1:wght@400;700;900&family=Nanum+Gothic:wght@400;700;800&family=Nanum+Myeongjo:wght@400;700;800&family=Hahmlet:wght@400;700;900&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://cdn.jsdelivr.net">
+<link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.css" rel="stylesheet">
+<style>
+@property --angle { syntax: '<angle>'; initial-value: 0deg; inherits: false; }
+
+__THEME_CSS__
+
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html, body { margin: 0; }
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--f-body), -apple-system, "Apple SD Gothic Neo", sans-serif;
+  word-break: keep-all;
+  overflow-wrap: anywhere;
+  line-height: 1.6;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+.mono { font-family: var(--f-mono); font-size: .92em; }
+
+/* ---------- 스타 버튼 ---------- */
+.star-btn {
+  margin-left: auto;
+  display: inline-flex; align-items: center; gap: 5px; height: 24px; padding: 0 9px 0 8px; border-radius: 999px;
+  color: var(--ink-3); text-decoration: none; font-size: 11.5px; font-weight: 600; letter-spacing: -.01em; line-height: 1;
+  background: transparent; border: 1px solid var(--card-line); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+  transition: color .25s, border-color .25s;
+}
+.star-btn:hover { color: var(--ink); border-color: color-mix(in srgb, var(--now) 40%, transparent); }
+.star-btn:focus-visible { outline: 2px solid var(--now); outline-offset: 2px; }
+.star-btn .swap { position: relative; width: 13px; height: 13px; display: inline-grid; place-items: center; }
+.star-btn .swap > svg { position: absolute; transition: opacity .25s, transform .5s cubic-bezier(.3,1.6,.5,1); }
+.star-btn .gh { width: 12px; height: 12px; fill: currentColor; }
+.star-btn .s {
+  width: 13px; height: 13px; fill: var(--now); stroke: var(--now); stroke-width: 1.7; stroke-linejoin: round;
+  opacity: 0; transform: rotate(-72deg) scale(.4);
+}
+.star-btn:hover .gh, .star-btn:focus-visible .gh { opacity: 0; transform: scale(.4); }
+.star-btn:hover .s, .star-btn:focus-visible .s { opacity: 1; transform: rotate(0) scale(1.12); }
+
+/* ---------- 허브 버튼 ---------- */
+.hub-btn {
+  margin-left: auto;
+  display: inline-flex; align-items: center; height: 24px; padding: 0 10px; border-radius: 999px;
+  color: var(--ink-3); text-decoration: none; font-size: 11.5px; font-weight: 600; letter-spacing: -.01em; line-height: 1;
+  border: 1px solid var(--card-line); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+  transition: color .25s, border-color .25s;
+}
+.hub-btn:hover { color: var(--ink); border-color: color-mix(in srgb, var(--now) 40%, transparent); }
+.hub-btn:focus-visible { outline: 2px solid var(--now); outline-offset: 2px; }
+.hub-btn:not([hidden]) + .star-btn { margin-left: 6px; }
+
+/* ---------- 배경 ---------- */
+.aurora, .stars { position: fixed; inset: 0; pointer-events: none; z-index: 0; opacity: 0; transition: opacity .8s; }
+.aurora i {
+  position: absolute; width: 60vmax; height: 60vmax; border-radius: 50%;
+  filter: blur(80px);
+}
+.aurora i:nth-child(1) { background: var(--glow-a); top: -25vmax; left: -15vmax; }
+.aurora i:nth-child(2) { background: var(--glow-b); top: 10vmax; right: -25vmax; }
+.aurora i:nth-child(3) { background: var(--glow-c); bottom: -30vmax; left: 20vmax; }
+.stars b {
+  position: absolute; width: 2px; height: 2px; border-radius: 50%; background: #fff;
+  opacity: .5;
+}
+[data-fx="max"] .aurora { opacity: 1; }
+[data-fx="max"] .stars { opacity: 1; }
+
+/* ---------- 레이아웃 ---------- */
+main { position: relative; z-index: 1; max-width: 1040px; margin: 0 auto; padding: 40px 16px 80px; }
+
+.eyebrow {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-size: 13px; font-weight: 500; color: var(--now);
+  padding: 4px 12px 4px 10px; border-radius: 999px;
+  background: color-mix(in srgb, var(--now) 12%, transparent);
+  border: 1px solid color-mix(in srgb, var(--now) 30%, transparent);
+}
+.eyebrow .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--now); box-shadow: 0 0 0 0 var(--now); }
+
+h1 {
+  font-size: clamp(26px, 4.2vw, 40px); line-height: 1.3; font-weight: 900; letter-spacing: -.02em;
+  margin: 16px 0 12px;
+  font-family: var(--f-head); font-weight: var(--head-w); letter-spacing: var(--head-ls);
+}
+h1 .key { color: var(--done); }
+h1 .key a { color: inherit; text-decoration: none; }
+[data-fx="max"] h1 .shine {
+  background: linear-gradient(100deg, var(--ink) 40%, #fff 50%, var(--ink) 60%);
+  background-size: 250% 100%;
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+}
+
+.goal {
+  display: grid; grid-template-columns: max-content 1fr; column-gap: 12px; row-gap: 6px;
+  margin: 4px 0 16px; padding: 2px 0 2px 16px;
+  border-left: 3px solid;
+  border-image: linear-gradient(var(--done), var(--side)) 1;
+}
+.goal-row { display: contents; }
+.goal-row p { margin: 0; font-size: 16px; color: var(--ink-2); line-height: 1.6; }
+.goal-tag {
+  align-self: start; margin-top: 3px; text-align: center;
+  font-size: 11px; padding: 2px 8px; border-radius: 999px;
+  color: var(--done); background: color-mix(in srgb, var(--done) 14%, transparent);
+  white-space: nowrap;
+}
+.goal-tag.end { color: var(--side); background: color-mix(in srgb, var(--side) 14%, transparent); }
+
+.meta { display: flex; flex-wrap: wrap; gap: 8px; color: var(--ink-3); font-size: 14px; }
+.meta .chip {
+  padding: 2px 10px; border-radius: 6px; background: var(--track); color: var(--ink-2);
+}
+
+/* ---------- 진행 바 ---------- */
+.progress { display: grid; grid-template-columns: 1fr auto; gap: 20px; align-items: center; margin: 32px 0 12px; }
+.bar { position: relative; height: 12px; border-radius: 999px; background: var(--track); overflow: visible; }
+.bar .fill {
+  position: absolute; inset: 0 auto 0 0; width: 0;
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--done-deep), var(--done-2));
+  overflow: hidden;
+}
+.bar .tip {
+  position: absolute; top: 50%; left: 0; width: 18px; height: 18px; margin: -9px 0 0 -9px;
+  border-radius: 50%; background: var(--tip);
+  box-shadow: 0 0 12px 4px color-mix(in srgb, var(--done-2) 70%, transparent);
+  opacity: 0;
+}
+[data-fx="max"] .bar .tip { opacity: 1; }
+.count-col { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; }
+.count { font-size: 15px; color: var(--ink-3); white-space: nowrap; }
+.eta { font-size: 13px; color: var(--ink-3); white-space: nowrap; }
+.eta b { font-family: var(--f-mono); font-size: 15px; font-weight: 600; color: var(--ink); }
+.eta.past { opacity: .6; }
+.eta .raw { opacity: .6; margin-right: 6px; font-weight: 400; }
+.cal-note { font-size: 11.5px; color: var(--ink-3); white-space: nowrap; }
+.count b {
+  font-family: var(--f-mono); font-size: 34px; font-weight: 600; color: var(--ink);
+  letter-spacing: -.03em;
+}
+[data-fx="max"] .count b {
+  background: linear-gradient(135deg, var(--done-2), var(--count-end));
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+}
+
+.tally { display: flex; flex-wrap: wrap; gap: 8px; font-size: 13px; }
+.tally span { display: inline-flex; align-items: center; gap: 6px; color: var(--ink-2); }
+.tally i { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+.tally i.done { background: var(--done); } .tally i.now { background: var(--now); } .tally i.blocked { background: var(--blocked); }
+.tally i.side { background: var(--side); } .tally i.left { background: var(--left); }
+
+/* ---------- 흐름 ---------- */
+.flow {
+  margin: 36px 0 48px; padding: 20px 16px;
+  border-radius: 20px; background: var(--card); border: 1px solid var(--card-line);
+  backdrop-filter: blur(16px);
+  overflow-x: auto; overflow-y: hidden;
+  scrollbar-width: thin; scrollbar-color: var(--scroll) transparent;
+}
+.flow::-webkit-scrollbar { height: 8px; }
+.flow::-webkit-scrollbar-track { background: transparent; margin: 0 16px; }
+.flow::-webkit-scrollbar-thumb { background: var(--scroll); border-radius: 999px; }
+.flow::-webkit-scrollbar-thumb:hover { background: var(--scroll-hover); }
+.canvas { position: relative; margin: 0 auto; }
+.lane-band {
+  position: absolute; left: 0; right: 0; border-radius: 14px;
+  background: color-mix(in srgb, var(--track) 55%, transparent);
+  border: 1px dashed var(--card-line);
+}
+.lane-band { transition: border-color .4s, box-shadow .4s; }
+[data-fx="max"] .lane-band.live {
+  border: 1px solid color-mix(in srgb, var(--now) 35%, transparent);
+  background:
+    linear-gradient(100deg, transparent 20%, color-mix(in srgb, var(--now) 16%, transparent) 45%, transparent 70%),
+    color-mix(in srgb, var(--track) 55%, transparent);
+  background-size: 250% 100%, auto;
+  box-shadow: inset 0 0 36px -12px color-mix(in srgb, var(--now) 45%, transparent);
+  animation: nebula 6s ease-in-out infinite;
+}
+[data-fx="max"] .lane-band.done { border-color: color-mix(in srgb, var(--done) 28%, transparent); }
+[data-fx="max"] .lane-band.blocked {
+  border: 1px solid color-mix(in srgb, var(--blocked) 40%, transparent);
+  background:
+    linear-gradient(100deg, transparent 20%, color-mix(in srgb, var(--blocked) 14%, transparent) 45%, transparent 70%),
+    color-mix(in srgb, var(--track) 55%, transparent);
+  background-size: 250% 100%, auto;
+  box-shadow: inset 0 0 36px -12px color-mix(in srgb, var(--blocked) 45%, transparent);
+  animation: nebula 6s ease-in-out infinite;
+}
+@keyframes nebula { 0%, 100% { background-position: 100% 0, 0 0; } 50% { background-position: 0% 0, 0 0; } }
+.lane-label {
+  position: absolute; left: 12px; top: 10px; z-index: 2;
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 2px 10px; border-radius: 999px;
+  font-size: 12.5px; font-weight: 700; letter-spacing: -.01em; line-height: 1.5;
+  color: var(--ink-2); background: color-mix(in srgb, var(--track) 80%, var(--bg-2));
+}
+.lane-label::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--left); }
+.lane-band.live .lane-label { color: var(--now); background: color-mix(in srgb, var(--now) 14%, var(--bg-2)); }
+.lane-band.live .lane-label::before { background: var(--now); box-shadow: 0 0 8px var(--now); }
+[data-fx="max"] .lane-band.live .lane-label::before { animation: blink 1.4s ease-in-out infinite; }
+.lane-band.done .lane-label { color: var(--done); background: color-mix(in srgb, var(--done) 12%, var(--bg-2)); }
+.lane-band.done .lane-label::before { background: var(--done); }
+.lane-band.blocked .lane-label { color: var(--blocked); background: color-mix(in srgb, var(--blocked) 14%, var(--bg-2)); }
+.lane-band.blocked .lane-label::before { background: var(--blocked); }
+.lane-band.live .lane-label::after { content: "· 진행 중"; font-weight: 500; opacity: .85; }
+.lane-band.done .lane-label::after { content: "· 완료"; font-weight: 500; opacity: .85; }
+.lane-band.blocked .lane-label::after { content: "· 막힘"; font-weight: 500; opacity: .85; }
+html:lang(en) .lane-band.live .lane-label::after { content: "· In progress"; }
+html:lang(en) .lane-band.done .lane-label::after { content: "· Done"; }
+html:lang(en) .lane-band.blocked .lane-label::after { content: "· Blocked"; }
+@keyframes blink { 50% { opacity: .35; } }
+.edges { position: absolute; inset: 0; overflow: visible; pointer-events: none; }
+.edge { fill: none; stroke: var(--track); stroke-width: 3; stroke-linecap: round; }
+.edge.done { stroke: var(--done); }
+.edge.active { stroke: var(--now); stroke-dasharray: 2 7; }
+.edge.side { stroke: var(--side); stroke-dasharray: 2 7; opacity: .8; }
+.edge.blocked { stroke: var(--blocked); stroke-dasharray: 2 7; }
+.edge.left { stroke: color-mix(in srgb, var(--ink-3) 55%, transparent); stroke-width: 2.5; stroke-dasharray: .1 9; }
+.edge-flow { fill: none; stroke: var(--tip); stroke-width: 3; stroke-linecap: round; stroke-dasharray: 6 44; opacity: 0; }
+[data-fx="max"] .edge-flow {
+  opacity: .9; animation: flow 1.8s linear infinite;
+  filter: drop-shadow(0 0 4px var(--done-2));
+}
+[data-fx="max"] .edge.active, [data-fx="max"] .edge.blocked { animation: march .9s linear infinite; }
+@keyframes flow { to { stroke-dashoffset: -50; } }
+@keyframes march { to { stroke-dashoffset: -9; } }
+[data-fx="max"] .edge.active { filter: drop-shadow(0 0 5px color-mix(in srgb, var(--now) 80%, transparent)); }
+[data-fx="max"] .edge.done { filter: drop-shadow(0 0 10px color-mix(in srgb, var(--done) 80%, transparent)); }
+.fnode {
+  position: absolute; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 8px;
+  transform: translate(-50%, -26px); z-index: 1;
+}
+
+.node {
+  position: relative; width: 52px; height: 52px; border-radius: 50%;
+  display: grid; place-items: center; font-size: 20px; font-weight: 700;
+  border: 3px solid var(--left); color: var(--left); background: var(--bg-2);
+  z-index: 1;
+}
+.fnode.done .node {
+  background: linear-gradient(135deg, var(--done-deep), var(--done-2)); border-color: transparent; color: #fff;
+}
+[data-fx="max"] .fnode.done .node {
+  box-shadow: 0 0 18px color-mix(in srgb, var(--done) 55%, transparent);
+}
+.fnode.now .node {
+  background: linear-gradient(135deg, var(--now-deep), var(--now-2)); border-color: transparent; color: #fff;
+  animation: heartbeat 1.5s ease-in-out infinite;
+}
+.fnode.now .node::before, .fnode.now .node::after {
+  content: ""; position: absolute; inset: -3px; border-radius: 50%;
+  border: 2px solid var(--now); animation: ripple 1.5s ease-out infinite;
+}
+.fnode.now .node::after { animation-delay: .75s; }
+[data-fx="max"] .fnode.now .node { box-shadow: 0 0 30px 6px color-mix(in srgb, var(--now) 55%, transparent); }
+@keyframes heartbeat {
+  0%, 100% { transform: scale(1); }
+  14% { transform: scale(1.14); }
+  28% { transform: scale(1); }
+  42% { transform: scale(1.09); }
+  56% { transform: scale(1); }
+}
+@keyframes ripple { from { transform: scale(1); opacity: .9; } to { transform: scale(2); opacity: 0; } }
+.fnode.side .node { border-color: var(--side); color: var(--side); box-shadow: 0 0 12px color-mix(in srgb, var(--side) 35%, transparent); }
+.fnode.blocked .node {
+  background: linear-gradient(135deg, var(--blocked-deep), var(--blocked-2)); border-color: transparent; color: #fff;
+  box-shadow: 0 0 24px 4px color-mix(in srgb, var(--blocked) 45%, transparent);
+}
+
+.fnode .label { font-size: 14px; line-height: 1.35; font-weight: 700; }
+.fnode .sub { font-size: 12px; color: var(--ink-3); }
+.fnode.now .sub { color: var(--now); font-weight: 500; }
+.fnode.side .sub { color: var(--side); }
+.fnode.blocked .sub { color: var(--blocked); font-weight: 500; }
+.fnode.left .node { border: 2px dashed color-mix(in srgb, var(--ink-3) 70%, transparent); background: color-mix(in srgb, var(--bg-2) 70%, transparent); color: var(--ink-3); }
+.fnode.left .label { color: var(--ink-2); }
+.fnode .when { display: block; margin-top: 2px; font-family: var(--f-mono); font-size: 11px; color: var(--ink-3); }
+.fnode .when-now { color: var(--now); }
+.fnode .when-past { color: var(--blocked); }
+
+.node .orbit {
+  position: absolute; inset: -11px; border-radius: 50%; pointer-events: none;
+  border: 2px dashed color-mix(in srgb, var(--now) 70%, transparent);
+  opacity: 0;
+}
+[data-fx="max"] .node .orbit { opacity: 1; animation: spin 7s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+[data-fx="max"] .fnode.now .label { color: var(--now-2); text-shadow: 0 0 14px color-mix(in srgb, var(--now) 60%, transparent); }
+
+.fnode.done .node { overflow: hidden; }
+.fnode.done .node::after {
+  content: ""; position: absolute; inset: 0; border-radius: 50%;
+  background: linear-gradient(115deg, transparent 30%, rgba(255,255,255,.55) 50%, transparent 70%);
+  background-size: 300% 100%; background-position: 150% 0; opacity: 0;
+}
+[data-fx="max"] .fnode.done .node::after { opacity: 1; animation: sheen 4.5s ease-in-out infinite; animation-delay: calc(var(--i, 0) * .35s); }
+@keyframes sheen { 0%, 60% { background-position: 150% 0; } 100% { background-position: -50% 0; } }
+
+/* ---------- 스파클 ---------- */
+.spark {
+  position: absolute; width: 10px; height: 10px; pointer-events: none; z-index: 3;
+  background: radial-gradient(circle, #fff 0 20%, transparent 60%);
+  clip-path: polygon(50% 0, 60% 40%, 100% 50%, 60% 60%, 50% 100%, 40% 60%, 0 50%, 40% 40%);
+  animation: sparkle 1.2s ease-out forwards;
+}
+@keyframes sparkle {
+  0% { transform: scale(0) rotate(0); opacity: 0; }
+  30% { transform: scale(1.4) rotate(45deg); opacity: 1; }
+  100% { transform: scale(0) rotate(120deg); opacity: 0; }
+}
+.burst {
+  position: absolute; width: 8px; height: 8px; border-radius: 50%; pointer-events: none; z-index: 4;
+  animation: burst 1s cubic-bezier(.1,.8,.3,1) forwards;
+}
+@keyframes burst {
+  0% { transform: translate(0,0) scale(1); opacity: 1; }
+  100% { transform: translate(var(--dx), var(--dy)) scale(0); opacity: 0; }
+}
+
+/* ---------- 섹션 ---------- */
+h2 { font-size: 20px; font-weight: 700; margin: 40px 0 16px; display: flex; align-items: center; gap: 10px; }
+h2 .ic { width: 28px; height: 28px; border-radius: 8px; display: grid; place-items: center; font-size: 14px; }
+h2.done .ic { background: color-mix(in srgb, var(--done) 18%, transparent); color: var(--done); }
+h2.now .ic { background: color-mix(in srgb, var(--now) 18%, transparent); color: var(--now); }
+h2.left .ic { background: var(--track); color: var(--ink-3); }
+h2.blocked .ic { background: color-mix(in srgb, var(--blocked) 18%, transparent); color: var(--blocked); }
+
+.card {
+  position: relative; padding: 20px 22px; margin-bottom: 12px;
+  border-radius: 16px; background: var(--card); border: 1px solid var(--card-line);
+  backdrop-filter: blur(16px);
+  transition: transform .25s, box-shadow .25s;
+}
+.card:hover { transform: translateY(-2px); box-shadow: 0 12px 32px rgba(0,0,0,.18); }
+.card h3 { margin: 0 0 6px; font-size: 16px; font-weight: 700; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.card p { margin: 0; color: var(--ink-2); font-size: 15px; }
+.card .ev { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
+.card .ev span {
+  font-size: 12px; padding: 3px 9px; border-radius: 6px;
+  background: var(--track); color: var(--ink-3);
+  display: inline-flex; align-items: center;
+}
+.card .ev .mono { font-size: 11.5px; }
+.card .ev a { color: inherit; text-decoration: none; }
+.card .ev a span { background: var(--track); }
+.card .ev a:hover span { color: var(--ink-2); }
+
+/* 본문에 섞인 링크: 본문 색을 따르되 밑줄과 hover 색으로 링크임을 드러낸다. */
+.lnk { color: inherit; text-decoration: underline dotted; text-decoration-thickness: 1px; text-underline-offset: 2px; }
+.lnk:hover { color: var(--now); text-decoration-style: solid; }
+.card.done h3::before { content: "✓"; color: var(--done); }
+[data-fx="max"] .card.done h3::before { text-shadow: 0 0 10px var(--done); }
+.badge { font-size: 11px; font-weight: 500; padding: 2px 8px; border-radius: 999px; }
+.badge.side { color: var(--side); background: color-mix(in srgb, var(--side) 14%, transparent); }
+
+.card.now { border-color: color-mix(in srgb, var(--now) 45%, transparent); }
+.card.now h3::before { content: "▶"; color: var(--now); font-size: 12px; }
+[data-fx="max"] .card.now {
+  border: 1.5px solid transparent;
+  background:
+    linear-gradient(var(--bg-2), var(--bg-2)) padding-box,
+    conic-gradient(from var(--angle), transparent 0 60%, var(--now) 75%, var(--now-hi) 80%, var(--now) 85%, transparent 100%) border-box;
+  box-shadow: 0 0 40px -8px color-mix(in srgb, var(--now) 50%, transparent);
+}
+
+.card.left { opacity: .72; }
+.card.left h3::before { content: "○"; color: var(--ink-3); }
+.card.side { opacity: 1; }
+.card.side h3::before { content: "◐"; color: var(--side); }
+
+.card.blocked { border-color: color-mix(in srgb, var(--blocked) 45%, transparent); }
+.card.blocked h3::before { content: "!"; color: var(--blocked); }
+[data-fx="max"] .card.blocked { box-shadow: 0 0 40px -8px color-mix(in srgb, var(--blocked) 45%, transparent); }
+
+/* ---------- 카드 안 그림 ---------- */
+.ic-sm { width: 13px; height: 13px; flex: none; vertical-align: -2px; margin-right: 4px; opacity: .8; }
+
+.substeps { display: flex; align-items: center; gap: 0; margin: 16px 0 4px; flex-wrap: wrap; row-gap: 10px; }
+.sub-s { display: flex; align-items: center; gap: 6px; font-size: 12.5px; color: var(--ink-3); }
+.sub-s i {
+  width: 22px; height: 22px; border-radius: 50%; display: grid; place-items: center;
+  font-style: normal; font-size: 11px; font-weight: 700;
+  border: 2px solid var(--left); color: var(--left);
+}
+.sub-s.ok { color: var(--ink-2); }
+.sub-s.ok i { background: var(--done); border-color: var(--done); color: #fff; box-shadow: 0 0 10px color-mix(in srgb, var(--done) 60%, transparent); }
+.sub-s.run { color: var(--now); font-weight: 700; }
+.sub-s.run i { background: var(--now); border-color: var(--now); color: #fff; box-shadow: 0 0 14px color-mix(in srgb, var(--now) 70%, transparent); }
+.sub-s.blocked { color: var(--blocked); font-weight: 700; }
+.sub-s.blocked i { background: var(--blocked); border-color: var(--blocked); color: #fff; box-shadow: 0 0 10px color-mix(in srgb, var(--blocked) 60%, transparent); }
+.sub-line { width: 28px; height: 2px; margin: 0 8px; background: var(--track); border-radius: 2px; }
+.sub-line.ok { background: linear-gradient(90deg, var(--done), var(--done-2)); }
+.sub-line.run { background: linear-gradient(90deg, var(--done-2), var(--now)); }
+
+.etime { margin-top: 12px; }
+.etime-row { display: flex; justify-content: space-between; gap: 12px; font-family: var(--f-mono); font-size: 12px; color: var(--ink-3); }
+.etime-bar {
+  position: relative; height: 8px; border-radius: 999px; margin: 6px 0; overflow: hidden;
+  background-color: var(--track);
+  background-image: repeating-linear-gradient(90deg, color-mix(in srgb, var(--now) 45%, transparent) 0 5px, transparent 5px 9px);
+}
+.etime-bar i { position: absolute; inset: 0 auto 0 0; width: 0; border-radius: inherit; background: var(--now); }
+
+.viz { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 16px; }
+.stat {
+  display: flex; align-items: center; gap: 12px;
+  padding: 10px 14px 10px 10px; border-radius: 12px;
+  background: color-mix(in srgb, var(--track) 70%, transparent);
+}
+.stat .t { font-size: 12px; color: var(--ink-3); line-height: 1.4; }
+.stat .t b { display: block; font-size: 18px; color: var(--ink); font-family: var(--f-mono); letter-spacing: -.02em; }
+.ring { width: 46px; height: 46px; transform: rotate(-90deg); }
+.ring circle { fill: none; stroke-width: 5; }
+.ring .bg { stroke: var(--track); }
+.ring .fg { stroke: var(--done); stroke-linecap: round; stroke-dasharray: 113.1; stroke-dashoffset: 113.1; animation: draw 1.4s .3s cubic-bezier(.2,.8,.2,1) forwards; filter: drop-shadow(0 0 4px var(--done)); }
+@keyframes draw { to { stroke-dashoffset: var(--off, 0); } }
+.stat .big-ic { width: 46px; height: 46px; border-radius: 12px; display: grid; place-items: center; background: color-mix(in srgb, var(--done) 16%, transparent); color: var(--done); }
+.stat .big-ic svg { width: 24px; height: 24px; }
+
+.compare { flex: 1 1 280px; padding: 12px 14px; border-radius: 12px; background: color-mix(in srgb, var(--track) 70%, transparent); }
+.compare .cap { font-size: 12px; color: var(--ink-3); margin-bottom: 8px; }
+.cmp-row { display: grid; grid-template-columns: 88px 1fr 48px; align-items: center; gap: 10px; font-size: 12.5px; margin: 6px 0; }
+.cmp-row .track { height: 10px; border-radius: 99px; background: var(--track); overflow: hidden; }
+.cmp-row .val { height: 100%; width: 0; border-radius: inherit; animation: grow 1.2s .4s cubic-bezier(.2,.8,.2,1) forwards; }
+.cmp-row.win .val { background: linear-gradient(90deg, var(--side), var(--side-hi)); box-shadow: 0 0 12px var(--side); }
+.cmp-row.lose .val { background: var(--left); }
+.cmp-row.risk .val { background: linear-gradient(90deg, var(--now-deep), var(--blocked)); box-shadow: 0 0 12px var(--blocked); }
+.cmp-row .num { font-family: var(--f-mono); text-align: right; color: var(--ink-2); }
+.cmp-row.win .num { color: var(--side); font-weight: 700; }
+.cmp-row.risk .num { color: var(--blocked-2); font-weight: 700; }
+@keyframes grow { to { width: var(--w); } }
+
+/* 처음 볼 때만 입장 애니메이션을 재생한다 (새로고침 시 최종 상태로 바로 그린다) */
+body.no-entrance .ring .fg { animation: none; stroke-dashoffset: var(--off, 0); }
+body.no-entrance .cmp-row .val { animation: none; width: var(--w); }
+
+footer { margin-top: 48px; color: var(--ink-3); font-size: 12px; text-align: center; }
+
+/* ---------- 모바일 ---------- */
+@media (max-width: 720px) {
+  main { padding-top: 28px; }
+  .progress { grid-template-columns: 1fr; gap: 8px; }
+  .goal { grid-template-columns: 1fr; row-gap: 4px; }
+  .goal-tag { justify-self: start; }
+  .goal-row:not(:first-child) .goal-tag { margin-top: 8px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+}
+
+/* ---------- 컴팩트 보기 ---------- */
+/* 버튼 줄 폭은 main(max-width 1040px)·#compact[data-o] 와 함께 바꾼다 */
+.viewbar {
+  position: relative; z-index: 20; display: flex; flex-wrap: wrap; align-items: center; gap: 6px;
+  max-width: 1040px; margin: 0 auto; padding: 14px 16px 0;
+}
+.viewbar[data-o="port"] { max-width: 520px; }
+.viewbar[data-o="land"] { max-width: 1100px; }
+.seg-ctl {
+  display: inline-flex; padding: 2px; gap: 1px; border-radius: 999px;
+  background: transparent; border: 1px solid var(--card-line); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+}
+.seg-ctl button {
+  font: inherit; font-size: 11.5px; line-height: 1; color: var(--ink-3); background: none; border: 0; cursor: pointer;
+  height: 22px; padding: 0 9px; border-radius: 999px; display: inline-flex; align-items: center; gap: 5px; white-space: nowrap;
+  transition: color .2s, background .2s;
+}
+.seg-ctl button:hover { color: var(--ink); }
+.seg-ctl button[aria-pressed="true"] { color: var(--ink); background: color-mix(in srgb, var(--done) 18%, transparent); }
+.seg-ctl button:focus-visible { outline: 2px solid var(--now); outline-offset: 1px; }
+.seg-ctl svg { width: 12px; height: 12px; }
+#orient .lbl { display: none; }
+#o-land, #o-port { padding: 0 7px; }
+body[data-view] main { padding-top: 24px; }
+body[data-view]:not([data-view="full"]) main { display: none; }
+body:not([data-view]) #orient, body[data-view="full"] #orient { display: none; }
+
+#compact { position: relative; z-index: 1; margin: 0 auto; padding: 16px 16px 40px; font-size: 13.5px; }
+#compact[data-o="port"] { max-width: 520px; }
+#compact[data-o="land"] { max-width: 1100px; }
+.cx-glass { background: var(--card); border: 1px solid var(--card-line); border-radius: 14px; backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); }
+.cx-key { color: var(--done); font-family: var(--f-mono); font-size: 12px; text-decoration: none; }
+.cx-title { font-family: var(--f-head); font-size: 18px; line-height: 1.35; margin: 4px 0 0; text-wrap: balance; }
+.cx-muted { color: var(--ink-3); }
+.cx-pill {
+  display: inline-flex; align-items: center; gap: 6px; font-size: 12px; color: var(--now);
+  padding: 2px 10px 2px 8px; border-radius: 999px; white-space: nowrap;
+  background: color-mix(in srgb, var(--now) 12%, transparent); border: 1px solid color-mix(in srgb, var(--now) 30%, transparent);
+}
+.cx-pill i { width: 6px; height: 6px; border-radius: 50%; background: var(--now); animation: cxpulse 1.6s ease-in-out infinite; }
+@keyframes cxpulse { 50% { box-shadow: 0 0 0 4px color-mix(in srgb, var(--now) 25%, transparent); } }
+.cx-dot { width: 9px; height: 9px; border-radius: 50%; display: inline-block; flex: none; }
+.cx-dot.done { background: var(--done); } .cx-dot.now { background: var(--now); box-shadow: 0 0 8px var(--now); }
+.cx-dot.side { background: var(--side); } .cx-dot.blocked { background: var(--blocked); }
+.cx-dot.left { border: 1.5px dashed var(--left); }
+.cx-bar { height: 6px; border-radius: 999px; background: var(--track); position: relative; }
+.cx-bar > span { position: absolute; inset: 0 auto 0 0; border-radius: inherit; background: linear-gradient(90deg, var(--done-deep), var(--done-2)); box-shadow: 0 0 10px color-mix(in srgb, var(--done-2) 50%, transparent); }
+.cx-count b { font-family: var(--f-mono); font-weight: 600; background: linear-gradient(135deg, var(--done-2), var(--count-end)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.cx-eta { font-size: 12px; color: var(--ink-3); white-space: nowrap; } .cx-eta b { font-family: var(--f-mono); color: var(--ink); font-weight: 600; }
+.cx-card { padding: 14px 16px; min-width: 0; }
+.cx-card h3 { margin: 0 0 4px; font-size: 15px; font-weight: 400; display: flex; justify-content: space-between; gap: 10px; align-items: baseline; }
+.cx-card p { margin: 0; color: var(--ink-2); font-size: 13px; }
+.cx-subs { list-style: none; margin: 10px 0 0; padding: 0; display: grid; gap: 4px; font-size: 12.5px; }
+.cx-subs li { display: flex; gap: 8px; align-items: center; color: var(--ink-2); }
+.cx-subs .g { width: 14px; text-align: center; font-size: 11px; }
+.cx-subs .done .g { color: var(--done-2); } .cx-subs .now { color: var(--ink); } .cx-subs .now .g { color: var(--now); }
+.cx-subs .left { color: var(--ink-3); } .cx-subs .left .g { color: var(--left); }
+.cx-ev { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+.cx-ev a, .cx-ev span { font-size: 11.5px; padding: 2px 8px; border-radius: 6px; background: var(--track); color: var(--ink-2); text-decoration: none; }
+.cx-ev a:hover { color: var(--ink); }
+.cx-ev .mono { font-family: var(--f-mono); }
+.cx-head { display: flex; justify-content: space-between; gap: 14px; align-items: flex-start; }
+.cx-head .cx-count { text-align: right; font-size: 12px; color: var(--ink-3); white-space: nowrap; }
+.cx-head .cx-count > b { font-size: 26px; display: block; line-height: 1.1; }
+
+/* 스트립 */
+.ca-strip { display: flex; align-items: flex-start; margin: 18px 0 16px; }
+.ca-strip .st { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 6px; position: relative; min-width: 0; }
+.ca-strip .st::before { content: ""; position: absolute; top: 7px; left: -50%; width: 100%; height: 2px; background: var(--track); z-index: -1; }
+.ca-strip .st:first-child::before { display: none; }
+.ca-strip .st.done::before, .ca-strip .st.now::before { background: var(--done); box-shadow: 0 0 6px var(--done); }
+.ca-strip .nd { width: 16px; height: 16px; border-radius: 50%; display: grid; place-items: center; font-size: 9px; color: var(--bg); background: var(--bg); }
+.ca-strip .done .nd { background: var(--done); }
+.ca-strip .now .nd { background: var(--now); box-shadow: 0 0 0 4px color-mix(in srgb, var(--now) 25%, transparent), 0 0 14px var(--now); }
+.ca-strip .left .nd { border: 1.5px dashed var(--left); }
+.ca-strip .blocked .nd { background: var(--blocked); }
+.ca-strip small { font-size: 10.5px; color: var(--ink-3); text-align: center; line-height: 1.25; }
+.ca-strip .now small { color: var(--now-2); }
+.ca-side { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; margin: -6px 0 14px; font-size: 11.5px; color: var(--ink-3); }
+.ca-side span { color: var(--side-hi); border: 1px solid color-mix(in srgb, var(--side) 40%, transparent); border-radius: 6px; padding: 1px 7px; }
+.ca-body { display: grid; gap: 12px; }
+#compact[data-o="land"] .ca-body { grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); align-items: start; }
+.ca-rest { display: grid; gap: 4px; align-content: start; }
+.ca-rest details { border-top: 1px solid var(--card-line); padding: 6px 0 2px; }
+#compact[data-o="land"] .ca-rest details:first-child { border-top: 0; padding-top: 0; }
+.ca-rest summary { cursor: pointer; list-style: none; display: flex; gap: 8px; align-items: center; color: var(--ink-2); font-size: 13px; }
+.ca-rest summary::-webkit-details-marker { display: none; }
+.ca-rest summary::after { content: "▸"; margin-left: auto; color: var(--ink-3); transition: transform .2s; }
+.ca-rest details[open] summary::after { transform: rotate(90deg); }
+.ca-rest ul { margin: 6px 0 4px 17px; padding: 0; list-style: none; display: grid; gap: 3px; font-size: 12.5px; color: var(--ink-3); }
+.ca-rest summary:focus-visible { outline: 2px solid var(--now); outline-offset: 2px; }
+
+/* 타임라인 */
+.cb-top { display: grid; gap: 6px; margin-bottom: 14px; }
+.cb-top .row { display: flex; gap: 10px; align-items: center; }
+.cb-top .row .cx-bar { flex: 1; }
+.cb-top .cx-count b { font-size: 15px; }
+.cb-body { display: grid; gap: 14px; }
+#compact[data-o="land"] .cb-body { grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr); align-items: start; }
+#compact[data-o="land"] .cb-body .cx-card { position: sticky; top: 16px; }
+.cb-tl { list-style: none; margin: 0; padding: 0; position: relative; }
+.cb-tl::before { content: ""; position: absolute; left: 6px; top: 10px; bottom: 10px; width: 2px; background: var(--track); }
+.cb-tl > li { position: relative; padding: 5px 0 5px 26px; display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 10px; align-items: baseline; color: var(--ink-2); }
+.cb-tl > li > .cx-dot { position: absolute; left: 2px; top: 11px; width: 10px; height: 10px; outline: 3px solid var(--bg); }
+.cb-tl > li.done::after { content: ""; position: absolute; left: 6px; top: 16px; height: 100%; width: 2px; background: var(--done); z-index: -1; }
+.cb-tl > li .tm { font-family: var(--f-mono); font-size: 11px; color: var(--ink-3); white-space: nowrap; }
+.cb-tl > li.left, .cb-tl > li.side { color: var(--ink-3); }
+.cb-tl > li.now { color: var(--ink); }
+.cb-tl .tag { font-size: 10px; color: var(--side-hi); border: 1px solid color-mix(in srgb, var(--side) 40%, transparent); border-radius: 4px; padding: 0 4px; margin-left: 6px; }
+#compact[data-o="port"] .cb-tl > li.now { padding: 0; display: block; margin: 6px 0; }
+#compact[data-o="port"] .cb-tl > li.now .cx-dot { top: 20px; }
+#compact[data-o="port"] .cb-tl > li.now .cx-card { margin-left: 18px; }
+#compact[data-o="land"] .cb-tl > li.now { background: color-mix(in srgb, var(--now) 10%, transparent); border-radius: 8px; }
+
+/* 타일 */
+.cc-tiles { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+.cc-tile { padding: 10px 12px; display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.cc-tile small { font-size: 11px; color: var(--ink-3); }
+.cc-tile b { font-family: var(--f-mono); font-size: 19px; font-weight: 600; }
+.cc-tile .cc-ring { display: flex; gap: 8px; align-items: center; flex: none; }
+.cc-tile .cx-count { white-space: nowrap; flex: none; overflow-wrap: normal; }
+.cb-top > .cx-pill { justify-self: start; }
+.cc-tile svg { width: 36px; height: 36px; flex: none; }
+.cc-seg { display: flex; gap: 3px; margin: 14px 0 6px; }
+.cc-seg span { flex: 1; height: 9px; border-radius: 3px; background: var(--track); }
+.cc-seg .done { background: var(--done); } .cc-seg .now { background: var(--now); box-shadow: 0 0 8px var(--now); }
+.cc-seg .side { background: color-mix(in srgb, var(--side) 55%, transparent); } .cc-seg .left { background: transparent; border: 1px dashed var(--left); }
+.cc-seg .blocked { background: var(--blocked); }
+.cc-legend { display: flex; gap: 12px; flex-wrap: wrap; font-size: 11.5px; color: var(--ink-3); margin-bottom: 14px; }
+.cc-legend span { display: inline-flex; gap: 5px; align-items: center; }
+.cc-grid { display: grid; gap: 12px; }
+#compact[data-o="land"] .cc-grid { grid-template-columns: minmax(0, 1fr) minmax(0, 1.3fr); align-items: start; }
+#compact[data-o="land"] .cc-tiles { grid-template-columns: 1fr; }
+#compact[data-o="land"] .cc-tile { flex-direction: row; justify-content: space-between; align-items: center; }
+.cc-chips { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 12px; }
+.cc-chips button {
+  font: inherit; font-size: 12px; color: var(--ink-2); background: var(--track); border: 1px solid var(--card-line);
+  border-radius: 999px; padding: 3px 10px; cursor: pointer; display: inline-flex; gap: 6px; align-items: center;
+}
+.cc-chips button[aria-pressed="true"] { color: var(--ink); border-color: color-mix(in srgb, var(--done) 45%, transparent); }
+.cc-chips button:focus-visible { outline: 2px solid var(--now); outline-offset: 2px; }
+.cc-list { margin: 8px 0 0; padding: 0; list-style: none; display: grid; gap: 5px; font-size: 12.5px; color: var(--ink-2); }
+.cc-list li { display: flex; gap: 8px; align-items: center; }
+.cc-list li span:last-child { margin-left: auto; font-family: var(--f-mono); font-size: 11px; color: var(--ink-3); white-space: nowrap; }
+@media (max-width: 600px) { .seg-ctl button { padding: 0 7px; } }
+
+/* ---------- ink 테마 ---------- */
+[data-theme="ink"] .fnode.done .node, [data-theme="ink"] .fnode.now .node { color: var(--bg); }
+[data-theme="ink"] .sub-s.ok i, [data-theme="ink"] .sub-s.run i { color: var(--bg); }
+[data-theme="ink"] .fnode.blocked .node {
+  background: radial-gradient(circle, var(--bg) 0 58%, transparent 59%), repeating-linear-gradient(45deg, var(--ink) 0 3px, transparent 3px 7px);
+  border: 3px solid var(--ink); color: var(--ink); box-shadow: none;
+}
+[data-theme="ink"] .sub-s.blocked i { background: repeating-linear-gradient(45deg, var(--ink) 0 2px, transparent 2px 5px); color: var(--ink); border-color: var(--ink); box-shadow: none; }
+[data-theme="ink"] .card.blocked {
+  border: 1px solid var(--ink);
+  background-image: repeating-linear-gradient(-45deg, color-mix(in srgb, var(--ink) 7%, transparent) 0 6px, transparent 6px 12px);
+  box-shadow: none !important;
+}
+[data-theme="ink"] .cx-dot.blocked, [data-theme="ink"] .cc-seg .blocked, [data-theme="ink"] .ca-strip .blocked .nd, [data-theme="ink"] .tally i.blocked {
+  background: repeating-linear-gradient(45deg, var(--ink) 0 2px, transparent 2px 4px); border: 1px solid var(--ink);
+}
+[data-theme="ink"] .fnode.side .node { border-style: dashed; box-shadow: none; }
+[data-theme="ink"] .cx-dot.side, [data-theme="ink"] .cc-seg .side, [data-theme="ink"] .tally i.side { background: linear-gradient(90deg, var(--side) 50%, transparent 50%); border: 1.5px solid var(--side); }
+[data-theme="ink"] .tally i.left { background: transparent; border: 1.5px dashed var(--ink-3); }
+[data-theme="ink"] .edge.blocked { stroke-dasharray: 8 6; }
+[data-theme="ink"] .lane-band.blocked .lane-label::before { background: repeating-linear-gradient(45deg, var(--ink) 0 1.5px, transparent 1.5px 3px); }
+[data-theme="ink"] body[data-fx="max"] h1 .shine { background-image: linear-gradient(100deg, var(--ink) 40%, var(--ink-3) 50%, var(--ink) 60%); }
+[data-theme="ink"] .eyebrow { background: transparent; border-color: var(--ink); }
+[data-theme="ink"] .goal { border-image: none; border-left-color: var(--ink); }
+[data-theme="ink"] .count b { font-family: var(--f-head); font-weight: var(--head-w); letter-spacing: var(--head-ls); font-size: 40px; }
+
+/* ---------- 입력 대기 띠 ---------- */
+.status { margin: 22px 0 0; padding: 14px 18px; border-radius: 14px; background: var(--card); border: 1px solid var(--card-line); backdrop-filter: blur(16px); }
+.status-main { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.status-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--ink-3); }
+.status-title { font-family: var(--f-head); font-weight: 700; font-size: 20px; line-height: 1.2; }
+.status-what { font-size: 12.5px; padding: 3px 9px; border: 1px solid var(--card-line); border-radius: 6px; color: var(--ink-2); }
+.status-sub { display: flex; flex-wrap: wrap; gap: 6px 16px; margin-top: 8px; font-size: 12.5px; color: var(--ink-3); }
+.status-waiting_permission { border-color: color-mix(in srgb, var(--now) 45%, transparent); box-shadow: 0 0 40px -8px color-mix(in srgb, var(--now) 50%, transparent); }
+.status-waiting_permission .status-dot { background: var(--now); box-shadow: 0 0 10px var(--now); animation: blink 1.2s ease-in-out infinite; }
+.status-waiting_permission .status-title { color: var(--now-2); }
+.status-waiting_permission .status-what { border-color: color-mix(in srgb, var(--now) 30%, transparent); background: color-mix(in srgb, var(--now) 10%, transparent); }
+.status-idle { border-color: color-mix(in srgb, var(--side) 45%, transparent); }
+.status-idle .status-dot { background: var(--side); }
+.status-idle .status-title { color: var(--side-hi); }
+.status-working { padding: 10px 18px; }
+.status-working .status-title { font-size: 15px; font-weight: 500; color: var(--ink-2); }
+.status-working .status-dot { background: var(--done); box-shadow: 0 0 8px var(--done); animation: blink 1.6s ease-in-out infinite; }
+.status-stall .status-dot { background: var(--blocked); animation: none; }
+.status-stall .status-title { color: var(--blocked-2); }
+.status-ended { opacity: .6; }
+[data-theme="ink"] .status-waiting_permission { background-image: repeating-linear-gradient(-45deg, color-mix(in srgb, var(--ink) 7%, transparent) 0 6px, transparent 6px 12px); box-shadow: none; border-color: var(--ink); }
+[data-theme="ink"] .status-waiting_permission .status-main { display: inline-flex; padding: 4px 10px; margin-left: -10px; border-radius: 8px; background: var(--bg); }
+</style>
+</head>
+<body data-fx="max">
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-pr" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="4" cy="3.5" r="1.8"/><circle cx="4" cy="12.5" r="1.8"/><circle cx="12" cy="12.5" r="1.8"/><path d="M4 5.3v5.4M12 10.7V6.5a2 2 0 0 0-2-2H7.5M9 3l-1.5 1.5L9 6"/></symbol>
+  <symbol id="i-commit" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="8" cy="8" r="2.6"/><path d="M1 8h4.4M10.6 8H15"/></symbol>
+  <symbol id="i-test" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 1.5h4M7 1.5v4.2L3 13a1.2 1.2 0 0 0 1 1.8h8a1.2 1.2 0 0 0 1-1.8L9 5.7V1.5"/><path d="M4.8 10h6.4"/></symbol>
+  <symbol id="i-ticket" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"><path d="M2 4.5h12v2.2a1.4 1.4 0 0 0 0 2.6v2.2H2V9.3a1.4 1.4 0 0 0 0-2.6z"/><path d="M6 4.5v7" stroke-dasharray="1.4 1.4"/></symbol>
+  <symbol id="i-file" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"><path d="M3.5 1.5h6l3 3v10h-9z"/><path d="M9.5 1.5v3h3M5.5 8.5h5M5.5 11h5"/></symbol>
+  <symbol id="i-deploy" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M8 1.5c2.5 1.5 3.7 4 3.5 7.5l-2 2h-3l-2-2C4.3 5.5 5.5 3 8 1.5z"/><circle cx="8" cy="6" r="1.2"/><path d="M5.5 11.5 4 14.5M10.5 11.5l1.5 3"/></symbol>
+  <symbol id="i-check" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M8 1.5 13.5 4v4c0 3.2-2.3 5.6-5.5 6.5C4.8 13.6 2.5 11.2 2.5 8V4z"/><path d="m5.5 8 1.8 1.8L10.8 6"/></symbol>
+  <symbol id="i-run" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="8" r="6"/><path d="M6.6 5.4 10.8 8l-4.2 2.6z"/></symbol>
+  <symbol id="i-chat" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 4.5a2 2 0 0 1 2-2h7a2 2 0 0 1 2 2v4a2 2 0 0 1-2 2H7.6l-3 2.8v-2.8H4.5a2 2 0 0 1-2-2z"/></symbol>
+  <symbol id="i-doc" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3.5C6.8 2.6 5.2 2.3 3 2.5v9c2.2-.2 3.8.1 5 1 1.2-.9 2.8-1.2 5-1v-9c-2.2-.2-3.8.1-5 1z"/><path d="M8 3.5v9"/></symbol>
+  <symbol id="i-link" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6.5 9.5 9.5 6.5"/><path d="M7.2 4.8 8.6 3.4a2.6 2.6 0 0 1 3.7 3.7l-1.4 1.4"/><path d="M8.8 11.2 7.4 12.6a2.6 2.6 0 0 1-3.7-3.7l1.4-1.4"/></symbol>
+  <symbol id="i-chart" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M2 2.5v11h12"/><path d="M4.5 10.5 7 7l2.5 2L13 4.5"/></symbol>
+</svg>
+<div class="aurora" aria-hidden="true"><i></i><i></i><i></i></div>
+<div class="stars" aria-hidden="true" id="stars"></div>
+
+<div class="viewbar" role="toolbar" id="viewbar" aria-label="보기">
+  <div class="seg-ctl" id="views">
+    <button type="button" id="v-full" data-v="full">원본</button>
+    <button type="button" id="v-a" data-v="a">스트립</button>
+    <button type="button" id="v-b" data-v="b">타임라인</button>
+    <button type="button" id="v-c" data-v="c">타일</button>
+  </div>
+  <div class="seg-ctl" id="orient">
+    <button type="button" id="o-auto" data-o="auto" title="탭 비율에 따라 자동">자동</button>
+    <button type="button" id="o-land" data-o="land" title="가로"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="1.5" y="4" width="13" height="8" rx="1.5"/></svg><span class="lbl">가로</span></button>
+    <button type="button" id="o-port" data-o="port" title="세로"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="4" y="1.5" width="8" height="13" rx="1.5"/></svg><span class="lbl">세로</span></button>
+  </div>
+  <a class="hub-btn" id="hubBtn" hidden>허브 ↗</a>
+  <a class="star-btn" href="https://github.com/lcalmsky/deadhd" target="_blank" rel="noopener" aria-label="Star deadhd on GitHub">
+    <span class="swap">
+      <svg class="gh" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+      <svg class="s" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.4l2.55 5.36 5.85.72-4.3 4.05 1.12 5.83L12 16.5l-5.22 2.86 1.12-5.83-4.3-4.05 5.85-.72z"/></svg>
+    </span>
+    <span>Star</span>
+  </a>
+</div>
+<div id="compact" hidden></div>
+
+<main>
+  <span class="eyebrow" id="eyebrow"><span class="dot"></span><span id="eyebrowText"></span></span>
+  <h1 id="h1"></h1>
+  <div class="goal" id="goal"></div>
+  <div class="meta" id="meta"></div>
+  <section class="status" id="status" hidden aria-live="polite"></section>
+
+  <div class="progress">
+    <div class="bar"><div class="fill"></div><div class="tip"></div></div>
+    <div class="count-col" id="countCol">
+      <div class="count"><b id="countB">0/0</b> <span id="countLabel">완료</span></div>
+    </div>
+  </div>
+  <div class="tally" id="tally"></div>
+
+  <div id="blocked"></div>
+
+  <section class="flow" id="flow" aria-label="단계 흐름"><div class="canvas" id="canvas"></div></section>
+
+  <div id="cards"></div>
+
+  <footer id="footer" hidden></footer>
+</main>
+
+<script id="progress-data" type="application/json">__PROGRESS_DATA__</script>
+<script>
+(() => {
+  const body = document.body;
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const $ = id => document.getElementById(id);
+  const NS = 'http://www.w3.org/2000/svg';
+  const NODE_ICON = { done: '✓', now: '▶', side: '◐', left: '○', blocked: '!' };
+  const ANIM_KEY = { done: 'sub-s ok', now: 'sub-s run', blocked: 'sub-s blocked' };
+  const ANIM_GLYPH = { done: '✓', now: '▶', side: '◐', blocked: '!' };
+
+  // 템플릿이 스스로 그리는 고정 문구만 담는다. 카드 내용은 데이터가 이미 사용자 언어로 갖고 있다.
+  // ko/en 은 같은 키를 가진다 (test_render.py 가 대조한다).
+  const I18N = {
+    ko: {
+      countDone: '완료',
+      stepFlow: '단계 흐름',
+      updated: t => '마지막 갱신 ' + t,
+      goal: '목표',
+      doneWhen: '완료 조건',
+      eta: '완료 예상 ',
+      overdue: ' (지남)',
+      eyebrowNow: l => l + ' 진행 중',
+      eyebrowBlocked: l => l + ' 막힘',
+      allDone: '모든 단계 완료',
+      tally: { done: '완료', now: '진행', blocked: '막힘', side: '병행', left: '대기' },
+      secBlocked: '막힌 작업',
+      secNow: '진행 중인 작업',
+      secDone: '완료된 작업',
+      secRemaining: '남은 작업',
+      secChanges: '바뀐 판단',
+      started: '시작 ',
+      elapsed: '경과 ',
+      tomorrow: '내일 ',
+      date: (m, d, hm) => m + '.' + d + ' ' + hm,
+      min: m => m + '분',
+      hour: h => h + '시간',
+      hourMin: (h, r) => h + '시간 ' + r + '분',
+      day: d => d + '일',
+      dayHour: (d, r) => d + '일 ' + r + '시간',
+      viewNav: '보기',
+      viewFull: '원본',
+      viewStrip: '스트립',
+      viewTimeline: '타임라인',
+      viewTile: '타일',
+      orientAuto: '자동',
+      orientAutoTitle: '탭 비율에 따라 자동',
+      orientLand: '가로',
+      orientPort: '세로',
+      remainingTime: '남은 ',
+      nowRemaining: '현재 단계 남은 시간',
+      statesLabel: '단계별 상태',
+      stepListLabel: '단계 목록',
+      hub: '허브',
+      liveWait: d => '권한 승인 대기 · ' + d,
+      liveIdle: d => '입력 대기 · ' + d,
+      liveWorking: '작업 중',
+      liveStall: d => '신호 없음 · ' + d,
+      liveEnded: t => '세션 종료 ' + t,
+      liveLastTool: (n, a) => '마지막 도구 ' + n + ' · ' + a,
+      liveBackground: n => '백그라운드 작업 ' + n,
+      liveCompact: (n, t) => '압축 ' + n + '회 · ' + t + ' 데이터 재주입',
+      liveSource: '훅',
+      forDur: d => d + '째',
+      ago: d => d + ' 전',
+      sec: s => s + '초',
+      etaRaw: '원래 예상 ',
+      calibrated: '보정 ',
+      calSlow: (f, n) => '예측이 ' + f + '배 느림 · 완료 ' + n + '단계 기준',
+      calFast: (f, n) => '예측이 ' + f + '배 빠름 · 완료 ' + n + '단계 기준'
+    },
+    en: {
+      countDone: 'done',
+      stepFlow: 'Step flow',
+      updated: t => 'Updated ' + t,
+      goal: 'Goal',
+      doneWhen: 'Done when',
+      eta: 'ETA ',
+      overdue: ' (overdue)',
+      eyebrowNow: l => l + ' in progress',
+      eyebrowBlocked: l => l + ' blocked',
+      allDone: 'All steps done',
+      tally: { done: 'Done', now: 'Now', blocked: 'Blocked', side: 'Parallel', left: 'Left' },
+      secBlocked: 'Blocked',
+      secNow: 'In progress',
+      secDone: 'Completed',
+      secRemaining: 'Remaining',
+      secChanges: 'Plan changes',
+      started: 'Started ',
+      elapsed: 'Elapsed ',
+      tomorrow: 'Tomorrow ',
+      date: (m, d, hm) => m + '/' + d + ' ' + hm,
+      min: m => m + 'm',
+      hour: h => h + 'h',
+      hourMin: (h, r) => h + 'h ' + r + 'm',
+      day: d => d + 'd',
+      dayHour: (d, r) => d + 'd ' + r + 'h',
+      viewNav: 'View',
+      viewFull: 'Original',
+      viewStrip: 'Strip',
+      viewTimeline: 'Timeline',
+      viewTile: 'Tiles',
+      orientAuto: 'Auto',
+      orientAutoTitle: 'Follows the tab aspect ratio',
+      orientLand: 'Landscape',
+      orientPort: 'Portrait',
+      remainingTime: 'Remaining ',
+      nowRemaining: 'Current step remaining',
+      statesLabel: 'Step states',
+      stepListLabel: 'Step list',
+      hub: 'Hub',
+      liveWait: d => 'Waiting for permission · ' + d,
+      liveIdle: d => 'Waiting for your input · ' + d,
+      liveWorking: 'Working',
+      liveStall: d => 'No signal · ' + d,
+      liveEnded: t => 'Session ended ' + t,
+      liveLastTool: (n, a) => 'Last tool ' + n + ' · ' + a,
+      liveBackground: n => n + ' background task' + (n === 1 ? '' : 's'),
+      liveCompact: (n, t) => 'Compacted ' + n + '× · data re-injected ' + t,
+      liveSource: 'hook',
+      forDur: d => 'for ' + d,
+      ago: d => d + ' ago',
+      sec: s => s + 's',
+      etaRaw: 'Raw ETA ',
+      calibrated: 'Calibrated ',
+      calSlow: (f, n) => 'Estimates run ' + f + '× slow · from ' + n + ' done steps',
+      calFast: (f, n) => 'Estimates run ' + f + '× fast · from ' + n + ' done steps'
+    }
+  };
+
+  const el = (tag, cls, text) => {
+    const n = document.createElement(tag);
+    if (cls) n.className = cls;
+    if (text != null) n.textContent = String(text);
+    return n;
+  };
+  const iconEl = (name, cls) => {
+    const svg = document.createElementNS(NS, 'svg');
+    if (cls) svg.setAttribute('class', cls);
+    const use = document.createElementNS(NS, 'use');
+    use.setAttribute('href', '#i-' + name);
+    svg.appendChild(use);
+    return svg;
+  };
+  // http(s) 밖의 스킴은 링크로 만들지 않고 텍스트로만 그린다.
+  const httpHref = href => (typeof href === 'string' && /^https?:\/\//i.test(href)) ? href : null;
+  const linkEl = (href, node, cls) => {
+    const safe = httpHref(href);
+    if (!safe) return node;
+    const a = document.createElement('a');
+    if (cls) a.className = cls;
+    a.href = safe; a.target = '_blank'; a.rel = 'noopener';
+    a.appendChild(node);
+    return a;
+  };
+
+  const toDate = v => (v instanceof Date ? v : new Date(v));
+  const pad2 = n => String(n).padStart(2, '0');
+  const sameDay = (a, b) => a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate();
+
+  // 표기는 보는 시점의 브라우저 로컬 날짜를 기준으로 정한다 (렌더 시점이 아니다).
+  function fmtClock(target, viewNow) {
+    const t = toDate(target), v = toDate(viewNow);
+    const hm = pad2(t.getHours()) + ':' + pad2(t.getMinutes());
+    if (sameDay(t, v)) return hm;
+    if (sameDay(t, new Date(v.getFullYear(), v.getMonth(), v.getDate() + 1))) return L.tomorrow + hm;
+    return L.date(t.getMonth() + 1, pad2(t.getDate()), hm);
+  }
+
+  function fmtDur(minutes) {
+    const m = Math.round(Number(minutes) || 0);
+    if (m < 60) return L.min(m);
+    if (m < 1440) {
+      const h = Math.floor(m / 60), rest = m % 60;
+      return rest ? L.hourMin(h, rest) : L.hour(h);
+    }
+    const h = Math.round(m / 60), d = Math.floor(h / 24), rest = h % 24;
+    return rest ? L.dayHour(d, rest) : L.day(d);
+  }
+
+  function linkify(text) {
+    const frag = document.createDocumentFragment();
+    const s = text == null ? '' : String(text);
+    let last = 0, m;
+    LINK_RE.lastIndex = 0;
+    while ((m = LINK_RE.exec(s)) !== null) {
+      const isUrl = m[2] !== undefined;
+      let label = m[0];
+      let end = m.index + label.length;
+      if (isUrl) {
+        const trimmed = label.replace(/[.,;:!?]+$/, '');
+        end -= label.length - trimmed.length;
+        label = trimmed;
+      }
+      frag.appendChild(document.createTextNode(s.slice(last, m.index)));
+      frag.appendChild(linkEl(isUrl ? label : LINKS[m[1]], document.createTextNode(label), 'lnk'));
+      last = end;
+      LINK_RE.lastIndex = end;
+    }
+    frag.appendChild(document.createTextNode(s.slice(last)));
+    return frag;
+  }
+
+  let data;
+  try {
+    // render.py 는 script 태그가 조기에 닫히지 않게 데이터의 `<!--` 를 `<\!--` 로 바꿔 넣는다.
+    // JSON 에서 유효한 이스케이프가 아니므로 여기서 되돌린다.
+    data = JSON.parse($('progress-data').textContent.replace(/<\\!/g, '<!'));
+  } catch (err) {
+    console.error('progress: 데이터를 읽지 못했다', err);
+    return;
+  }
+
+  const L = I18N[data.lang] || I18N.ko;
+  $('countLabel').textContent = L.countDone;
+  $('flow').setAttribute('aria-label', L.stepFlow);
+
+  const hubBtn = $('hubBtn');
+  if (data.hubHref) {
+    hubBtn.href = data.hubHref;
+    hubBtn.textContent = L.hub + ' ↗';
+    hubBtn.hidden = false;
+  }
+
+  const LINKS = (data.links && typeof data.links === 'object' && !Array.isArray(data.links)) ? data.links : {};
+  const escapeRe = s => String(s).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const KEY_PAT = Object.keys(LINKS).sort((a, b) => b.length - a.length).map(escapeRe).join('|');
+  // 키는 앞뒤가 영숫자·_·- 가 아닌 경계에서만 잡는다 (SHOP-13 이 SHOP-130 안에서 걸리지 않게).
+  const KEY_GROUP = KEY_PAT ? '(?<![A-Za-z0-9_-])(?:' + KEY_PAT + ')(?![A-Za-z0-9_-])' : null;
+  const LINK_RE = new RegExp('(' + (KEY_GROUP || '(?!)') + ')|(https?://[^\\s<>"\')\\]]+)', 'g');
+
+  const KEY = 'progress:' + (data.key || '') + ':' + (data.title || '');
+  const store = {
+    get(k) { try { const v = sessionStorage.getItem(k); return v == null ? null : JSON.parse(v); } catch (e) { return null; } },
+    set(k, v) { try { sessionStorage.setItem(k, JSON.stringify(v)); } catch (e) { /* 저장 불가 환경에서는 매번 처음 보는 것으로 취급한다 */ } }
+  };
+
+  const items = (data.items || []).map(it => Object.assign({}, it));
+  const nextCol = {};
+  items.forEach(it => {
+    it.lane = Number.isFinite(it.lane) ? it.lane : 0;
+    const base = nextCol[it.lane] == null ? 0 : nextCol[it.lane];
+    if (it.col == null) it.col = base;
+    nextCol[it.lane] = Math.max(base, it.col) + 1;
+  });
+  const renderedAt = data.renderedAt ? toDate(data.renderedAt) : null;
+  // 완료 예상의 기준은 렌더 시각이 아니라 데이터가 마지막으로 바뀐 시각이다.
+  const dataAt = data.dataAt ? toDate(data.dataAt) : renderedAt;
+  const viewNow = new Date();
+  const plusMinutes = (base, mins) => new Date(base.getTime() + mins * 60000);
+
+  const byState = st => items.filter(i => i.state === st);
+  const doneList = byState('done'), nowList = byState('now'), blockedList = byState('blocked');
+  const sideList = byState('side'), leftList = byState('left');
+  const total = items.length;
+  const lanes = Array.isArray(data.lanes) ? data.lanes : [];
+  const laneCount = Math.max(lanes.length, items.reduce((m, i) => Math.max(m, i.lane + 1), 1));
+
+  const edges = [];
+  const perLane = {};
+  items.forEach(it => { (perLane[it.lane] = perLane[it.lane] || []).push(it); });
+  Object.keys(perLane).forEach(k => {
+    const arr = perLane[k].slice().sort((a, b) => a.col - b.col);
+    for (let i = 0; i + 1 < arr.length; i++) edges.push([arr[i].id, arr[i + 1].id]);
+  });
+  if (Array.isArray(data.edges)) {
+    data.edges.forEach(pair => {
+      if (!edges.some(e => e[0] === pair[0] && e[1] === pair[1])) edges.push(pair);
+    });
+  }
+
+  // ---- 배경 ----
+  const stars = $('stars');
+  for (let i = 0; i < 60; i++) {
+    const st = document.createElement('b');
+    st.style.left = Math.random() * 100 + '%';
+    st.style.top = Math.random() * 100 + '%';
+    stars.appendChild(st);
+  }
+
+  // ---- 머리말 ----
+  const eyebrow = $('eyebrow');
+  if (nowList.length) $('eyebrowText').textContent = L.eyebrowNow(nowList[0].label);
+  else if (blockedList.length) $('eyebrowText').textContent = L.eyebrowBlocked(blockedList[0].label);
+  else if (total && doneList.length === total) $('eyebrowText').textContent = L.allDone;
+  else eyebrow.hidden = true;
+
+  const h1 = $('h1');
+  if (data.key) {
+    const k = el('span', 'key');
+    k.appendChild(data.keyHref ? linkEl(data.keyHref, document.createTextNode(data.key)) : document.createTextNode(data.key));
+    h1.appendChild(k);
+    h1.appendChild(document.createTextNode(' '));
+  }
+  h1.appendChild(el('span', 'shine', data.title || ''));
+
+  const meta = $('meta');
+  if (data.updated) meta.appendChild(el('span', null, L.updated(data.updated)));
+  (data.meta || []).forEach(m => {
+    const obj = (m && typeof m === 'object' && !Array.isArray(m)) ? m : null;
+    if (obj && obj.href) {
+      meta.appendChild(linkEl(obj.href, document.createTextNode(obj.text == null ? '' : String(obj.text)), 'chip mono lnk'));
+      return;
+    }
+    const chip = el('span', 'chip mono');
+    chip.appendChild(linkify(obj ? obj.text : m));
+    meta.appendChild(chip);
+  });
+  if (!meta.children.length) meta.hidden = true;
+
+  // ---- 입력 대기 띠 (훅이 유지하는 상태) ----
+  const relDur = v => {
+    const s = Math.max(0, Math.round((viewNow.getTime() - toDate(v).getTime()) / 1000));
+    return s < 60 ? L.sec(s) : fmtDur(s / 60);
+  };
+  if (data.live) {
+    const lv = data.live;
+    const stallMs = 10 * 60 * 1000;
+    const lastToolAt = lv.lastTool && lv.lastTool.at ? toDate(lv.lastTool.at) : null;
+    const stalled = lv.status === 'working' && lastToolAt != null
+      && viewNow.getTime() - lastToolAt.getTime() > stallMs;
+    const band = $('status');
+    band.className = 'status status-' + lv.status + (stalled ? ' status-stall' : '');
+    band.hidden = false;
+
+    const main = el('div', 'status-main');
+    main.appendChild(el('i', 'status-dot'));
+    let title = L.liveWorking;
+    if (lv.status === 'waiting_permission') title = L.liveWait(L.forDur(relDur(lv.since)));
+    else if (lv.status === 'idle') title = L.liveIdle(L.forDur(relDur(lv.since)));
+    else if (lv.status === 'working' && stalled) title = L.liveStall(L.forDur(relDur(lv.lastTool.at)));
+    else if (lv.status === 'ended') title = L.liveEnded(fmtClock(toDate(lv.since), viewNow));
+    main.appendChild(el('b', 'status-title', title));
+    const what = lv.status === 'waiting_permission' ? lv.message
+      : lv.status === 'working' && lv.lastTool ? lv.lastTool.name : '';
+    if (what) main.appendChild(el('span', 'status-what mono', what));
+    band.appendChild(main);
+
+    const sub = el('div', 'status-sub');
+    if (lv.lastTool && lv.lastTool.name) {
+      sub.appendChild(el('span', null, L.liveLastTool(lv.lastTool.name, L.ago(relDur(lv.lastTool.at)))));
+    }
+    const tasks = Array.isArray(lv.backgroundTasks) ? lv.backgroundTasks : [];
+    if (tasks.length) {
+      const first = tasks[0] && tasks[0].description;
+      sub.appendChild(el('span', null, L.liveBackground(tasks.length) + (first ? ' · ' + first : '')));
+    }
+    const comp = lv.compactions;
+    if (comp && comp.count > 0 && comp.lastAt) {
+      sub.appendChild(el('span', null, L.liveCompact(comp.count, fmtClock(toDate(comp.lastAt), viewNow))));
+    }
+    if (sub.children.length) band.appendChild(sub);
+  }
+
+  const goal = $('goal');
+  const goalRow = (tag, tagCls, text) => {
+    const row = el('div', 'goal-row');
+    row.appendChild(el('span', tagCls ? 'goal-tag ' + tagCls : 'goal-tag', tag));
+    const p = el('p');
+    p.appendChild(linkify(text));
+    row.appendChild(p);
+    goal.appendChild(row);
+  };
+  if (data.goal) goalRow(L.goal, null, data.goal);
+  if (data.doneWhen) goalRow(L.doneWhen, 'end', data.doneWhen);
+  if (!goal.children.length) goal.hidden = true;
+
+  // ---- 진행 바와 집계 ----
+  const pct = total ? (doneList.length / total * 100) : 0;
+  document.querySelector('.bar .fill').style.width = pct.toFixed(2) + '%';
+  document.querySelector('.bar .tip').style.left = pct.toFixed(2) + '%';
+  $('countB').textContent = doneList.length + '/' + total;
+
+  if (data.eta) {
+    const rawAt = toDate(data.eta);
+    const calAt = data.etaCalibrated ? toDate(data.etaCalibrated) : null;
+    const etaAt = calAt || rawAt;
+    const past = etaAt.getTime() < viewNow.getTime();
+    const line = el('div', past ? 'eta past' : 'eta');
+    line.appendChild(document.createTextNode(L.eta));
+    if (calAt) line.appendChild(el('s', 'raw', fmtClock(rawAt, viewNow)));
+    line.appendChild(el('b', null, fmtClock(etaAt, viewNow)));
+    if (past) line.appendChild(document.createTextNode(L.overdue));
+    $('countCol').appendChild(line);
+    if (calAt && data.calibration) {
+      const { factor, samples } = data.calibration;
+      const note = factor < 1 ? L.calFast(factor, samples) : L.calSlow(factor, samples);
+      $('countCol').appendChild(el('div', 'cal-note', note));
+    }
+  }
+
+  const tally = $('tally');
+  [['done', L.tally.done], ['now', L.tally.now], ['blocked', L.tally.blocked], ['side', L.tally.side], ['left', L.tally.left]].forEach(([k, t]) => {
+    const c = byState(k).length;
+    if (!c) return;
+    const s = el('span');
+    const dot = el('i');
+    dot.className = k;
+    s.appendChild(dot);
+    s.appendChild(document.createTextNode(t + ' ' + c));
+    tally.appendChild(s);
+  });
+
+  // ---- 막힌 작업 ----
+  const blockedWrap = $('blocked');
+  if (blockedList.length) {
+    const h = el('h2', 'blocked');
+    h.appendChild(el('span', 'ic', '⚠'));
+    h.appendChild(document.createTextNode(L.secBlocked));
+    blockedWrap.appendChild(h);
+    blockedList.forEach(it => blockedWrap.appendChild(cardEl(it, it.state)));
+  }
+
+  // ---- 흐름도 ----
+  const cols = items.reduce((m, i) => Math.max(m, i.col), 0) + 1;
+  const avail = $('flow').clientWidth - 32;
+  const COLW = avail > 0 ? Math.max(118, Math.min(150, Math.floor(avail / cols))) : 150;
+  const PADX = COLW / 2, NODE_R = 26;
+  const LABEL_DY = lanes.some(name => name) ? 14 : 0;
+  const NODE_DY = 62 + LABEL_DY;
+  const LANEH = (items.some(it => nodeWhen(it)) ? 184 : 150) + LABEL_DY;
+  const canvasEl = $('canvas');
+  const pos = {};
+
+  Array.from({ length: laneCount }, (_, i) => lanes[i] || '').forEach((name, i) => {
+    const inLane = items.filter(it => it.lane === i);
+    const cls = inLane.some(it => it.state === 'blocked') ? 'blocked'
+      : inLane.some(it => it.state === 'now') ? 'live'
+      : (inLane.length && inLane.every(it => it.state === 'done')) ? 'done' : '';
+    const band = el('div', 'lane-band' + (cls ? ' ' + cls : ''));
+    band.style.top = (i * LANEH + 4) + 'px';
+    band.style.height = (LANEH - 8) + 'px';
+    if (name) band.appendChild(el('span', 'lane-label', name));
+    canvasEl.appendChild(band);
+  });
+
+  const W = PADX * 2 + (cols - 1) * COLW;
+  const H = laneCount * LANEH;
+  canvasEl.style.width = W + 'px';
+  canvasEl.style.height = H + 'px';
+  items.forEach(it => { pos[it.id] = { x: PADX + it.col * COLW, y: it.lane * LANEH + NODE_DY }; });
+
+  const svg = document.createElementNS(NS, 'svg');
+  svg.setAttribute('class', 'edges');
+  svg.setAttribute('width', W);
+  svg.setAttribute('height', H);
+  edges.forEach((pair, index) => {
+    const p = pos[pair[0]], q = pos[pair[1]];
+    if (!p || !q) return;
+    const x1 = p.x + NODE_R + 4, x2 = q.x - NODE_R - 4, y1 = p.y, y2 = q.y;
+    const a = items.find(i => i.id === pair[0]), b = items.find(i => i.id === pair[1]);
+    const gx = q.x - COLW / 2;
+    const blocked = items.some(it => it.lane === a.lane && it.col > a.col && it.col < b.col);
+    let d;
+    if (y1 === y2) d = `M${x1} ${y1} L${x2} ${y2}`;
+    else if (b.col - a.col >= 2 && !blocked) {
+      const w = 22;
+      d = `M${x1} ${y1} L${gx - w} ${y1} C${gx} ${y1}, ${gx} ${y2}, ${gx + w} ${y2} L${x2} ${y2}`;
+    } else {
+      const mx = (x1 + x2) / 2;
+      d = `M${x1} ${y1} C${mx} ${y1}, ${mx} ${y2}, ${x2} ${y2}`;
+    }
+    const from = a.state;
+    const to = b.state;
+    const cls = (from === 'blocked' || to === 'blocked') ? 'blocked'
+      : (from === 'done' && to === 'done') ? 'done'
+      : (from === 'done' && to === 'now') ? 'active'
+      : (from === 'side' || to === 'side') ? 'side' : 'left';
+    const delay = (-(index * 0.37) % 1.8).toFixed(2) + 's';
+    const path = document.createElementNS(NS, 'path');
+    path.setAttribute('d', d);
+    path.setAttribute('class', 'edge ' + cls);
+    path.style.animationDelay = delay;
+    svg.appendChild(path);
+    if (cls === 'done') {
+      const flow = document.createElementNS(NS, 'path');
+      flow.setAttribute('d', d);
+      flow.setAttribute('class', 'edge-flow');
+      flow.style.animationDelay = delay;
+      svg.appendChild(flow);
+    }
+  });
+  canvasEl.appendChild(svg);
+
+  let doneIndex = 0;
+  items.forEach(it => {
+    const node = el('div', 'fnode ' + it.state);
+    node.dataset.id = it.id;
+    node.style.left = pos[it.id].x + 'px';
+    node.style.top = pos[it.id].y + 'px';
+    node.style.width = (COLW - 16) + 'px';
+    const circle = el('div', 'node', NODE_ICON[it.state] || '○');
+    if (it.state === 'now') circle.appendChild(el('i', 'orbit'));
+    node.appendChild(circle);
+    if (it.state === 'done') node.style.setProperty('--i', doneIndex++);
+    node.appendChild(el('div', 'label', it.label));
+    node.appendChild(el('div', 'sub', it.sub || ''));
+    const when = nodeWhen(it);
+    if (when) node.appendChild(el('div', when.pending ? 'when when-now' + (when.past ? ' when-past' : '') : 'when', when.text));
+    canvasEl.appendChild(node);
+  });
+
+  // ---- 카드 ----
+  const cards = $('cards');
+  function section(headCls, glyph, title, list, cardCls) {
+    const h = el('h2', headCls);
+    h.appendChild(el('span', 'ic', glyph));
+    h.appendChild(document.createTextNode(title));
+    cards.appendChild(h);
+    list.forEach(it => cards.appendChild(cardEl(it, cardCls(it))));
+  }
+  if (nowList.length) section('now', '▶', L.secNow, nowList, () => 'now');
+  if (doneList.length) section('done', '✓', L.secDone, doneList, () => 'done');
+  const rest = sideList.concat(leftList);
+  if (rest.length) section('left', '○', L.secRemaining, rest, it => it.state === 'side' ? 'left side' : 'left');
+  if (Array.isArray(data.changes) && data.changes.length) {
+    const h = el('h2', 'left');
+    h.appendChild(el('span', 'ic', 'Δ'));
+    h.appendChild(document.createTextNode(L.secChanges));
+    cards.appendChild(h);
+    data.changes.forEach(c => {
+      const card = el('div', 'card');
+      if (c.title) {
+        const h3 = el('h3');
+        h3.appendChild(linkify(c.title));
+        card.appendChild(h3);
+      }
+      if (c.body) {
+        const p = el('p');
+        p.appendChild(linkify(c.body));
+        card.appendChild(p);
+      }
+      if (Array.isArray(c.evidence) && c.evidence.length) card.appendChild(evEl(c.evidence));
+      cards.appendChild(card);
+    });
+  }
+
+  const footer = $('footer');
+  if (data.footer) footer.appendChild(linkify(data.footer));
+  else footer.hidden = true;
+
+  function cardEl(it, cls) {
+    const card = el('div', cls ? 'card ' + cls : 'card');
+    const h3 = el('h3');
+    h3.appendChild(linkify(it.title || it.label || ''));
+    if (it.badge) {
+      const badge = el('span', it.state === 'side' ? 'badge side' : 'badge');
+      badge.appendChild(linkify(it.badge));
+      h3.appendChild(badge);
+    }
+    card.appendChild(h3);
+    if (it.body) {
+      const p = el('p');
+      p.appendChild(linkify(it.body));
+      card.appendChild(p);
+    }
+    const etime = nowTimeEl(it);
+    if (etime) card.appendChild(etime);
+    if (Array.isArray(it.substeps) && it.substeps.length) card.appendChild(substepsEl(it.substeps));
+    if ((Array.isArray(it.stats) && it.stats.length) || (Array.isArray(it.compare) && it.compare.length)) card.appendChild(vizEl(it));
+    if (Array.isArray(it.evidence) && it.evidence.length) card.appendChild(evEl(it.evidence));
+    return card;
+  }
+
+  function nodeWhen(it) {
+    const start = it.startedAt ? toDate(it.startedAt) : null;
+    if (it.state === 'done' && start && it.doneAt) {
+      return { text: fmtDur((toDate(it.doneAt).getTime() - start.getTime()) / 60000) };
+    }
+    if (it.state === 'now' && typeof it.estimate === 'number' && dataAt) {
+      const end = plusMinutes(dataAt, it.estimate);
+      const past = end.getTime() < viewNow.getTime();
+      return { text: '~' + fmtClock(end, viewNow) + (past ? L.overdue : ''), pending: true, past: past };
+    }
+    if ((it.state === 'left' || it.state === 'side') && typeof it.estimate === 'number') {
+      return { text: '~' + fmtDur(it.estimate) };
+    }
+    return null;
+  }
+
+  function nowTimeEl(it) {
+    if (it.state !== 'now' || !it.startedAt || typeof it.estimate !== 'number' || !dataAt) return null;
+    const start = toDate(it.startedAt);
+    const end = plusMinutes(dataAt, it.estimate);
+    const elapsed = viewNow.getTime() - start.getTime();
+    const total = end.getTime() - start.getTime();
+    const ratio = total > 0 ? Math.min(1, Math.max(0, elapsed / total)) : 0;
+    const wrap = el('div', 'etime');
+    const top = el('div', 'etime-row');
+    top.appendChild(el('span', null, L.started + fmtClock(start, viewNow)));
+    top.appendChild(el('span', null, L.eta + fmtClock(end, viewNow) + (end.getTime() < viewNow.getTime() ? L.overdue : '')));
+    wrap.appendChild(top);
+    const bar = el('div', 'etime-bar');
+    const fill = el('i');
+    fill.style.width = (ratio * 100).toFixed(1) + '%';
+    bar.appendChild(fill);
+    wrap.appendChild(bar);
+    const bottom = el('div', 'etime-row');
+    bottom.appendChild(el('span', null, L.elapsed + fmtDur(Math.max(0, elapsed / 60000))));
+    bottom.appendChild(el('span'));
+    wrap.appendChild(bottom);
+    return wrap;
+  }
+
+  function substepsEl(subs) {
+    const wrap = el('div', 'substeps');
+    subs.forEach((s, i) => {
+      const st = s.state || 'left';
+      const step = el('div', ANIM_KEY[st] || 'sub-s');
+      const ic = el('i');
+      ic.textContent = ANIM_GLYPH[st] || String(i + 1);
+      step.appendChild(ic);
+      const label = s.label == null ? '' : String(s.label);
+      step.appendChild(s.href ? linkEl(s.href, document.createTextNode(label), 'lnk') : linkify(label));
+      wrap.appendChild(step);
+      if (i < subs.length - 1) {
+        const nx = subs[i + 1].state || 'left';
+        const lc = (st === 'done' && nx === 'done') ? 'sub-line ok'
+          : (st === 'done' && nx === 'now') ? 'sub-line run' : 'sub-line';
+        wrap.appendChild(el('div', lc));
+      }
+    });
+    return wrap;
+  }
+
+  function vizEl(it) {
+    const viz = el('div', 'viz');
+    (it.stats || []).forEach(st => viz.appendChild(statEl(st)));
+    (it.compare || []).forEach(c => viz.appendChild(compareEl(c)));
+    return viz;
+  }
+
+  function statEl(st) {
+    const wrap = el('div', 'stat');
+    const value = st.value == null ? '' : String(st.value);
+    if (st.kind === 'ring') {
+      const totalN = Number(st.total) || 0;
+      const ratio = totalN > 0 ? Math.min(1, Math.max(0, (Number(st.value) || 0) / totalN)) : 0;
+      const off = (113.1 * (1 - ratio)).toFixed(1);
+      const ring = document.createElementNS(NS, 'svg');
+      ring.setAttribute('class', 'ring');
+      ring.setAttribute('viewBox', '0 0 46 46');
+      ['bg', 'fg'].forEach(k => {
+        const c = document.createElementNS(NS, 'circle');
+        c.setAttribute('class', k);
+        c.setAttribute('cx', '23'); c.setAttribute('cy', '23'); c.setAttribute('r', '18');
+        if (k === 'fg') c.style.setProperty('--off', off);
+        ring.appendChild(c);
+      });
+      wrap.appendChild(ring);
+    } else if (st.icon) {
+      const big = el('div', 'big-ic');
+      big.appendChild(iconEl(st.icon));
+      wrap.appendChild(big);
+    }
+    const t = el('div', 't');
+    t.appendChild(el('b', null, st.kind === 'ring' ? value + ' / ' + (st.total == null ? '' : st.total) : value));
+    t.appendChild(document.createTextNode(st.label == null ? '' : String(st.label)));
+    wrap.appendChild(t);
+    return wrap;
+  }
+
+  function compareEl(c) {
+    const wrap = el('div', 'compare');
+    if (c.caption) wrap.appendChild(el('div', 'cap', c.caption));
+    (c.rows || []).forEach(r => {
+      const row = el('div', 'cmp-row' + (r.tone ? ' ' + r.tone : ''));
+      row.appendChild(el('span', null, r.label == null ? '' : String(r.label)));
+      const track = el('div', 'track');
+      const val = el('div', 'val');
+      val.style.setProperty('--w', Math.min(100, Math.max(0, Number(r.value) || 0)) + '%');
+      track.appendChild(val);
+      row.appendChild(track);
+      row.appendChild(el('span', 'num', (r.value == null ? '' : String(r.value)) + '%'));
+      wrap.appendChild(row);
+    });
+    return wrap;
+  }
+
+  function evEl(list) {
+    const wrap = el('div', 'ev');
+    list.forEach(ev => {
+      const s = el('span', ev.mono ? 'mono' : null);
+      if (ev.icon) s.appendChild(iconEl(ev.icon, 'ic-sm'));
+      const text = ev.text == null ? '' : String(ev.text);
+      s.appendChild(ev.href ? document.createTextNode(text) : linkify(text));
+      wrap.appendChild(ev.href ? linkEl(ev.href, s) : s);
+    });
+    return wrap;
+  }
+
+  // ---- 완료 효과 ----
+  function sparkleOn(node) {
+    const fr = canvasEl.getBoundingClientRect(), r = node.getBoundingClientRect();
+    const sp = el('span', 'spark');
+    const size = 8 + Math.random() * 10;
+    sp.style.width = sp.style.height = size + 'px';
+    sp.style.left = (r.left - fr.left + Math.random() * r.width - size / 2) + 'px';
+    sp.style.top = (r.top - fr.top + Math.random() * r.height - size / 2) + 'px';
+    canvasEl.appendChild(sp);
+    sp.addEventListener('animationend', () => sp.remove());
+  }
+
+  function burstAt(node) {
+    const fr = canvasEl.getBoundingClientRect(), r = node.getBoundingClientRect();
+    const cx = r.left - fr.left + r.width / 2, cy = r.top - fr.top + r.height / 2;
+    const colors = ['#34d399', '#a7f3d0', '#fbbf24', '#fff', '#c4b5fd'];
+    for (let i = 0; i < 28; i++) {
+      const p = el('span', 'burst');
+      const a = (Math.PI * 2 * i) / 28 + Math.random() * .3;
+      const dist = 40 + Math.random() * 60;
+      p.style.left = (cx - 4) + 'px';
+      p.style.top = (cy - 4) + 'px';
+      p.style.background = colors[i % colors.length];
+      p.style.setProperty('--dx', Math.cos(a) * dist + 'px');
+      p.style.setProperty('--dy', Math.sin(a) * dist + 'px');
+      canvasEl.appendChild(p);
+      p.addEventListener('animationend', () => p.remove());
+    }
+    for (let i = 0; i < 8; i++) setTimeout(() => sparkleOn(node), i * 60);
+  }
+
+  // ---- 새로고침 대응 ----
+  const saved = store.get(KEY + ':states');
+  if (saved) body.classList.add('no-entrance');
+
+  const scrollLeft = store.get(KEY + ':scroll');
+  const flow = $('flow');
+  if (typeof scrollLeft === 'number') flow.scrollLeft = scrollLeft;
+  let scrollTimer = null;
+  flow.addEventListener('scroll', () => {
+    clearTimeout(scrollTimer);
+    scrollTimer = setTimeout(() => store.set(KEY + ':scroll', flow.scrollLeft), 200);
+  });
+
+  if (saved && !reduce) {
+    items.filter(it => it.state === 'done' && saved[it.id] !== 'done').forEach(it => {
+      const node = canvasEl.querySelector('.fnode[data-id="' + it.id + '"] > .node');
+      if (node) burstAt(node);
+    });
+  }
+
+  const states = Object.assign({}, saved || {});
+  items.forEach(it => { states[it.id] = it.state; });
+  store.set(KEY + ':states', states);
+
+  // ---- 컴팩트 보기 ----
+  // 좁은 탭에서 쓰는 보기 3종은 버튼을 누른 순간 이미 받은 데이터로 그 보기 하나만 그린다.
+  const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  const viewStoreKey = KEY + ':view';
+  const vst = Object.assign({ v: 'full', o: 'auto', chip: 'done' }, store.get(viewStoreKey) || {});
+  const saveView = () => store.set(viewStoreKey, vst);
+
+  const box = $('compact');
+  const vNow = nowList[0] || blockedList[0] || null;
+
+  const VIEW_LABEL = { full: L.viewFull, a: L.viewStrip, b: L.viewTimeline, c: L.viewTile };
+  Object.keys(VIEW_LABEL).forEach(v => { const b = $('v-' + v); if (b) b.textContent = VIEW_LABEL[v]; });
+  const ORIENT_LABEL = { auto: L.orientAuto, land: L.orientLand, port: L.orientPort };
+  Object.keys(ORIENT_LABEL).forEach(o => {
+    const b = $('o-' + o);
+    if (!b) return;
+    b.title = o === 'auto' ? L.orientAutoTitle : ORIENT_LABEL[o];
+    const lbl = b.querySelector('.lbl');
+    if (lbl) lbl.textContent = ORIENT_LABEL[o]; else b.textContent = ORIENT_LABEL[o];
+  });
+  $('viewbar').setAttribute('aria-label', L.viewNav);
+
+  const keyHtml = data.key
+    ? `<a class="cx-key" href="${esc(httpHref(data.keyHref) || '#')}" target="_blank" rel="noopener">${esc(data.key)}</a>` : '';
+  const etaViewAt = data.eta ? toDate(data.etaCalibrated || data.eta) : null;
+  const etaHtml = etaViewAt ? `<span class="cx-eta">${L.eta}<b>${fmtClock(etaViewAt, viewNow)}</b>${etaViewAt.getTime() < viewNow.getTime() ? L.overdue : ''}</span>` : '';
+  const pill = vNow
+    ? `<span class="cx-pill"${vNow.state === 'blocked' ? ' style="color:var(--blocked)"' : ''}><i></i>${esc(vNow.state === 'blocked' ? L.eyebrowBlocked(vNow.label) : L.eyebrowNow(vNow.label))}</span>`
+    : `<span class="cx-pill">${L.allDone}</span>`;
+
+  const nowCard = () => !vNow ? '' : `<div class="cx-glass cx-card">
+      <h3><span>${esc(vNow.title)}</span>${vNow.estimate != null ? `<span class="cx-eta">${L.remainingTime}<b>${fmtDur(vNow.estimate)}</b></span>` : ''}</h3>
+      <p>${esc(vNow.body)}</p>
+      ${Array.isArray(vNow.substeps) && vNow.substeps.length ? `<ul class="cx-subs">${vNow.substeps.map(s => { const sh = httpHref(s.href); return `<li class="${s.state}"><span class="g">${NODE_ICON[s.state] || '○'}</span>${sh ? `<a href="${esc(sh)}" target="_blank" rel="noopener" style="color:inherit">${esc(s.label)}</a>` : esc(s.label)}</li>`; }).join('')}</ul>` : ''}
+      ${Array.isArray(vNow.evidence) && vNow.evidence.length ? `<div class="cx-ev">${vNow.evidence.map(e => { const eh = httpHref(e.href), mono = e.mono ? ' class="mono"' : ''; return eh ? `<a href="${esc(eh)}" target="_blank" rel="noopener"${mono}>${esc(e.text)}</a>` : `<span${mono}>${esc(e.text)}</span>`; }).join('')}</div>` : ''}
+    </div>`;
+
+  const RENDER = {
+    a() {
+      const strip = items.filter(i => i.state !== 'side');
+      const group = (label, list, cls, open) => !list.length ? '' : `<details${open ? ' open' : ''}><summary><span class="cx-dot ${cls}"></span>${label} ${list.length}</summary><ul>${list.map(i => `<li>${esc(i.title)}${i.doneAt ? ` <span class="cx-muted">· ${fmtClock(toDate(i.doneAt), viewNow)}</span>` : i.estimate != null ? ` <span class="cx-muted">· ${fmtDur(i.estimate)}</span>` : ''}</li>`).join('')}</ul></details>`;
+      const land = vst.oe === 'land';
+      return `<div class="cx-head"><div>${pill}<div class="cx-title">${keyHtml} ${esc(data.title)}</div></div><div class="cx-count"><b>${doneList.length}/${total}</b>${L.countDone}${data.eta ? `<br>${etaHtml}` : ''}</div></div>
+        <div class="ca-strip">${strip.map(i => `<div class="st ${i.state}"><span class="nd">${i.state === 'done' || i.state === 'blocked' ? NODE_ICON[i.state] : ''}</span><small>${esc(i.label)}</small></div>`).join('')}</div>
+        ${sideList.length ? `<div class="ca-side">${L.tally.side} ${sideList.map(i => `<span>${esc(i.label)}</span>`).join('')}</div>` : ''}
+        <div class="ca-body">${nowCard()}<div class="ca-rest">${group(L.tally.done, doneList, 'done', land)}${group(L.tally.side, sideList, 'side', land)}${group(L.tally.left, leftList, 'left', land)}</div></div>`;
+    },
+    b() {
+      const order = [...doneList, ...(vNow ? [vNow] : []), ...leftList, ...sideList];
+      const row = i => {
+        const tm = i.state === 'done' ? (i.doneAt ? fmtClock(toDate(i.doneAt), viewNow) : '')
+          : i.state === 'now' ? (i.estimate != null ? L.remainingTime + fmtDur(i.estimate) : '')
+          : (i.estimate != null ? fmtDur(i.estimate) : '');
+        if (i === vNow && vst.oe === 'port') return `<li class="now"><span class="cx-dot now"></span>${nowCard()}</li>`;
+        return `<li class="${i.state}"><span class="cx-dot ${i.state}"></span><span>${esc(i.title)}${i.state === 'side' ? `<span class="tag">${L.tally.side}</span>` : ''}</span><span class="tm">${tm}</span></li>`;
+      };
+      return `<div class="cb-top">${pill}<div class="cx-title">${keyHtml} ${esc(data.title)}</div>
+          <div class="row"><div class="cx-bar"><span style="width:${pct.toFixed(2)}%"></span></div><span class="cx-count"><b>${doneList.length}/${total}</b></span>${etaHtml}</div></div>
+        <div class="cb-body"><ol class="cb-tl">${order.map(row).join('')}</ol>${vst.oe === 'land' ? nowCard() : ''}</div>`;
+    },
+    c() {
+      const C = 2 * Math.PI * 15, f = total ? doneList.length / total * C : 0;
+      const counts = [
+        ['done', L.tally.done, doneList],
+        ['now', L.tally.now, vNow && vNow.state === 'now' ? [vNow] : []],
+        ['blocked', L.tally.blocked, blockedList],
+        ['left', L.tally.left, leftList],
+        ['side', L.tally.side, sideList]
+      ].filter(c => c[2].length);
+      const chips = counts.filter(c => c[0] !== 'now');
+      return `<div class="cx-head"><div>${pill}<div class="cx-title">${keyHtml} ${esc(data.title)}</div></div></div>
+        <div class="cc-grid" style="margin-top:14px">
+          <div>
+            <div class="cc-tiles">
+              <div class="cx-glass cc-tile"><small>${L.countDone}</small><div class="cc-ring"><svg viewBox="0 0 36 36" aria-hidden="true"><circle cx="18" cy="18" r="15" fill="none" stroke="var(--track)" stroke-width="4"/><circle cx="18" cy="18" r="15" fill="none" stroke="var(--done-2)" stroke-width="4" stroke-linecap="round" stroke-dasharray="${f} ${C}" transform="rotate(-90 18 18)"/></svg><span class="cx-count"><b>${doneList.length}/${total}</b></span></div></div>
+              <div class="cx-glass cc-tile"><small>${L.nowRemaining}</small><b>${vNow && vNow.estimate != null ? fmtDur(vNow.estimate) : '—'}</b></div>
+              <div class="cx-glass cc-tile"><small>${L.eta}</small><b>${etaViewAt ? fmtClock(etaViewAt, viewNow) : '—'}</b>${etaViewAt && etaViewAt.getTime() < viewNow.getTime() ? L.overdue : ''}</div>
+            </div>
+            <div class="cc-seg" aria-label="${esc(L.statesLabel)}">${items.map(i => `<span class="${i.state}" title="${esc(i.label)}"></span>`).join('')}</div>
+            <div class="cc-legend">${counts.map(([k, l, a]) => `<span><i class="cx-dot ${k}"></i>${l} ${a.length}</span>`).join('')}</div>
+          </div>
+          <div>${nowCard()}
+            <div class="cc-chips" role="group" aria-label="${esc(L.stepListLabel)}">${chips.map(([k, l, a]) => `<button type="button" id="cc-${k}" data-k="${k}" aria-pressed="${vst.chip === k}"><i class="cx-dot ${k}"></i>${l} ${a.length}</button>`).join('')}</div>
+            <ul class="cc-list">${(counts.find(c => c[0] === vst.chip) || chips[0] || [, , []])[2].map(i => `<li><i class="cx-dot ${i.state}"></i><span>${esc(i.title)}</span><span>${i.doneAt ? fmtClock(toDate(i.doneAt), viewNow) : (i.estimate != null ? fmtDur(i.estimate) : '')}</span></li>`).join('')}</ul>
+          </div>
+        </div>`;
+    }
+  };
+
+  // 가로·세로는 창 비율로 정하고, 버튼으로 고정할 수 있다
+  const landMq = matchMedia('(min-aspect-ratio: 5/4) and (min-width: 760px)');
+  const built = {};
+  function apply() {
+    document.body.dataset.view = vst.v;
+    ['full', 'a', 'b', 'c'].forEach(v => { const b = $('v-' + v); if (b) b.setAttribute('aria-pressed', String(v === vst.v)); });
+    ['auto', 'land', 'port'].forEach(o => { const b = $('o-' + o); if (b) b.setAttribute('aria-pressed', String(o === vst.o)); });
+    if (vst.v === 'full') { box.hidden = true; delete $('viewbar').dataset.o; return; }
+    vst.oe = vst.o === 'auto' ? (landMq.matches ? 'land' : 'port') : vst.o;
+    const sig = vst.v + vst.oe + vst.chip;
+    box.dataset.o = vst.oe;
+    $('viewbar').dataset.o = vst.oe;
+    if (built.sig !== sig) { box.innerHTML = RENDER[vst.v](); built.sig = sig; }
+    box.hidden = false;
+  }
+  $('views').addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; vst.v = b.dataset.v; saveView(); apply(); scrollTo(0, 0); });
+  $('orient').addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; vst.o = b.dataset.o; saveView(); apply(); });
+  box.addEventListener('click', e => { const b = e.target.closest('.cc-chips button'); if (!b) return; vst.chip = b.dataset.k; saveView(); apply(); });
+  landMq.addEventListener('change', () => { if (vst.o === 'auto') apply(); });
+  apply();
+})();
+</script>
+</body>
+</html>

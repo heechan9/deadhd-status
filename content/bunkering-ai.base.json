@@ -1,0 +1,555 @@
+{
+ "key": "병커시유",
+ "keyHref": "https://github.com/heechan9/bunkering-ai",
+ "title": "병커시유 선박 급유 의사결정 강화학습 프로젝트 현황",
+ "goal": "선박의 유가·환율·연료잔량·잔여항로를 입력으로 급유 시점과 행동을 결정하는 정책을 합성 항해 환경에서 비교한다. 규칙 기반 3종과 Double DQN을 같은 조건으로 평가하고 구매·소비·잔량과 결과 근거를 함께 추적한다. 수동 정리 항목은 아래 '정리 기준 SHA' 시점의 공개 저장소 문서이며, 맨 위 줄은 GitHub 공개 기록을 자동 조회한 결과다.",
+ "doneWhen": "저장소 기준 남은 필수 작업: 같은 선박·기간의 공급량·ROB·소비·구매가격 자료를 확보해 독립 실선 평가를 하고, Ocean Lab 을 실제 휴대폰·iOS Safari 에서 확인한다.",
+ "lang": "ko",
+ "links": {
+  "PR #66": "https://github.com/heechan9/bunkering-ai/pull/66",
+  "PR #78": "https://github.com/heechan9/bunkering-ai/pull/78",
+  "PR #89": "https://github.com/heechan9/bunkering-ai/pull/89",
+  "PR #90": "https://github.com/heechan9/bunkering-ai/pull/90",
+  "PR #93": "https://github.com/heechan9/bunkering-ai/pull/93",
+  "PR #96": "https://github.com/heechan9/bunkering-ai/pull/96",
+  "PR #97": "https://github.com/heechan9/bunkering-ai/pull/97",
+  "PR #99": "https://github.com/heechan9/bunkering-ai/pull/99",
+  "PR #100": "https://github.com/heechan9/bunkering-ai/pull/100",
+  "PR #104": "https://github.com/heechan9/bunkering-ai/pull/104",
+  "PR #105": "https://github.com/heechan9/bunkering-ai/pull/105",
+  "PR #107": "https://github.com/heechan9/bunkering-ai/pull/107",
+  "PR #108": "https://github.com/heechan9/bunkering-ai/pull/108",
+  "PR #109": "https://github.com/heechan9/bunkering-ai/pull/109",
+  "PR #110": "https://github.com/heechan9/bunkering-ai/pull/110",
+  "PR #111": "https://github.com/heechan9/bunkering-ai/pull/111",
+  "PR #101": "https://github.com/heechan9/bunkering-ai/pull/101",
+  "PR #102": "https://github.com/heechan9/bunkering-ai/pull/102",
+  "PR #103": "https://github.com/heechan9/bunkering-ai/pull/103",
+  "PR #106": "https://github.com/heechan9/bunkering-ai/pull/106"
+ },
+ "curatedSha": "ead8785added7d0c4b2f97e7373ef79f6d9cc5bc",
+ "curatedAt": "2026-10-07 19:07 KST",
+ "lanes": [
+  "자동 조회 · GitHub 공개 기록",
+  "저장소 기록 · 구현·실험 결과",
+  "다른 환경 검증 기록 (출처·SHA)",
+  "남은 필수 작업",
+  "선택적 확장"
+ ],
+ "items": [
+  {
+   "id": "overview",
+   "lane": 1,
+   "col": 0,
+   "label": "목표·주요 기능",
+   "sub": "README",
+   "state": "done",
+   "badge": "저장소 기록",
+   "title": "프로젝트 목표와 주요 기능",
+   "body": "Gymnasium 기반 BunkeringEnv 에서 고정 급유·가격 반응형·안전재고·Double DQN 을 동일 seed·episode·환경설정으로 비교한다. 지도·선박 모형은 설명용이며 실제 항적이나 선박 물리 시뮬레이션이 아니다.",
+   "evidence": [
+    {
+     "text": "정책 비교: 동일 평가계약·공통 결과 형식"
+    },
+    {
+     "text": "결과 추적: 구매·소비·잔량·급유횟수·SCI 와 CSV·체크포인트 해시 연결"
+    },
+    {
+     "text": "Ocean Lab: 한·영 전환, 7개 지역 지도, 항차 재생, 구매안 비교"
+    },
+    {
+     "text": "항차 자료 검토: CSV 입력·연료수지·한바다호 AB-LOG 집계"
+    },
+    {
+     "icon": "doc",
+     "text": "README.md",
+     "mono": true,
+     "href": "https://github.com/heechan9/bunkering-ai/blob/ead8785/README.md"
+    },
+    {
+     "icon": "doc",
+     "text": "docs/technical/evaluation_contract.md",
+     "mono": true,
+     "href": "https://github.com/heechan9/bunkering-ai/blob/ead8785/docs/technical/evaluation_contract.md"
+    }
+   ]
+  },
+  {
+   "id": "official",
+   "lane": 1,
+   "col": 1,
+   "label": "공식 동일조건 평가",
+   "sub": "100 항차",
+   "state": "done",
+   "badge": "저장소 기록",
+   "title": "규칙 3종·Double DQN 공식 평가 (학습 seed 42, 평가 seed 42~141)",
+   "body": "Double DQN 은 평균 Reward 0.044 로 가장 높았지만 SCI 847,118 과 급유횟수 5.31 도 Safe Stock(545,393·1.00)보다 높다. 저장소는 높은 보상을 비용 절감으로 해석하지 않는다고 기록한다.",
+   "compare": [
+    {
+     "caption": "성공률 (%) · 100개 합성 항차",
+     "rows": [
+      {
+       "label": "Fixed Fueling",
+       "value": 0,
+       "tone": "lose"
+      },
+      {
+       "label": "Price Reactive",
+       "value": 3,
+       "tone": "lose"
+      },
+      {
+       "label": "Safe Stock",
+       "value": 100,
+       "tone": "win"
+      },
+      {
+       "label": "Double DQN",
+       "value": 100,
+       "tone": "win"
+      }
+     ]
+    }
+   ],
+   "evidence": [
+    {
+     "icon": "file",
+     "text": "results/evaluation_results.csv",
+     "mono": true,
+     "href": "https://github.com/heechan9/bunkering-ai/blob/ead8785/results/evaluation_results.csv"
+    },
+    {
+     "icon": "file",
+     "text": "results/evaluation_manifest.json",
+     "mono": true,
+     "href": "https://github.com/heechan9/bunkering-ai/blob/ead8785/results/evaluation_manifest.json"
+    },
+    {
+     "icon": "doc",
+     "text": "docs/technical/official_evaluation.md",
+     "mono": true,
+     "href": "https://github.com/heechan9/bunkering-ai/blob/ead8785/docs/technical/official_evaluation.md"
+    },
+    {
+     "icon": "link",
+     "text": "Release official-eval-2026-09-01 (dqn_final.pt)",
+     "href": "https://github.com/heechan9/bunkering-ai/releases/tag/official-eval-2026-09-01"
+    }
+   ]
+  },
+  {
+   "id": "seeds",
+   "lane": 1,
+   "col": 2,
+   "label": "4시드·V1.5 강건성",
+   "sub": "합성 환경",
+   "state": "done",
+   "badge": "저장소 기록",
+   "title": "네 학습 seed 안정성과 V1.5 소비량·horizon 민감도",
+   "body": "학습 seed 42·1042·2042·3042 체크포인트 모두 Suez/Cape 조건에서 성공률 100%·연료고갈 0% 를 유지했다. 소비량 충격과 경로 조건에서 SCI/step 이 증가했으며, 저장소는 이를 실제 비용 근거로 쓰지 않는다고 기록한다.",
+   "compare": [
+    {
+     "caption": "SCI/step 평균 변화 (%) · 4개 frozen 체크포인트",
+     "rows": [
+      {
+       "label": "Suez/Cape 대표 조건",
+       "value": 5.1,
+       "tone": "risk"
+      },
+      {
+       "label": "소비량 +10%",
+       "value": 11.68,
+       "tone": "risk"
+      },
+      {
+       "label": "소비량 +20%",
+       "value": 22.59,
+       "tone": "risk"
+      }
+     ]
+    }
+   ],
+   "evidence": [
+    {
+     "icon": "doc",
+     "text": "docs/technical/multiseed_results_4seed.md",
+     "mono": true,
+     "href": "https://github.com/heechan9/bunkering-ai/blob/ead8785/docs/technical/multiseed_results_4seed.md"
+    },
+    {
+     "icon": "doc",
+     "text": "docs/technical/v1_5_results_4seed.md",
+     "mono": true,
+     "href": "https://github.com/heechan9/bunkering-ai/blob/ead8785/docs/technical/v1_5_results_4seed.md"
+    },
+    {
+     "icon": "doc",
+     "text": "docs/technical/reward_diagnostics_results_4seed.md",
+     "mono": true,
+     "href": "https://github.com/heechan9/bunkering-ai/blob/ead8785/docs/technical/reward_diagnostics_results_4seed.md"
+    }
+   ]
+  },
+  {
+   "id": "research",
+   "lane": 1,
+   "col": 3,
+   "label": "외부자료 후속 연구",
+   "sub": "교체 보류",
+   "state": "done",
+   "badge": "저장소 기록",
+   "title": "외부자료 연구와 공식 모델 교체 판정",
+   "body": "FuelCast 재학습, 소비·출력 후보 8개, NTNU 별도 DQN 3시드 재학습 모두 공식 DQN 교체 기준을 통과하지 못해 보류로 기록되어 있다. NTNU 재학습(PR #96)은 저장 산출물의 해시·집계 재검산이며 새 학습 재실행이 아니다.",
+   "stats": [
+    {
+     "kind": "number",
+     "icon": "check",
+     "value": "0 / 8",
+     "label": "소비·출력 후보 교체 기준 통과"
+    },
+    {
+     "kind": "number",
+     "icon": "file",
+     "value": "18,312",
+     "label": "NTNU 재학습 평가 행"
+    },
+    {
+     "kind": "number",
+     "icon": "check",
+     "value": "11 / 72",
+     "label": "UPA 인센티브 엄격 우위 전환"
+    }
+   ],
+   "evidence": [
+    {
+     "icon": "doc",
+     "text": "research/external_validation/DECISIONS.md",
+     "mono": true,
+     "href": "https://github.com/heechan9/bunkering-ai/blob/ead8785/research/external_validation/DECISIONS.md"
+    },
+    {
+     "icon": "doc",
+     "text": "research/ntnu_bunkering/RETRAINING.md",
+     "mono": true,
+     "href": "https://github.com/heechan9/bunkering-ai/blob/ead8785/research/ntnu_bunkering/RETRAINING.md"
+    },
+    {
+     "icon": "doc",
+     "text": "research/upa_incentive/README.md",
+     "mono": true,
+     "href": "https://github.com/heechan9/bunkering-ai/blob/ead8785/research/upa_incentive/README.md"
+    },
+    {
+     "icon": "pr",
+     "text": "PR #96",
+     "href": "https://github.com/heechan9/bunkering-ai/pull/96"
+    }
+   ]
+  },
+  {
+   "id": "public",
+   "lane": 1,
+   "col": 4,
+   "label": "공공자료 검산",
+   "sub": "UPA·EMSA·울산",
+   "state": "done",
+   "badge": "저장소 기록",
+   "title": "UPA·EMSA·울산세관 공개자료 검산",
+   "body": "UPA 신청 6,028행·배정 10,099행, EMSA THETIS-MRV 2024·2025 원본을 검산했고, 울산세관 8월 전 연료 공급 95,604톤과 LNG 1,675톤을 대조했다. 저장소는 이를 업무 맥락·참고 통계로만 쓰고 DQN 성능 근거에서 제외한다.",
+   "evidence": [
+    {
+     "icon": "doc",
+     "text": "docs/data/upa_followup_20261005.md",
+     "mono": true,
+     "href": "https://github.com/heechan9/bunkering-ai/blob/ead8785/docs/data/upa_followup_20261005.md"
+    },
+    {
+     "icon": "doc",
+     "text": "research/emsa_mrv/README.md",
+     "mono": true,
+     "href": "https://github.com/heechan9/bunkering-ai/blob/ead8785/research/emsa_mrv/README.md"
+    },
+    {
+     "icon": "doc",
+     "text": "research/public_bunker_review/results/ulsan_customs_202608_review.md",
+     "mono": true,
+     "href": "https://github.com/heechan9/bunkering-ai/blob/ead8785/research/public_bunker_review/results/ulsan_customs_202608_review.md"
+    },
+    {
+     "icon": "pr",
+     "text": "PR #89 · PR #90 · PR #93 · PR #97"
+    }
+   ]
+  },
+  {
+   "id": "fair",
+   "lane": 1,
+   "col": 5,
+   "label": "공정 비교·shadow",
+   "sub": "PR #100~#109",
+   "state": "done",
+   "badge": "저장소 기록",
+   "title": "공식 DQN 동일 관측 비교와 shadow 추천 기록",
+   "body": "PR #104 는 새 시드 1,000건 비교에서 비용 −0.0038%(95% 구간 −0.0786%~+0.0690%)로 비열등이지만 비용 우위는 입증되지 않았다고 기록한다. Shadow 모드(PR #107·#109)는 DQN 행동을 유지한 채 계획기 추천만 기록하며 운영 연결·계획기 성능평가가 아니다. 운영 모델은 기존 DQN 유지다.",
+   "evidence": [
+    {
+     "icon": "pr",
+     "text": "PR #104",
+     "href": "https://github.com/heechan9/bunkering-ai/pull/104"
+    },
+    {
+     "icon": "pr",
+     "text": "PR #109",
+     "href": "https://github.com/heechan9/bunkering-ai/pull/109"
+    },
+    {
+     "icon": "doc",
+     "text": "research/fair_replacement_eval/README.md",
+     "mono": true,
+     "href": "https://github.com/heechan9/bunkering-ai/blob/ead8785/research/fair_replacement_eval/README.md"
+    },
+    {
+     "icon": "doc",
+     "text": "research/fair_replacement_eval/SHADOW_MODE.md",
+     "mono": true,
+     "href": "https://github.com/heechan9/bunkering-ai/blob/ead8785/research/fair_replacement_eval/SHADOW_MODE.md"
+    }
+   ]
+  },
+  {
+   "id": "v-codex",
+   "lane": 2,
+   "label": "PR #109 독립 검토",
+   "sub": "514 passed",
+   "state": "done",
+   "badge": "다른 환경 검증 · 출처·SHA",
+   "title": "Codex 독립 검토와 병합 전 통합 실행 (PR #109)",
+   "body": "Codex 가 Linux·Python 3.12 CPU 환경에서 직접 실행했다. head 544dcd3 전체 pytest 514 passed + 23 subtests, main 5db07db 와 합친 임시 통합 314d9df 에서도 514 passed + 23 subtests. 병합 커밋 c01b563 의 tree c66987c 가 통합 검사 tree 와 같다고 기록되어 있다. 시간 제한은 soft deadline 이며 엄격한 벽시계 상한은 검증 범위 밖이다.",
+   "stats": [
+    {
+     "kind": "ring",
+     "value": 514,
+     "total": 514,
+     "label": "pytest (544dcd3 · 314d9df)"
+    }
+   ],
+   "evidence": [
+    {
+     "icon": "chat",
+     "text": "Codex 재검토 (head 544dcd3)",
+     "href": "https://github.com/heechan9/bunkering-ai/pull/109#issuecomment-6033560611"
+    },
+    {
+     "icon": "chat",
+     "text": "Codex 병합 기록 (merge c01b563)",
+     "href": "https://github.com/heechan9/bunkering-ai/pull/109#issuecomment-6033647098"
+    },
+    {
+     "icon": "chat",
+     "text": "Codex 첫 검토 (head 0fd4307, 수정 요청)",
+     "href": "https://github.com/heechan9/bunkering-ai/pull/109#issuecomment-6033066838"
+    }
+   ],
+   "col": 1
+  },
+  {
+   "id": "v-win",
+   "lane": 2,
+   "label": "Windows 재검증",
+   "sub": "288 passed · 8/8",
+   "state": "done",
+   "badge": "다른 환경 검증 · 출처·SHA",
+   "title": "Windows 직접 재검증 (main 7df50a5, Codex)",
+   "body": "Windows·Python 3.12 에서 전체 pytest 288 passed + 23 subtests, 근거감사 8/8 통과. 공개 Release dqn_final.pt SHA-256 이 정본과 일치했고, evaluate.py 100 에피소드 재실행 400행이 정본과 정확히 일치(reward·SCI 최대 차이 0)했다. Jules 의 같은 SHA Linux 288 passed 보고는 별도 기록이다.",
+   "evidence": [
+    {
+     "icon": "doc",
+     "text": "docs/audits/local_verification_20261007.md",
+     "mono": true,
+     "href": "https://github.com/heechan9/bunkering-ai/blob/ead8785/docs/audits/local_verification_20261007.md"
+    },
+    {
+     "icon": "commit",
+     "text": "7df50a5",
+     "mono": true,
+     "href": "https://github.com/heechan9/bunkering-ai/commit/7df50a5f0f34cc2dc33928ea2583645c9762f75d"
+    },
+    {
+     "icon": "link",
+     "text": "Jules 세션 12656040711462439408",
+     "href": "https://jules.google.com/session/12656040711462439408"
+    }
+   ],
+   "col": 2
+  },
+  {
+   "id": "ocean",
+   "lane": 2,
+   "col": 3,
+   "label": "Ocean Lab 개선",
+   "sub": "Sites 36판 확인",
+   "state": "done",
+   "badge": "다른 환경 검증 · 출처·SHA",
+   "title": "Ocean Lab 운영 사이트 확인 (Sites 36판, Codex)",
+   "body": "Codex 가 Windows 내장 브라우저로 운영 사이트를 직접 확인했다. PR #99 의 CSV 음수·0 보존, 수식 방어, 입력 오류 후 복구, 공유 상태 복원, CSV·GLB 다운로드가 정상이고, 360/390/412px 에서 로딩 완료 후 가로 넘침이 없었다. 새 배포는 하지 않았다.",
+   "evidence": [
+    {
+     "icon": "doc",
+     "text": "docs/audits/ocean_lab_live_verification_20261007.md",
+     "mono": true,
+     "href": "https://github.com/heechan9/bunkering-ai/blob/ead8785/docs/audits/ocean_lab_live_verification_20261007.md"
+    },
+    {
+     "icon": "pr",
+     "text": "PR #99",
+     "href": "https://github.com/heechan9/bunkering-ai/pull/99"
+    }
+   ]
+  },
+  {
+   "id": "wait",
+   "lane": 3,
+   "col": 0,
+   "label": "실선 자료 요청",
+   "sub": "회신 대기",
+   "state": "blocked",
+   "badge": "필수 · 외부 회신 대기",
+   "title": "UPA 회신과 한바다호 추가 기록",
+   "body": "README 기준: 울산항만공사에 2026-10-05 요청한 공급일·비식별 기록·ROB·소비·가격 문의는 회신 대기다. 한바다호 추가 요청문은 준비했으나 발송 확인 전이다.",
+   "evidence": [
+    {
+     "icon": "doc",
+     "text": "README.md · 다음 검증에 필요한 기록",
+     "href": "https://github.com/heechan9/bunkering-ai/blob/ead8785/README.md"
+    }
+   ]
+  },
+  {
+   "id": "c-ulsan",
+   "lane": 3,
+   "col": 1,
+   "label": "원문 불일치",
+   "sub": "미해결",
+   "state": "blocked",
+   "title": "울산세관 원문 수치 불일치",
+   "body": "ATLANTIC TOPAZ 공급일이 세관 8/6·UPA 8/8 로 다르고, 5쪽 기타선 척수 비율은 인쇄값 67% 와 재계산 150% 가 다르다. 저장소는 두 값을 보존하고 해당 비율을 분석에 쓰지 않는다고 기록하며, README 는 '날짜 확인 대기'로 표시한다.",
+   "evidence": [
+    {
+     "icon": "doc",
+     "text": "ulsan_customs_202608_review.md",
+     "mono": true,
+     "href": "https://github.com/heechan9/bunkering-ai/blob/ead8785/research/public_bunker_review/results/ulsan_customs_202608_review.md"
+    }
+   ],
+   "badge": "필수 · 원문 확인 대기"
+  },
+  {
+   "id": "realship",
+   "lane": 3,
+   "col": 2,
+   "label": "실선 적용",
+   "sub": "미입증",
+   "state": "left",
+   "badge": "필수 · 미착수",
+   "title": "실제 선박 적용과 비용·연료 절감 입증",
+   "body": "같은 선박·기간의 공급량·ROB·소비·구매가격 연결과 독립 실선 평가가 남아 있다. PR #104 의 동일 관측 비교도 비용 −0.0038%(95% 구간 −0.0786%~+0.0690%)로 비열등이지만 비용 우위는 입증되지 않았다.",
+   "evidence": [
+    {
+     "icon": "doc",
+     "text": "docs/PROJECT_STATUS.md · 남은 작업",
+     "href": "https://github.com/heechan9/bunkering-ai/blob/ead8785/docs/PROJECT_STATUS.md"
+    },
+    {
+     "icon": "pr",
+     "text": "PR #104",
+     "href": "https://github.com/heechan9/bunkering-ai/pull/104"
+    }
+   ]
+  },
+  {
+   "id": "n-web",
+   "lane": 3,
+   "col": 3,
+   "label": "실기기 웹 확인",
+   "sub": "미검증",
+   "state": "left",
+   "title": "Ocean Lab 실제 휴대폰·iOS Safari 확인",
+   "body": "Sites 36판 확인은 데스크톱 브라우저의 모바일 폭 측정이다. 완료 조건: 실제 휴대폰·iOS Safari·다른 브라우저에서 열어 동작과 초기 로딩 넘침 여부를 확인한 기록과 배포 판이 남는다.",
+   "badge": "필수 · 미검증"
+  },
+  {
+   "id": "o-ops",
+   "label": "운영 연결",
+   "sub": "별도 설계",
+   "title": "shadow 추천의 운영 연결",
+   "body": "저장소는 운영 연결을 별도 설계·검증 대상으로 둔다. 현재 shadow 는 DQN 행동을 유지하고 추천만 기록한다. 완료 조건: 운영 연결 설계와 하위 프로세스 격리·운영 부하 검증 기록.",
+   "evidence": [
+    {
+     "icon": "doc",
+     "text": "research/fair_replacement_eval/SHADOW_MODE.md",
+     "mono": true,
+     "href": "https://github.com/heechan9/bunkering-ai/blob/ead8785/research/fair_replacement_eval/SHADOW_MODE.md"
+    }
+   ],
+   "lane": 4,
+   "state": "left",
+   "badge": "선택적 확장",
+   "col": 0
+  },
+  {
+   "id": "o-ci",
+   "label": "필수 체크 설정",
+   "sub": "미설정",
+   "title": "CI 필수 체크(branch protection) 설정",
+   "body": "python_ci.md 는 필수 체크·자동 병합·배포가 이 워크플로 밖의 저장소 설정이라고 기록한다. 완료 조건: 저장소 설정에서 pytest 체크를 필수로 지정한 기록.",
+   "evidence": [
+    {
+     "icon": "doc",
+     "text": "docs/technical/python_ci.md",
+     "mono": true,
+     "href": "https://github.com/heechan9/bunkering-ai/blob/ead8785/docs/technical/python_ci.md"
+    }
+   ],
+   "lane": 4,
+   "state": "left",
+   "badge": "선택적 확장",
+   "col": 1
+  },
+  {
+   "id": "o-overflow",
+   "label": "초기 넘침 개선",
+   "sub": "선택 개선",
+   "title": "모바일 초기 로딩 2~4px 넘침 개선",
+   "body": "Windows 재검증 기록은 초기 모바일 넘침을 선택 개선으로 분류한다. 완료 조건: 로딩 직후에도 scrollWidth 와 clientWidth 가 같은 측정 기록.",
+   "lane": 4,
+   "state": "left",
+   "badge": "선택적 확장",
+   "col": 2
+  },
+  {
+   "id": "o-data",
+   "label": "추가 외부자료",
+   "sub": "자료 대기",
+   "title": "Dockflow·OCTARVIA 실항차 자료",
+   "body": "README 는 실항차 샘플·접근 조건 확보 대기로 기록한다. 완료 조건: 자료 확보와 적용 판정 기록.",
+   "evidence": [
+    {
+     "icon": "doc",
+     "text": "research/external_validation/DECISIONS.md",
+     "mono": true,
+     "href": "https://github.com/heechan9/bunkering-ai/blob/ead8785/research/external_validation/DECISIONS.md"
+    }
+   ],
+   "lane": 4,
+   "state": "left",
+   "badge": "선택적 확장",
+   "col": 3
+  }
+ ],
+ "changes": [
+  {
+   "title": "병합·CI 와 연구 완료의 구분",
+   "body": "PR 병합과 CI 성공은 코드 반영과 자동 검사 범위의 기록이다. 실선 검증·비용 절감 등 연구 목표의 완료로 처리하지 않는다."
+  }
+ ]
+}
