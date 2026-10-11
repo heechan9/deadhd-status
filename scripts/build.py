@@ -76,7 +76,7 @@ def fetch_repo(spec):
                  'title': head['commit']['message'].splitlines()[0][:120], 'url': head['html_url']},
         'merged': [{'n': p['number'], 'title': p['title'][:100], 'at': p['merged_at'], 'url': p['html_url'],
                     'sha': (p.get('merge_commit_sha') or '')[:7]} for p in merged[:6]],
-        'open': [{'n': p['number'], 'title': p['title'][:100], 'url': p['html_url'], 'draft': p.get('draft', False)}
+        'open': [{'n': p['number'], 'title': p['title'][:100], 'url': p['html_url'], 'draft': p.get('draft', False), 'headSha': p['head']['sha'], 'baseSha': p['base']['sha']}
                  for p in open_prs],
         'ci': [{'name': r['name'], 'status': r['status'], 'conclusion': r['conclusion'], 'url': r['html_url'],
                 'event': r['event'], 'at': r['created_at']} for r in sorted(latest.values(), key=lambda r: r['name'])],
@@ -162,10 +162,13 @@ def load_previous_state():
 
 
 def build_project(project, prev, at):
-    base = json.load(open(os.path.join(ROOT, 'content', project['slug'] + '.base.json'), encoding='utf-8'))
+    with open(os.path.join(ROOT, 'content', project['slug'] + '.base.json'), encoding='utf-8') as fh:
+        base = json.load(fh)
     curated = base.pop('curatedSha')
     curated_at = base.pop('curatedAt')
-    pstate = {'repos': {}}
+    curated_refs = base.pop('curatedRefs', {'official': curated})
+    curated_prs = base.pop('curatedPrs', [])
+    pstate = {'repos': {}, 'curatedRefs': curated_refs, 'curatedAt': curated_at, 'curatedPrs': curated_prs}
     auto, meta, failures = [], [], []
     for spec in project['repos']:
         key = spec['repo']
@@ -186,14 +189,23 @@ def build_project(project, prev, at):
             last_ok = entry.get('fetchedAt')
             if last_ok:
                 meta.append(f'{spec["label"]} 마지막 성공 조회 ' + datetime.fromisoformat(last_ok).astimezone(KST).strftime('%Y-%m-%d %H:%M KST'))
-            if spec['id'] == 'official' and f['head']['sha'] != curated:
+            reference = curated_refs.get(spec['id'])
+            if reference:
+                meta.append({'text': f'{spec["label"]} 수동 검토 SHA {reference[:7]} ({curated_at})', 'href': f'https://github.com/{key}/commit/{reference}'})
+            if reference and f['head']['sha'] != reference:
                 auto.append({
                     'id': f'{spec["id"]}-drift', 'lane': spec['lane'], 'label': '정리 이후 변경', 'sub': '검토 필요',
                     'state': 'side', 'badge': '자동 조회',
                     'title': '수동 정리 이후 main 이 바뀌었다',
-                    'body': f'아래 수동 정리 항목은 {curated[:7]}({curated_at}) 기준이다. main 은 지금 {f["head"]["sha"][:7]} 이므로 새 기록은 다시 검토해야 반영된다.',
-                    'evidence': [{'icon': 'link', 'text': f'{curated[:7]}…{f["head"]["sha"][:7]} 비교',
-                                  'href': f'https://github.com/{spec["repo"]}/compare/{curated}...{f["head"]["sha"]}'}]})
+                    'body': f'아래 수동 정리 항목은 {reference[:7]}({curated_at}) 기준이다. main 은 지금 {f["head"]["sha"][:7]} 이므로 새 기록은 다시 검토해야 반영된다.',
+                    'evidence': [{'icon': 'link', 'text': f'{reference[:7]}…{f["head"]["sha"][:7]} 비교',
+                                  'href': f'https://github.com/{spec["repo"]}/compare/{reference}...{f["head"]["sha"]}'}]})
+    for review in curated_prs:
+        entry = pstate['repos'].get(review['repo'], {})
+        current = next((p for p in entry.get('data', {}).get('open', []) if p['n'] == review['number']), None)
+        meta.append({'text': '수동 검토 PR' + f" #{review['number']} @ {review['sha'][:7]}", 'href': f"https://github.com/{review['repo']}/commit/{review['sha']}"})
+        if entry.get('ok') and (not current or current.get('headSha') != review['sha']):
+            auto.append({'id': f"pr-drift-{review['repo'].split('/')[0]}-{review['number']}", 'lane': 1 if review['repo'].startswith('heechan9/') else 0, 'label': 'PR 정리 이후 변경', 'sub': '검토 필요', 'state': 'side', 'title': f"PR #{review['number']} 수동 기록 재검토 필요", 'body': '검토한 head와 달라졌거나 열린 PR 목록에서 사라졌다. 병합·완료로 자동 승격하지 않는다.', 'evidence': [{'text': 'PR 상태 확인', 'href': f"https://github.com/{review['repo']}/pull/{review['number']}"}]})
     for spec, reason, prev_repo in failures:
         when = (prev_repo or {}).get('fetchedAt')
         kept = ('직전 성공 조회(' + datetime.fromisoformat(when).astimezone(KST).strftime('%Y-%m-%d %H:%M KST') + ') 내용을 유지한다.') if when else '유지할 이전 조회 결과가 없다.'
@@ -203,9 +215,7 @@ def build_project(project, prev, at):
                         'body': f'{at.strftime("%Y-%m-%d %H:%M KST")} 조회가 실패했다({reason}). {kept}'})
     data = base
     data['updated'] = at.strftime('%Y-%m-%d %H:%M KST')
-    data['meta'] = ([f'마지막 조회 {data["updated"]}' + (' · 일부 실패' if failures else '')] + meta +
-                    [{'text': f'정리 기준 SHA {curated[:7]} ({curated_at})',
-                      'href': f'https://github.com/{project["repos"][0]["repo"]}/commit/{curated}'}])
+    data['meta'] = ([f'자동 조회 시각 {data["updated"]}' + (' · 일부 실패' if failures else ''), f'수동 내용 검토 시각 {curated_at}'] + meta)
     lanes_used = {}
     items = auto + data['items']
     for i in items:  # 같은 줄 안에서 차례대로 칸을 매긴다

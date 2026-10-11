@@ -26,6 +26,8 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+      - name: Check review tracking
+        run: python scripts/test_build.py
       - name: Build pages from public GitHub records
         env:
           GITHUB_TOKEN: ${{ github.token }}
