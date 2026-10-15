@@ -2,7 +2,7 @@
  "key": "병커시유",
  "keyHref": "https://github.com/heechan9/bunkering-ai",
  "title": "병커시유 선박 급유 의사결정 강화학습 프로젝트 현황",
- "goal": "선박의 유가·환율·연료잔량·잔여항로를 입력으로 급유 시점과 행동을 결정하는 정책을 합성 항해 환경에서 비교한다. 규칙 기반 3종과 Double DQN을 같은 조건으로 평가하고 구매·소비·잔량과 결과 근거를 함께 추적한다. 수동 정리 항목은 아래 '정리 기준 SHA' 시점의 공개 저장소 문서이며, 맨 위 줄은 GitHub 공개 기록을 자동 조회한 결과다.",
+ "goal": "선박의 유가·환율·연료잔량·잔여항로를 입력으로 급유 시점과 행동을 결정하는 정책을 합성 항해 환경에서 비교한다. 맨 위 줄은 코드 상태 자동조회(main·PR·CI), 아래 본문은 공개 근거를 사람이 검토해 갱신하는 연구 내용이다. 15초 새로고침은 배포된 페이지를 다시 읽으며 연구 본문을 자동 작성하지 않는다.",
  "doneWhen": "저장소 기준 남은 필수 작업: 같은 선박·기간의 공급량·ROB·소비·구매가격 자료를 확보해 독립 실선 평가를 하고, Ocean Lab 을 실제 휴대폰·iOS Safari 에서 확인한다.",
  "lang": "ko",
  "links": {
@@ -25,14 +25,29 @@
   "PR #101": "https://github.com/heechan9/bunkering-ai/pull/101",
   "PR #102": "https://github.com/heechan9/bunkering-ai/pull/102",
   "PR #103": "https://github.com/heechan9/bunkering-ai/pull/103",
-  "PR #106": "https://github.com/heechan9/bunkering-ai/pull/106"
+  "PR #106": "https://github.com/heechan9/bunkering-ai/pull/106",
+  "PR #113": "https://github.com/heechan9/bunkering-ai/pull/113",
+  "PR #114": "https://github.com/heechan9/bunkering-ai/pull/114",
+  "PR #115": "https://github.com/heechan9/bunkering-ai/pull/115",
+  "PR #116": "https://github.com/heechan9/bunkering-ai/pull/116",
+  "PR #117": "https://github.com/heechan9/bunkering-ai/pull/117",
+  "PR #118": "https://github.com/heechan9/bunkering-ai/pull/118",
+  "PR #119": "https://github.com/heechan9/bunkering-ai/pull/119",
+  "PR #120": "https://github.com/heechan9/bunkering-ai/pull/120",
+  "PR #121": "https://github.com/heechan9/bunkering-ai/pull/121",
+  "PR #122": "https://github.com/heechan9/bunkering-ai/pull/122",
+  "PR #123": "https://github.com/heechan9/bunkering-ai/pull/123",
+  "PR #124": "https://github.com/heechan9/bunkering-ai/pull/124",
+  "PR #125": "https://github.com/heechan9/bunkering-ai/pull/125",
+  "PR #126": "https://github.com/heechan9/bunkering-ai/pull/126",
+  "PR #127": "https://github.com/heechan9/bunkering-ai/pull/127"
  },
- "curatedSha": "ead8785added7d0c4b2f97e7373ef79f6d9cc5bc",
- "curatedAt": "2026-10-07 19:07 KST",
+ "curatedSha": "a4634faa261e1a433bbbddbee6106dfac73dd6a5",
+ "curatedAt": "2026-10-16 00:12 KST",
  "lanes": [
-  "자동 조회 · GitHub 공개 기록",
-  "저장소 기록 · 구현·실험 결과",
-  "다른 환경 검증 기록 (출처·SHA)",
+  "코드 상태 자동조회 · GitHub 공개 기록",
+  "연구 내용 수동검토 · 구현·합성 실험",
+  "검증 기록 · 시점·환경·SHA 구분",
   "남은 필수 작업",
   "선택적 확장"
  ],
@@ -46,7 +61,7 @@
    "state": "done",
    "badge": "저장소 기록",
    "title": "프로젝트 목표와 주요 기능",
-   "body": "Gymnasium 기반 BunkeringEnv 에서 고정 급유·가격 반응형·안전재고·Double DQN 을 동일 seed·episode·환경설정으로 비교한다. 지도·선박 모형은 설명용이며 실제 항적이나 선박 물리 시뮬레이션이 아니다.",
+   "body": "Gymnasium 기반 BunkeringEnv에서 규칙 3종과 Double DQN을 동일 조건으로 비교한다. 합성 항차 재생과 공개 연구선 관측 지도는 별도 자료다. 지도 시각화·해빙 스냅샷은 실제 운항 추천이나 연료 성능 검증이 아니다.",
    "evidence": [
     {
      "text": "정책 비교: 동일 평가계약·공통 결과 형식"
@@ -55,22 +70,22 @@
      "text": "결과 추적: 구매·소비·잔량·급유횟수·SCI 와 CSV·체크포인트 해시 연결"
     },
     {
-     "text": "Ocean Lab: 한·영 전환, 7개 지역 지도, 항차 재생, 구매안 비교"
+     "text": "Ocean Lab: 한·영 전환, 지역 지도, 합성 항차 재생, 공개 북극 관측 구분"
     },
     {
-     "text": "항차 자료 검토: CSV 입력·연료수지·한바다호 AB-LOG 집계"
+     "text": "항차 자료 검토: 단위·연료수지·입력 계약 검사; 비공개 원자료는 게시하지 않음"
     },
     {
      "icon": "doc",
      "text": "README.md",
      "mono": true,
-     "href": "https://github.com/heechan9/bunkering-ai/blob/ead8785/README.md"
+     "href": "https://github.com/heechan9/bunkering-ai/blob/a4634faa261e1a433bbbddbee6106dfac73dd6a5/README.md"
     },
     {
      "icon": "doc",
      "text": "docs/technical/evaluation_contract.md",
      "mono": true,
-     "href": "https://github.com/heechan9/bunkering-ai/blob/ead8785/docs/technical/evaluation_contract.md"
+     "href": "https://github.com/heechan9/bunkering-ai/blob/a4634faa261e1a433bbbddbee6106dfac73dd6a5/docs/technical/evaluation_contract.md"
     }
    ]
   },
@@ -116,19 +131,19 @@
      "icon": "file",
      "text": "results/evaluation_results.csv",
      "mono": true,
-     "href": "https://github.com/heechan9/bunkering-ai/blob/ead8785/results/evaluation_results.csv"
+     "href": "https://github.com/heechan9/bunkering-ai/blob/a4634faa261e1a433bbbddbee6106dfac73dd6a5/results/evaluation_results.csv"
     },
     {
      "icon": "file",
      "text": "results/evaluation_manifest.json",
      "mono": true,
-     "href": "https://github.com/heechan9/bunkering-ai/blob/ead8785/results/evaluation_manifest.json"
+     "href": "https://github.com/heechan9/bunkering-ai/blob/a4634faa261e1a433bbbddbee6106dfac73dd6a5/results/evaluation_manifest.json"
     },
     {
      "icon": "doc",
      "text": "docs/technical/official_evaluation.md",
      "mono": true,
-     "href": "https://github.com/heechan9/bunkering-ai/blob/ead8785/docs/technical/official_evaluation.md"
+     "href": "https://github.com/heechan9/bunkering-ai/blob/a4634faa261e1a433bbbddbee6106dfac73dd6a5/docs/technical/official_evaluation.md"
     },
     {
      "icon": "link",
@@ -174,19 +189,19 @@
      "icon": "doc",
      "text": "docs/technical/multiseed_results_4seed.md",
      "mono": true,
-     "href": "https://github.com/heechan9/bunkering-ai/blob/ead8785/docs/technical/multiseed_results_4seed.md"
+     "href": "https://github.com/heechan9/bunkering-ai/blob/a4634faa261e1a433bbbddbee6106dfac73dd6a5/docs/technical/multiseed_results_4seed.md"
     },
     {
      "icon": "doc",
      "text": "docs/technical/v1_5_results_4seed.md",
      "mono": true,
-     "href": "https://github.com/heechan9/bunkering-ai/blob/ead8785/docs/technical/v1_5_results_4seed.md"
+     "href": "https://github.com/heechan9/bunkering-ai/blob/a4634faa261e1a433bbbddbee6106dfac73dd6a5/docs/technical/v1_5_results_4seed.md"
     },
     {
      "icon": "doc",
      "text": "docs/technical/reward_diagnostics_results_4seed.md",
      "mono": true,
-     "href": "https://github.com/heechan9/bunkering-ai/blob/ead8785/docs/technical/reward_diagnostics_results_4seed.md"
+     "href": "https://github.com/heechan9/bunkering-ai/blob/a4634faa261e1a433bbbddbee6106dfac73dd6a5/docs/technical/reward_diagnostics_results_4seed.md"
     }
    ]
   },
@@ -225,19 +240,19 @@
      "icon": "doc",
      "text": "research/external_validation/DECISIONS.md",
      "mono": true,
-     "href": "https://github.com/heechan9/bunkering-ai/blob/ead8785/research/external_validation/DECISIONS.md"
+     "href": "https://github.com/heechan9/bunkering-ai/blob/a4634faa261e1a433bbbddbee6106dfac73dd6a5/research/external_validation/DECISIONS.md"
     },
     {
      "icon": "doc",
      "text": "research/ntnu_bunkering/RETRAINING.md",
      "mono": true,
-     "href": "https://github.com/heechan9/bunkering-ai/blob/ead8785/research/ntnu_bunkering/RETRAINING.md"
+     "href": "https://github.com/heechan9/bunkering-ai/blob/a4634faa261e1a433bbbddbee6106dfac73dd6a5/research/ntnu_bunkering/RETRAINING.md"
     },
     {
      "icon": "doc",
      "text": "research/upa_incentive/README.md",
      "mono": true,
-     "href": "https://github.com/heechan9/bunkering-ai/blob/ead8785/research/upa_incentive/README.md"
+     "href": "https://github.com/heechan9/bunkering-ai/blob/a4634faa261e1a433bbbddbee6106dfac73dd6a5/research/upa_incentive/README.md"
     },
     {
      "icon": "pr",
@@ -261,19 +276,19 @@
      "icon": "doc",
      "text": "docs/data/upa_followup_20261005.md",
      "mono": true,
-     "href": "https://github.com/heechan9/bunkering-ai/blob/ead8785/docs/data/upa_followup_20261005.md"
+     "href": "https://github.com/heechan9/bunkering-ai/blob/a4634faa261e1a433bbbddbee6106dfac73dd6a5/docs/data/upa_followup_20261005.md"
     },
     {
      "icon": "doc",
      "text": "research/emsa_mrv/README.md",
      "mono": true,
-     "href": "https://github.com/heechan9/bunkering-ai/blob/ead8785/research/emsa_mrv/README.md"
+     "href": "https://github.com/heechan9/bunkering-ai/blob/a4634faa261e1a433bbbddbee6106dfac73dd6a5/research/emsa_mrv/README.md"
     },
     {
      "icon": "doc",
      "text": "research/public_bunker_review/results/ulsan_customs_202608_review.md",
      "mono": true,
-     "href": "https://github.com/heechan9/bunkering-ai/blob/ead8785/research/public_bunker_review/results/ulsan_customs_202608_review.md"
+     "href": "https://github.com/heechan9/bunkering-ai/blob/a4634faa261e1a433bbbddbee6106dfac73dd6a5/research/public_bunker_review/results/ulsan_customs_202608_review.md"
     },
     {
      "icon": "pr",
@@ -290,7 +305,7 @@
    "state": "done",
    "badge": "저장소 기록",
    "title": "공식 DQN 동일 관측 비교와 shadow 추천 기록",
-   "body": "PR #104 는 새 시드 1,000건 비교에서 비용 −0.0038%(95% 구간 −0.0786%~+0.0690%)로 비열등이지만 비용 우위는 입증되지 않았다고 기록한다. Shadow 모드(PR #107·#109)는 DQN 행동을 유지한 채 계획기 추천만 기록하며 운영 연결·계획기 성능평가가 아니다. 운영 모델은 기존 DQN 유지다.",
+   "body": "PR #104의 새 시드 1,000건 비교에서 비용 차이는 −0.0038%(95% 구간 −0.0786%~+0.0690%)다. 사전 기준 R2(95% 상한 ≤ +0.5%, 공통 안전 비율 ≥ 90%)를 충족한 합성 비용 비열등이며, 구간이 0을 포함한다는 사실만으로 비열등을 판정한 것이 아니다. 비용 우위·실선 절감은 입증되지 않았다. Shadow(#107·#109)는 DQN 행동을 유지하고 추천만 기록하며 운영 모델은 기존 DQN 유지다.",
    "evidence": [
     {
      "icon": "pr",
@@ -306,25 +321,172 @@
      "icon": "doc",
      "text": "research/fair_replacement_eval/README.md",
      "mono": true,
-     "href": "https://github.com/heechan9/bunkering-ai/blob/ead8785/research/fair_replacement_eval/README.md"
+     "href": "https://github.com/heechan9/bunkering-ai/blob/a4634faa261e1a433bbbddbee6106dfac73dd6a5/research/fair_replacement_eval/README.md"
     },
     {
      "icon": "doc",
      "text": "research/fair_replacement_eval/SHADOW_MODE.md",
      "mono": true,
-     "href": "https://github.com/heechan9/bunkering-ai/blob/ead8785/research/fair_replacement_eval/SHADOW_MODE.md"
+     "href": "https://github.com/heechan9/bunkering-ai/blob/a4634faa261e1a433bbbddbee6106dfac73dd6a5/research/fair_replacement_eval/SHADOW_MODE.md"
+    }
+   ]
+  },
+  {
+   "id": "time-intake",
+   "lane": 1,
+   "label": "추가시간·입력 검증",
+   "sub": "#113–117",
+   "state": "done",
+   "badge": "공개 근거 수동검토",
+   "title": "추가시간 계산과 자료 입력 도구",
+   "body": "동시 급유·전용 기항의 추가시간, 출항 준비 시간, UNKNOWN·단위·시간 순서 검사 도구가 main에 반영됐다. 합성 소프트웨어 검증이며 입력의 진위·실자료 성능 검증과 DQN 운영 연결은 남아 있다.",
+   "evidence": [
+    {
+     "icon": "pr",
+     "text": "PR #113",
+     "href": "https://github.com/heechan9/bunkering-ai/pull/113"
+    },
+    {
+     "icon": "pr",
+     "text": "PR #114",
+     "href": "https://github.com/heechan9/bunkering-ai/pull/114"
+    },
+    {
+     "icon": "pr",
+     "text": "PR #115",
+     "href": "https://github.com/heechan9/bunkering-ai/pull/115"
+    },
+    {
+     "icon": "pr",
+     "text": "PR #116",
+     "href": "https://github.com/heechan9/bunkering-ai/pull/116"
+    },
+    {
+     "icon": "pr",
+     "text": "PR #117",
+     "href": "https://github.com/heechan9/bunkering-ai/pull/117"
+    }
+   ]
+  },
+  {
+   "id": "arctic",
+   "lane": 1,
+   "label": "북극 관측·지도",
+   "sub": "#121·#122",
+   "state": "done",
+   "badge": "공개 근거 수동검토",
+   "title": "공개 북극 관측과 지도 도형 수정",
+   "body": "공개 Polarstern PS155 관측과 별도 날짜의 과거 해빙 스냅샷을 합성 항차·전략 비교와 구분해 연결했다. #122는 러시아 육지 채움과 섬·구멍 분류를 수정했다. 관측·해빙은 동시 자료가 아니며 항행 안전·연료 검증 근거가 아니다. 코드 병합과 운영 사이트 배포 상태는 별도다.",
+   "evidence": [
+    {
+     "icon": "pr",
+     "text": "PR #121",
+     "href": "https://github.com/heechan9/bunkering-ai/pull/121"
+    },
+    {
+     "icon": "pr",
+     "text": "PR #122",
+     "href": "https://github.com/heechan9/bunkering-ai/pull/122"
+    }
+   ]
+  },
+  {
+   "id": "english",
+   "lane": 1,
+   "label": "영문 문서·시각자료",
+   "sub": "#123–125",
+   "state": "done",
+   "badge": "공개 근거 수동검토",
+   "title": "영문 연구 README와 그림·표 대응",
+   "body": "영문 README, 언어 전환, 공개 이미지, 영문 그림과 13개 표·105행 대응 및 영어 시연 캡처가 병합됐다. 문서·근거 접근성 개선이며 새 모델 실험·웹 배포가 아니다.",
+   "evidence": [
+    {
+     "icon": "pr",
+     "text": "PR #123",
+     "href": "https://github.com/heechan9/bunkering-ai/pull/123"
+    },
+    {
+     "icon": "pr",
+     "text": "PR #124",
+     "href": "https://github.com/heechan9/bunkering-ai/pull/124"
+    },
+    {
+     "icon": "pr",
+     "text": "PR #125",
+     "href": "https://github.com/heechan9/bunkering-ai/pull/125"
+    }
+   ]
+  },
+  {
+   "id": "voyage-demand",
+   "lane": 1,
+   "label": "연료수요 검증 기반",
+   "sub": "#127 · 준비",
+   "state": "done",
+   "badge": "공개 근거 수동검토",
+   "title": "시간순 항차 연료수요 검증 준비",
+   "body": "구매 시점에 알 수 없는 미래 관측 차단, 완전한 항차의 시간순 분리, 학습 자료만으로 전처리, 명시적 L/h·시간·밀도 환산, 소비량 지표·ROB 검사를 추가했다. 모든 자동 fixture는 합성이다. 실제 선박 예측·논문 재현·구매 replay·절감 실증은 보류다.",
+   "evidence": [
+    {
+     "icon": "pr",
+     "text": "PR #127",
+     "href": "https://github.com/heechan9/bunkering-ai/pull/127"
+    }
+   ]
+  },
+  {
+   "id": "current-ci-snapshot",
+   "lane": 2,
+   "label": "검토 시점 main CI",
+   "sub": "736 passed · 32 subtests",
+   "state": "done",
+   "badge": "공개 근거 수동검토",
+   "title": "a4634fa Linux Python 3.12 CPU strict CI",
+   "body": "2026-10-15 main push CI에서 736 passed · 32 subtests passed, skip 없음. strict-config·strict-markers·경고 오류 처리를 적용했다. 이 수는 검토 시점 고정 기록이며 최신 자동조회는 맨 위 줄에서 확인한다. 소프트웨어 검사 성공이 실선 성능 검증을 뜻하지 않는다.",
+   "evidence": [
+    {
+     "icon": "pr",
+     "text": "PR #127",
+     "href": "https://github.com/heechan9/bunkering-ai/pull/127"
+    },
+    {
+     "icon": "run",
+     "text": "main CI #38705192647",
+     "href": "https://github.com/heechan9/bunkering-ai/actions/runs/38705192647"
+    }
+   ]
+  },
+  {
+   "id": "draft-work",
+   "lane": 4,
+   "label": "검토 중 작업",
+   "sub": "#119·#126 Draft",
+   "state": "side",
+   "badge": "Draft · 미병합",
+   "title": "고정 시나리오·구매 최적화 비교는 미병합",
+   "body": "#119의 웹 고정 합성 1~2단계 검토와 #126의 고정 항로·단일 연료 LP/MILP 구매 비교 및 Windows 보강은 확인 시점 Draft다. main 완료 항목에 포함하지 않는다. 합성 비교를 AI 우위·실제 구매 절감·미사용 holdout 근거로 확대하지 않는다.",
+   "evidence": [
+    {
+     "icon": "pr",
+     "text": "PR #119",
+     "href": "https://github.com/heechan9/bunkering-ai/pull/119"
+    },
+    {
+     "icon": "pr",
+     "text": "PR #126",
+     "href": "https://github.com/heechan9/bunkering-ai/pull/126"
     }
    ]
   },
   {
    "id": "v-codex",
    "lane": 2,
-   "label": "PR #109 독립 검토",
-   "sub": "514 passed",
+   "label": "과거 PR #109 검증",
+   "sub": "당시 514 passed",
    "state": "done",
    "badge": "다른 환경 검증 · 출처·SHA",
    "title": "Codex 독립 검토와 병합 전 통합 실행 (PR #109)",
-   "body": "Codex 가 Linux·Python 3.12 CPU 환경에서 직접 실행했다. head 544dcd3 전체 pytest 514 passed + 23 subtests, main 5db07db 와 합친 임시 통합 314d9df 에서도 514 passed + 23 subtests. 병합 커밋 c01b563 의 tree c66987c 가 통합 검사 tree 와 같다고 기록되어 있다. 시간 제한은 soft deadline 이며 엄격한 벽시계 상한은 검증 범위 밖이다.",
+   "body": "2026-10-07 당시 기록. Codex 가 Linux·Python 3.12 CPU 환경에서 직접 실행했다. head 544dcd3 전체 pytest 514 passed + 23 subtests, main 5db07db 와 합친 임시 통합 314d9df 에서도 514 passed + 23 subtests. 병합 커밋 c01b563 의 tree c66987c 가 통합 검사 tree 와 같다고 기록되어 있다. 시간 제한은 soft deadline 이며 엄격한 벽시계 상한은 검증 범위 밖이다.",
    "stats": [
     {
      "kind": "ring",
@@ -355,29 +517,24 @@
   {
    "id": "v-win",
    "lane": 2,
-   "label": "Windows 재검증",
-   "sub": "288 passed · 8/8",
+   "label": "과거 Windows 검증",
+   "sub": "당시 288 passed · 8/8",
    "state": "done",
    "badge": "다른 환경 검증 · 출처·SHA",
    "title": "Windows 직접 재검증 (main 7df50a5, Codex)",
-   "body": "Windows·Python 3.12 에서 전체 pytest 288 passed + 23 subtests, 근거감사 8/8 통과. 공개 Release dqn_final.pt SHA-256 이 정본과 일치했고, evaluate.py 100 에피소드 재실행 400행이 정본과 정확히 일치(reward·SCI 최대 차이 0)했다. Jules 의 같은 SHA Linux 288 passed 보고는 별도 기록이다.",
+   "body": "2026-10-07 당시 기록이며 현재 main 테스트 수가 아니다. Windows·Python 3.12 에서 전체 pytest 288 passed + 23 subtests, 근거감사 8/8 통과. 공개 Release dqn_final.pt SHA-256 이 정본과 일치했고, evaluate.py 100 에피소드 재실행 400행이 정본과 정확히 일치(reward·SCI 최대 차이 0)했다. Jules 의 같은 SHA Linux 288 passed 보고는 별도 기록이다.",
    "evidence": [
     {
      "icon": "doc",
      "text": "docs/audits/local_verification_20261007.md",
      "mono": true,
-     "href": "https://github.com/heechan9/bunkering-ai/blob/ead8785/docs/audits/local_verification_20261007.md"
+     "href": "https://github.com/heechan9/bunkering-ai/blob/a4634faa261e1a433bbbddbee6106dfac73dd6a5/docs/audits/local_verification_20261007.md"
     },
     {
      "icon": "commit",
      "text": "7df50a5",
      "mono": true,
      "href": "https://github.com/heechan9/bunkering-ai/commit/7df50a5f0f34cc2dc33928ea2583645c9762f75d"
-    },
-    {
-     "icon": "link",
-     "text": "Jules 세션 12656040711462439408",
-     "href": "https://jules.google.com/session/12656040711462439408"
     }
    ],
    "col": 2
@@ -386,18 +543,18 @@
    "id": "ocean",
    "lane": 2,
    "col": 3,
-   "label": "Ocean Lab 개선",
-   "sub": "Sites 36판 확인",
+   "label": "과거 운영 화면 검증",
+   "sub": "2026-10-07 · Sites 36",
    "state": "done",
    "badge": "다른 환경 검증 · 출처·SHA",
    "title": "Ocean Lab 운영 사이트 확인 (Sites 36판, Codex)",
-   "body": "Codex 가 Windows 내장 브라우저로 운영 사이트를 직접 확인했다. PR #99 의 CSV 음수·0 보존, 수식 방어, 입력 오류 후 복구, 공유 상태 복원, CSV·GLB 다운로드가 정상이고, 360/390/412px 에서 로딩 완료 후 가로 넘침이 없었다. 새 배포는 하지 않았다.",
+   "body": "2026-10-07 당시 배포판 기록이며 최신 코드 배포 확인과 구분한다. Codex 가 Windows 내장 브라우저로 운영 사이트를 직접 확인했다. PR #99 의 CSV 음수·0 보존, 수식 방어, 입력 오류 후 복구, 공유 상태 복원, CSV·GLB 다운로드가 정상이고, 360/390/412px 에서 로딩 완료 후 가로 넘침이 없었다. 새 배포는 하지 않았다.",
    "evidence": [
     {
      "icon": "doc",
      "text": "docs/audits/ocean_lab_live_verification_20261007.md",
      "mono": true,
-     "href": "https://github.com/heechan9/bunkering-ai/blob/ead8785/docs/audits/ocean_lab_live_verification_20261007.md"
+     "href": "https://github.com/heechan9/bunkering-ai/blob/a4634faa261e1a433bbbddbee6106dfac73dd6a5/docs/audits/ocean_lab_live_verification_20261007.md"
     },
     {
      "icon": "pr",
@@ -410,17 +567,20 @@
    "id": "wait",
    "lane": 3,
    "col": 0,
-   "label": "실선 자료 요청",
-   "sub": "회신 대기",
+   "label": "실선 평가 자료",
+   "sub": "준비 조건 미충족",
    "state": "blocked",
-   "badge": "필수 · 외부 회신 대기",
-   "title": "UPA 회신과 한바다호 추가 기록",
-   "body": "README 기준: 울산항만공사에 2026-10-05 요청한 공급일·비식별 기록·ROB·소비·가격 문의는 회신 대기다. 한바다호 추가 요청문은 준비했으나 발송 확인 전이다.",
+   "badge": "필수 · 추가 자료 검증",
+   "title": "완전한 항차·시점·단위·독립 목표 확보",
+   "body": "PR #127은 입력 계약·시간순 분할·소비량 환산·ROB 검사 준비다. 완전한 독립 항차 경계, 구매 의사결정과 자료 발행·수신 시각, 계획 운항시간, 독립 소비량 목표와 밀도 기준이 확인되어야 실제 예측 평가를 시작할 수 있다. 한 항차만으로 독립 항차 일반화를 주장하지 않는다.",
    "evidence": [
     {
-     "icon": "doc",
-     "text": "README.md · 다음 검증에 필요한 기록",
-     "href": "https://github.com/heechan9/bunkering-ai/blob/ead8785/README.md"
+     "text": "PR #127 · 준비와 보류 조건",
+     "href": "https://github.com/heechan9/bunkering-ai/pull/127"
+    },
+    {
+     "text": "연료수요 검증 프로토콜",
+     "href": "https://github.com/heechan9/bunkering-ai/blob/a4634faa261e1a433bbbddbee6106dfac73dd6a5/research/voyage_demand/README.md"
     }
    ]
   },
@@ -428,17 +588,21 @@
    "id": "c-ulsan",
    "lane": 3,
    "col": 1,
-   "label": "원문 불일치",
-   "sub": "미해결",
+   "label": "공개 원문 정합성",
+   "sub": "부분 해결",
    "state": "blocked",
-   "title": "울산세관 원문 수치 불일치",
-   "body": "ATLANTIC TOPAZ 공급일이 세관 8/6·UPA 8/8 로 다르고, 5쪽 기타선 척수 비율은 인쇄값 67% 와 재계산 150% 가 다르다. 저장소는 두 값을 보존하고 해당 비율을 분석에 쓰지 않는다고 기록하며, README 는 '날짜 확인 대기'로 표시한다.",
+   "title": "날짜 확인과 남은 비율 불일치 구분",
+   "body": "공개 PR #117·README는 기존 공급일 문의가 확인됐다고 기록한다. 세관 원문 자체가 정정된 것은 아니며 과거 불일치 이력을 보존한다. 기타선 척수 비율 67%와 재계산 150%의 차이는 별도 미해결로 분석에 쓰지 않는다.",
    "evidence": [
     {
      "icon": "doc",
      "text": "ulsan_customs_202608_review.md",
      "mono": true,
-     "href": "https://github.com/heechan9/bunkering-ai/blob/ead8785/research/public_bunker_review/results/ulsan_customs_202608_review.md"
+     "href": "https://github.com/heechan9/bunkering-ai/blob/a4634faa261e1a433bbbddbee6106dfac73dd6a5/research/public_bunker_review/results/ulsan_customs_202608_review.md"
+    },
+    {
+     "text": "PR #117 · 공개 정정 기록",
+     "href": "https://github.com/heechan9/bunkering-ai/pull/117"
     }
    ],
    "badge": "필수 · 원문 확인 대기"
@@ -450,14 +614,14 @@
    "label": "실선 적용",
    "sub": "미입증",
    "state": "left",
-   "badge": "필수 · 미착수",
+   "badge": "필수 · 실선 성능 미검증",
    "title": "실제 선박 적용과 비용·연료 절감 입증",
-   "body": "같은 선박·기간의 공급량·ROB·소비·구매가격 연결과 독립 실선 평가가 남아 있다. PR #104 의 동일 관측 비교도 비용 −0.0038%(95% 구간 −0.0786%~+0.0690%)로 비열등이지만 비용 우위는 입증되지 않았다.",
+   "body": "같은 선박·기간의 공급량·ROB·소비·구매가격 연결과 독립 실선 평가가 남아 있다. PR #127의 합성 소프트웨어 검사는 실선 예측 실험이 아니다. PR #104의 사전 기준 내 합성 비용 비열등도 실제 구매비 절감이나 일반적인 비용 우위를 입증하지 않는다.",
    "evidence": [
     {
      "icon": "doc",
      "text": "docs/PROJECT_STATUS.md · 남은 작업",
-     "href": "https://github.com/heechan9/bunkering-ai/blob/ead8785/docs/PROJECT_STATUS.md"
+     "href": "https://github.com/heechan9/bunkering-ai/blob/a4634faa261e1a433bbbddbee6106dfac73dd6a5/docs/PROJECT_STATUS.md"
     },
     {
      "icon": "pr",
@@ -488,7 +652,7 @@
      "icon": "doc",
      "text": "research/fair_replacement_eval/SHADOW_MODE.md",
      "mono": true,
-     "href": "https://github.com/heechan9/bunkering-ai/blob/ead8785/research/fair_replacement_eval/SHADOW_MODE.md"
+     "href": "https://github.com/heechan9/bunkering-ai/blob/a4634faa261e1a433bbbddbee6106dfac73dd6a5/research/fair_replacement_eval/SHADOW_MODE.md"
     }
    ],
    "lane": 4,
@@ -498,21 +662,21 @@
   },
   {
    "id": "o-ci",
-   "label": "필수 체크 설정",
-   "sub": "미설정",
-   "title": "CI 필수 체크(branch protection) 설정",
-   "body": "python_ci.md 는 필수 체크·자동 병합·배포가 이 워크플로 밖의 저장소 설정이라고 기록한다. 완료 조건: 저장소 설정에서 pytest 체크를 필수로 지정한 기록.",
+   "label": "필수 CI 설정 기록",
+   "sub": "문서상 활성화",
+   "title": "main 필수 Python 체크 활성화 기록",
+   "body": "python_ci.md는 2026-10-07 main-python-ci ruleset에 pytest (Python 3.12, CPU) 필수 체크를 활성화했다고 기록한다. 이번 검토는 공개 문서 기준이며 현재 관리 설정을 직접 감사한 결과는 아니다. 자동 병합·배포와는 별개다.",
    "evidence": [
     {
      "icon": "doc",
      "text": "docs/technical/python_ci.md",
      "mono": true,
-     "href": "https://github.com/heechan9/bunkering-ai/blob/ead8785/docs/technical/python_ci.md"
+     "href": "https://github.com/heechan9/bunkering-ai/blob/a4634faa261e1a433bbbddbee6106dfac73dd6a5/docs/technical/python_ci.md"
     }
    ],
-   "lane": 4,
-   "state": "left",
-   "badge": "선택적 확장",
+   "lane": 2,
+   "state": "done",
+   "badge": "공개 문서 기록",
    "col": 1
   },
   {
@@ -537,7 +701,7 @@
      "icon": "doc",
      "text": "research/external_validation/DECISIONS.md",
      "mono": true,
-     "href": "https://github.com/heechan9/bunkering-ai/blob/ead8785/research/external_validation/DECISIONS.md"
+     "href": "https://github.com/heechan9/bunkering-ai/blob/a4634faa261e1a433bbbddbee6106dfac73dd6a5/research/external_validation/DECISIONS.md"
     }
    ],
    "lane": 4,
@@ -550,6 +714,10 @@
   {
    "title": "병합·CI 와 연구 완료의 구분",
    "body": "PR 병합과 CI 성공은 코드 반영과 자동 검사 범위의 기록이다. 실선 검증·비용 절감 등 연구 목표의 완료로 처리하지 않는다."
+  },
+  {
+   "title": "자동조회와 수동검토의 갱신 주기",
+   "body": "GitHub Actions가 매시 23분(UTC)·push·수동 실행 시 코드 기록을 조회해 배포한다. 브라우저의 15초 새로고침은 그 배포본을 다시 읽는다. 연구 본문은 공개 근거 재검토 후 갱신하며, 검토 SHA 이후 main 변경은 별도 경고한다."
   }
  ]
 }
