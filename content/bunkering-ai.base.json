@@ -305,7 +305,7 @@
    "state": "done",
    "badge": "저장소 기록",
    "title": "공식 DQN 동일 관측 비교와 shadow 추천 기록",
-   "body": "PR #104의 새 시드 1,000건 비교에서 비용 차이는 −0.0038%(95% 구간 −0.0786%~+0.0690%)다. 사전 기준 R2(95% 상한 ≤ +0.5%, 공통 안전 비율 ≥ 90%)를 충족한 합성 비용 비열등이며, 구간이 0을 포함한다는 사실만으로 비열등을 판정한 것이 아니다. 비용 우위·실선 절감은 입증되지 않았다. Shadow(#107·#109)는 DQN 행동을 유지하고 추천만 기록하며 운영 모델은 기존 DQN 유지다.",
+   "body": "PR #104의 확인 시드 1,000건 중 공통 안전도착 999건(99.9%)에서 계획기−DQN의 재고 보정 SCI 상대 차이는 −0.0038%(95% 구간 −0.0786%~+0.0690%)다. 상한 +0.0690%가 사전 R2 한계 +0.5% 이하이고 공통 안전 비율도 90% 이상이어서 이 합성 비용 지표의 비열등 기준을 충족한다. 0 포함만으로 판정하지 않으며 비용 우위·실선 절감·일반적 안전 우위를 뜻하지 않는다. Shadow는 DQN 행동을 유지하고 추천만 기록한다.",
    "evidence": [
     {
      "icon": "pr",
@@ -328,6 +328,11 @@
      "text": "research/fair_replacement_eval/SHADOW_MODE.md",
      "mono": true,
      "href": "https://github.com/heechan9/bunkering-ai/blob/a4634faa261e1a433bbbddbee6106dfac73dd6a5/research/fair_replacement_eval/SHADOW_MODE.md"
+    },
+    {
+     "icon": "doc",
+     "text": "criteria.json · R2·사전 한계·모집단",
+     "href": "https://github.com/heechan9/bunkering-ai/blob/a4634faa261e1a433bbbddbee6106dfac73dd6a5/research/fair_replacement_eval/criteria.json"
     }
    ]
   },
