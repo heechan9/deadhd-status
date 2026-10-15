@@ -22,7 +22,7 @@ class ReviewTracking(unittest.TestCase):
             return f
         with patch.object(build,'fetch_repo',side_effect=changed):
             data,_=build.build_project(project,{},build.now_kst())
-        self.assertEqual(sum('drift' in i['id'] for i in data['items']),4)
+        self.assertEqual(sum('drift' in i['id'] for i in data['items']),len(base['curatedRefs'])+len(base['curatedPrs']))
         with patch.object(build,'fetch_repo',side_effect=OSError('offline')):
             data,_=build.build_project(project,{'adversarial-ai':state},build.now_kst())
         self.assertEqual(sum(i['id'].endswith('-fail') for i in data['items']),2)

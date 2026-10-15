@@ -2,17 +2,18 @@
  "key": "적대적 AI",
  "keyHref": "https://github.com/th0oel/AdversarialAI_Security",
  "title": "자율운항선박 이미지 분류 모델 적대적 AI 검증 프로젝트 현황",
- "goal": "선박 이미지 분류의 Clean·FGSM·필터 방어 비교를 제출한 본 연구로, CNN 학습·블랙박스 및 반복 공격을 제출 이후 확장으로 구분한다. 공식 main·개인 포크 main·미병합 PR의 공개 근거를 각각 고정 SHA로 표시한다.",
+ "goal": "781장·선종 10클래스의 Clean·FGSM·필터 방어 비교를 제출한 본 연구로, 방어 인지 FGSM은 기존 완료 범위다. CNN 적대적 학습·블랙박스 및 반복 공격은 제출 이후 확장으로 구분한다. 자동 코드 조회와 아래 공개 근거의 수동 내용 검토는 별개다.",
  "doneWhen": "본 연구 실험·제출 기록은 보존한다. 외부 재현 FAIL과 미해결 불일치, 공식 실행 기록·접수 확인·포크의 공식 통합은 별도 작업이다. 후속 확장 잔여 과제를 제출 연구의 미완료로 계산하지 않는다.",
  "lang": "ko",
  "links": {
   "PR #22": "https://github.com/th0oel/AdversarialAI_Security/pull/22",
   "PR #21": "https://github.com/th0oel/AdversarialAI_Security/pull/21",
   "포크 PR #78": "https://github.com/heechan9/AdversarialAI_Security/pull/78",
-  "공식 PR #23": "https://github.com/th0oel/AdversarialAI_Security/pull/23"
+  "공식 PR #23": "https://github.com/th0oel/AdversarialAI_Security/pull/23",
+  "포크 PR #81": "https://github.com/heechan9/AdversarialAI_Security/pull/81"
  },
  "curatedSha": "2e9bf4ac0e4c5506f6b65d1ffad4e10059220d7b",
- "curatedAt": "2026-10-12 00:41 KST",
+ "curatedAt": "2026-10-16 00:23 KST",
  "lanes": [
   "자동 조회 · 공식 main",
   "자동 조회 · 개인 포크 main",
@@ -200,7 +201,7 @@
    "state": "blocked",
    "badge": "공식 반영 · 2e9bf4a",
    "title": "연구 수행 PC 재실행과 외부 독립 재실행",
-   "body": "연구 수행 PC 전체 재실행은 LOCAL_PASS(예측 라벨 62,480개 차이 0건, 확률값 비교 제외)이고, 외부 독립 재실행은 MobileNetV2 16개 예측 차이로 FAIL 이 유지된다. 저장소는 두 결과를 합산한 전체 PASS 를 만들지 않는다.",
+   "body": "2026-10-01 수신 감사 기록: 연구 수행 PC 전체 재실행은 LOCAL_PASS(62,480개 예측 라벨 차이 0건, 확률 벡터 비교 제외)다. 외부 독립 재실행은 14장·16개 예측 차이로 FAIL이 유지된다. 과거 결과를 이번 상태판 갱신에서 새로 재추론한 것으로 표시하지 않는다.",
    "stats": [
     {
      "kind": "number",
@@ -258,7 +259,7 @@
    "state": "side",
    "badge": "공식 반영 · 2e9bf4a",
    "title": "환경 간 MobileNetV2 예측 불일치",
-   "body": "불일치 처리 이력의 상태는 open 이다. 외부 실행의 차이는 연구 수행 PC 에서 모두 기준과 일치했으나 원인은 미확정이며, 같은 공격 배열의 환경 간 교차 분류가 추가 작업으로 남아 있다.",
+   "body": "공식 불일치 이력은 open이다. PC 전체 재실행에서 기존 16개 항목은 기준과 일치했지만 외부 FAIL은 유지된다. PC·Linux 모두 oneDNN 활성화 상태에서도 남은 4장·5개 항목이 달라 단순 on/off만으로 원인을 확정할 수 없다. 동일 공격 배열의 환경 간 교차 분류가 남아 있다.",
    "evidence": [
     {
      "icon": "doc",
@@ -271,6 +272,11 @@
      "text": "results/verification/discrepancy_log.json",
      "mono": true,
      "href": "https://github.com/th0oel/AdversarialAI_Security/blob/2e9bf4ac0e4c5506f6b65d1ffad4e10059220d7b/results/verification/discrepancy_log.json"
+    },
+    {
+     "icon": "doc",
+     "text": "docs/STAGE_B_PC_FULL_20260928.md",
+     "href": "https://github.com/th0oel/AdversarialAI_Security/blob/2e9bf4ac0e4c5506f6b65d1ffad4e10059220d7b/docs/STAGE_B_PC_FULL_20260928.md"
     }
    ]
   },
@@ -417,7 +423,7 @@
    "state": "done",
    "badge": "개인 포크 main · 공식 미반영 · 9b64b8e",
    "title": "CPU 검증 자동화 반영",
-   "body": "PR #79·#80 포크 병합. Draft PR·main push·수동 실행, TensorFlow CPU 회귀·공개 결과 감사, 필수 import/skip·빈 suite 거부, 로그·JUnit·환경 기록. 별도 blackbox 워크플로를 재사용한다. CPU CI 통과는 공식 모델 781장 재추론·GPU 완료·외부 승인이 아니다.",
+   "body": "PR #79·#80 포크 main 병합. TensorFlow CPU 회귀·공개 저장 결과 감사, 필수 import/skip·빈 suite 거부, 로그·JUnit·환경 기록을 자동화했다. 9b64b8e의 10/07 GitHub CI 3개 성공은 기존 실행 기록이며 이번 새 검사 결과가 아니다. 공식 모델 781장 재추론·GPU 완료·외부 승인을 뜻하지 않는다.",
    "evidence": [
     {
      "icon": "doc",
@@ -433,6 +439,11 @@
      "icon": "doc",
      "text": ".github/workflows/blackbox-series.yml",
      "href": "https://github.com/heechan9/AdversarialAI_Security/blob/9b64b8e33a2a1ff2cda1d51386cfb9360b09aebf/.github/workflows/blackbox-series.yml"
+    },
+    {
+     "icon": "doc",
+     "text": "포크 main CPU CI · 2026-10-07",
+     "href": "https://github.com/heechan9/AdversarialAI_Security/actions/runs/37610764548"
     }
    ]
   },
@@ -464,21 +475,21 @@
    "lane": 3,
    "col": 0,
    "label": "BIM 16/16 · PGD 13/16 저장 감사",
-   "sub": "e6c9529",
+   "sub": "0657658",
    "state": "side",
-   "badge": "미병합 PR #78 · e6c9529",
+   "badge": "미병합 PR #78 · 0657658",
    "title": "BIM 16/16 · PGD 13/16 저장 감사",
-   "body": "PR #78에 BIM FULL_OUTPUTS_CONSISTENT 16/16, PGD PARTIAL_OUTPUTS_ONLY 13/16 기록. 실행 소스는 3294dcc(부모 e974c4bb), 이 카드의 SHA는 문서 버전이다. RUNNING은 잔존값이며 현재 GPU 실행 증거가 아니다. 공개 보고를 대조한 상태판 갱신으로, 이번에 원시 바이트를 재감사하지 않았다.",
+   "body": "PR #78 공개 기록에 BIM FULL_OUTPUTS_CONSISTENT 16/16, PGD PARTIAL_OUTPUTS_ONLY 13/16이 보존돼 있다. PGD 실행 소스 3294dcc(부모 e974c4bb)와 문서 head 0657658은 별개다. RUNNING은 중단 전 잔존값이며 현재 GPU 실행 증거가 아니다. 이번 검토는 공개 문서 대조로, 원시 CSV 재감사·GPU 재실행은 하지 않았다.",
    "evidence": [
     {
      "icon": "doc",
      "text": "docs/GPU_RECOVERY_20261005.md",
-     "href": "https://github.com/heechan9/AdversarialAI_Security/blob/e6c9529d2f25d109ad069e715ad5e6dce24a33c4/docs/GPU_RECOVERY_20261005.md"
+     "href": "https://github.com/heechan9/AdversarialAI_Security/blob/065765808d6fa6c1b9dec7381b8e73644cc9d542/docs/GPU_RECOVERY_20261005.md"
     },
     {
      "icon": "doc",
      "text": "results/extensions/bim_gpu_20261004/README.md",
-     "href": "https://github.com/heechan9/AdversarialAI_Security/blob/e6c9529d2f25d109ad069e715ad5e6dce24a33c4/results/extensions/bim_gpu_20261004/README.md"
+     "href": "https://github.com/heechan9/AdversarialAI_Security/blob/065765808d6fa6c1b9dec7381b8e73644cc9d542/results/extensions/bim_gpu_20261004/README.md"
     }
    ]
   },
@@ -487,16 +498,16 @@
    "lane": 4,
    "col": 0,
    "label": "확장 실험 잔여 · 본 연구와 별도",
-   "sub": "e6c9529",
+   "sub": "0657658",
    "state": "left",
-   "badge": "미병합 PR #78 · e6c9529",
+   "badge": "미병합 PR #78 · 0657658",
    "title": "확장 실험 잔여 · 본 연구와 별도",
-   "body": "PGD MobileNet Mean ε=.01/.03/.05, CNN JSMA 781장, MobileNet PGD7 학습 3 epoch·원본/학습 test 781장 비교와 통합 감사가 남아 있다. 환경 호환성·모델 가중치 바이트 확인도 별도다. PR #78은 draft·미병합이며 저장 결과만으로 외부 승인을 부여하지 않는다.",
+   "body": "PGD MobileNet Mean ε=.01/.03/.05, CNN JSMA 781장, MobileNet PGD7 학습 3 epoch·원본/학습 test 781장 비교 및 통합 감사가 남아 있다. 10/13 자료 이동 후 Colab 마운트·부모·백업 경로는 미검증이다. 경로·13조건 부모·환경·입력·가중치 무결성 확인 전 실행하지 않으며 PR #78은 draft·미병합이다.",
    "evidence": [
     {
      "icon": "doc",
      "text": "docs/GPU_RECOVERY_20261005.md",
-     "href": "https://github.com/heechan9/AdversarialAI_Security/blob/e6c9529d2f25d109ad069e715ad5e6dce24a33c4/docs/GPU_RECOVERY_20261005.md"
+     "href": "https://github.com/heechan9/AdversarialAI_Security/blob/065765808d6fa6c1b9dec7381b8e73644cc9d542/docs/GPU_RECOVERY_20261005.md"
     }
    ]
   },
@@ -540,6 +551,70 @@
      "href": "https://github.com/heechan9/AdversarialAI_Security/blob/9b64b8e33a2a1ff2cda1d51386cfb9360b09aebf/docs/CPU_CI_REVIEW.md"
     }
    ]
+  },
+  {
+   "id": "bim-environment-comparison",
+   "lane": 4,
+   "col": 0,
+   "label": "BIM CPU·GPU 수치 차이",
+   "sub": "0657658",
+   "state": "side",
+   "badge": "미병합 PR #78 · 0657658",
+   "title": "BIM CPU·GPU 65개 비교 셀 중 12개 차이",
+   "body": "10/12 공개 대조 기록에서 같은 모델·필터·ε·경로의 정확도 65개 셀 중 12개가 달랐다(1~13장). 실행 소스·하드웨어·플랫폼이 모두 달라 원인을 환경 하나로 확정하지 않는다. 확인한 BIM run.json은 step-size=.005이며 .002 실행은 확인되지 않았다. 서로 다른 실행을 합산하거나 허용오차로 맞추지 않는다.",
+   "evidence": [
+    {
+     "icon": "doc",
+     "text": "GPU_RECOVERY_20261005.md · 10/12 대조",
+     "href": "https://github.com/heechan9/AdversarialAI_Security/blob/065765808d6fa6c1b9dec7381b8e73644cc9d542/docs/GPU_RECOVERY_20261005.md"
+    }
+   ]
+  },
+  {
+   "id": "recovery-audit-boundary",
+   "lane": 4,
+   "col": 0,
+   "label": "복구 실행·최신 감사 분리",
+   "sub": "0657658",
+   "state": "left",
+   "badge": "미병합 PR #78 · 0657658",
+   "title": "실행 소스 3294dcc 유지 후 최신 감사기로 별도 검토",
+   "body": "복구 노트북은 13조건 부모와 실행 SHA 일치를 강제한다. 실행 소스 3294dcc에는 이후 추가된 recovery source 검사가 없으므로, 완료 후 읽기 전용 산출물 사본을 PR head의 최신 통합 감사기로 별도 검사해야 한다. head CI 4개 성공은 준비 코드·저장 증거 검사이며 GPU 재개·완료 증거가 아니다.",
+   "evidence": [
+    {
+     "icon": "doc",
+     "text": "GPU_RECOVERY_20261005.md · 최종 재감사 절차",
+     "href": "https://github.com/heechan9/AdversarialAI_Security/blob/065765808d6fa6c1b9dec7381b8e73644cc9d542/docs/GPU_RECOVERY_20261005.md"
+    },
+    {
+     "icon": "doc",
+     "text": "PR #78 head CPU CI",
+     "href": "https://github.com/heechan9/AdversarialAI_Security/actions/runs/38360264643"
+    }
+   ]
+  },
+  {
+   "id": "parser-hardening",
+   "lane": 3,
+   "col": 0,
+   "label": "감사 파서 보강 · 검토 대기",
+   "sub": "5d138ea",
+   "state": "side",
+   "badge": "미병합 PR #81 · 5d138ea",
+   "title": "중복 JSON 키·모호한 CSV 증거 거부",
+   "body": "PR #81은 중첩 JSON 중복 키, CSV 중복·초과 열/행 너비/인용 오류를 거부하도록 보강한다. PR 보고의 로컬 집중 검사 22개, 확장 검사 148개·13 subtest와 head GitHub CI 2개 성공을 확인했다. 기존 지원 보고서 11개는 PARTIAL_OUTPUTS_ONLY 유지로 보고됐다. 미병합이므로 main 수정 완료로 표시하지 않으며 원자료·GPU 실험·외부 승인 상태는 바뀌지 않는다.",
+   "evidence": [
+    {
+     "icon": "doc",
+     "text": "PR #81 · 변경·검증 범위",
+     "href": "https://github.com/heechan9/AdversarialAI_Security/pull/81"
+    },
+    {
+     "icon": "doc",
+     "text": "5d138ea CPU regression and saved evidence",
+     "href": "https://github.com/heechan9/AdversarialAI_Security/actions/runs/38600033132"
+    }
+   ]
   }
  ],
  "changes": [
@@ -550,6 +625,10 @@
   {
    "title": "2026-10-12 수동 내용 검토",
    "body": "공식 main 2e9bf4a·포크 main 9b64b8e·미병합 #78 e6c9529를 구분해 본 연구/후속 확장/잔여 검증으로 재정리했다. 연구 코드·원자료·판정은 변경하지 않았다."
+  },
+  {
+   "title": "2026-10-16 수동 내용 검토",
+   "body": "공식 main 2e9bf4a·포크 main 9b64b8e는 유지, PR #78 head 0657658과 PR #81 head 5d138ea를 공개 근거로 대조했다. 10/13 경로 미검증·BIM CPU/GPU 차이·최신 재감사·파서 보강 대기를 반영했다. 수치·CI는 해당 기록 시점의 결과이며 이번 상태판 검토가 새 연구 실험 또는 승인 완료를 뜻하지 않는다."
   }
  ],
  "curatedRefs": {
@@ -560,12 +639,17 @@
   {
    "repo": "heechan9/AdversarialAI_Security",
    "number": 78,
-   "sha": "e6c9529d2f25d109ad069e715ad5e6dce24a33c4"
+   "sha": "065765808d6fa6c1b9dec7381b8e73644cc9d542"
   },
   {
    "repo": "th0oel/AdversarialAI_Security",
    "number": 23,
    "sha": "76786c9b7da643639054ecb4a090449720d78906"
+  },
+  {
+   "repo": "heechan9/AdversarialAI_Security",
+   "number": 81,
+   "sha": "5d138ea2a237aa4ed89bcccf700c1857b8b3cc8c"
   }
  ]
 }
