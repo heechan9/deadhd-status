@@ -249,6 +249,8 @@ def render(data, out):
   const requiredItems = items.filter(i => i.countScope === 'submission');
   const requiredDone = requiredItems.filter(i => i.state === 'done').length;
   const requiredTotal = requiredItems.length;''')
+    html = html.replace('const byState = st => items.filter(i => i.state === st);',
+                        "const byState = st => items.filter(i => i.state === st && i.countScope === 'submission');")
     html = html.replace("$('countB').textContent = doneList.length + '/' + total;",
                         "$('countB').textContent = requiredDone + '/' + requiredTotal;")
     html = html.replace("countDone: '완료'", "countDone: '제출 필수 완료'")
@@ -271,7 +273,7 @@ def render(data, out):
   const afterSubmission = items.filter(i => i.countScope === 'after-submission');
   if (afterSubmission.length) section('left', '○', '제출 이후 · 확장·후속 작업 (필수 집계 제외)', afterSubmission, i => i.state);
   if (Array.isArray(data.changes)''')
-    html = html.replace('<div class="tally" id="tally"></div>', '<p class="research-scope-note">아래 상태별 카드 수는 참고 정보이며 제출 필수 집계와 다릅니다.</p><div class="tally" id="tally"></div>')
+    html = html.replace('<div class="tally" id="tally"></div>', '<p class="research-scope-note">아래 상태별 집계도 이번 제출 필수 항목 기준입니다.</p><div class="tally" id="tally"></div>')
     html = html.replace('<div id="compact" hidden></div>', '''<aside class="research-scope-note">이번 최종제출 필수 항목만 집계하며 연구 완성률은 아닙니다. 완료한 본 연구와 현재 주장에 영향을 주는 미해결 검증은 포함합니다. 제출 이후 연구·새 기능과 자동 Git·CI 참고 정보는 집계에서 제외합니다.</aside>
 <div id="compact" hidden></div>''')
     with open(out, 'w', encoding='utf-8') as fh:
