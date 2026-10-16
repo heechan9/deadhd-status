@@ -2,7 +2,7 @@
  "key": "병커시유",
  "keyHref": "https://github.com/heechan9/bunkering-ai",
  "title": "병커시유 선박 급유 의사결정 강화학습 프로젝트 현황",
- "goal": "제출 일정(모두 한국시간): 10/19 23:59 ACK 최종본·논문별 발표자 등록, 10/20 23:59 발표영상, 10/31 23:59 프로젝트 최종보고서. 팀원 1차 취합은 10/19 10:00 내부 일정이다. 등록·제출·업로드 완료는 미확인이다. 선박의 유가·환율·연료잔량·잔여항로를 입력으로 급유 시점과 행동을 결정하는 정책을 합성 항해 환경에서 비교한다. 맨 위 줄은 코드 상태 자동조회(main·PR·CI), 아래 본문은 공개 근거를 사람이 검토해 갱신하는 연구 내용이다. 15초 새로고침은 배포된 페이지를 다시 읽으며 연구 본문을 자동 작성하지 않는다. 카드 상태 집계는 연구 완성도 비율이 아니다. 본 연구·재현과 후속 확장·최종 제출 절차를 구분한다.",
+ "goal": "제출 일정(모두 한국시간): 10/19 23:59 ACK 최종본·논문별 발표자 등록, 10/20 23:59 발표영상, 10/31 23:59 프로젝트 최종보고서. 팀원 1차 취합은 10/19 10:00 내부 일정이다. 등록·제출·업로드 완료는 미확인이다. 선박의 유가·환율·연료잔량·잔여항로를 입력으로 급유 시점과 행동을 결정하는 정책을 합성 항해 환경에서 비교한다. 맨 위 줄은 코드 상태 자동조회(main·PR·CI), 아래 본문은 공개 근거를 사람이 검토해 갱신하는 연구 내용이다. 15초 새로고침은 배포된 페이지를 다시 읽으며 연구 본문을 자동 작성하지 않는다. 진행 그래프는 이번 최종제출 필수 항목만 집계한다. 완료된 확장과 미완료 후속 작업·자동 Git/CI는 모두 집계에서 제외하며 아래 제출 이후·참고 정보로 보존한다.",
  "doneWhen": "최종논문·발표자 등록(10/19), 영상(10/20), 프로젝트 최종보고서(10/31)는 제출 확인이 남아 있다. 합성 실험·원시 재계산과 실선 성능 입증을 구분한다. 실제 웹 QA, 실제 휴대폰·iOS Safari, 독립 실선 평가가 남아 있다.",
  "lang": "ko",
  "links": {
@@ -48,9 +48,9 @@
   "최종 제출 절차 · 채택과 최종 제출 구분",
   "자동 조회 · 공개 main·PR·CI",
   "본 연구 · 구현·합성 실험",
-  "검증 기록 · 시점·환경·SHA 구분",
-  "남은 필수 작업 · 실선·실제 웹",
-  "선택적 확장 · 미병합 연구"
+  "검증 이력 · 참고 정보 (집계 제외)",
+  "이번 제출 필수 · 원고 근거·웹 확인",
+  "제출 이후 · 확장 연구·새 기능 (집계 제외)"
  ],
  "items": [
   {
@@ -67,7 +67,9 @@
     {
      "text": "공식 심사결과 메일 확인"
     }
-   ]
+   ],
+   "countScope": "submission",
+   "countScopeReason": "최종제출 절차의 채택 확인 단계. 최종 업로드·등록과 별도."
   },
   {
    "id": "submission-final-paper",
@@ -78,7 +80,9 @@
    "col": 0,
    "sub": "한국시간 · 준비/확인 필요",
    "state": "left",
-   "badge": "미완료 · 완료 미확인"
+   "badge": "미완료 · 완료 미확인",
+   "countScope": "submission",
+   "countScopeReason": "이번 ACK 최종본 제출·논문별 발표자 등록 의무."
   },
   {
    "id": "submission-video",
@@ -89,7 +93,9 @@
    "col": 0,
    "sub": "한국시간 · 준비/확인 필요",
    "state": "left",
-   "badge": "미완료 · 완료 미확인"
+   "badge": "미완료 · 완료 미확인",
+   "countScope": "submission",
+   "countScopeReason": "이번 ACK 구두 동영상 제출 의무."
   },
   {
    "id": "submission-project-report",
@@ -100,7 +106,9 @@
    "col": 0,
    "sub": "한국시간 · 준비/확인 필요",
    "state": "left",
-   "badge": "미완료 · 완료 미확인"
+   "badge": "미완료 · 완료 미확인",
+   "countScope": "submission",
+   "countScopeReason": "이번 프로젝트 최종보고서 제출 의무."
   },
   {
    "id": "submission-team-intake",
@@ -111,23 +119,27 @@
    "col": 0,
    "sub": "한국시간 · 준비/확인 필요",
    "state": "left",
-   "badge": "미완료 · 완료 미확인"
+   "badge": "미완료 · 완료 미확인",
+   "countScope": "submission",
+   "countScopeReason": "공식 마감 전 팀 자료 취합 절차."
   },
   {
    "id": "submission-research-remaining",
-   "lane": 0,
+   "lane": 4,
    "col": 0,
-   "label": "논문·보고서 전 남은 검증",
+   "label": "제출본 최종 근거 확인",
    "sub": "10/16 진행 기록",
    "state": "left",
    "badge": "진행 중",
-   "title": "원시 재계산·로컬 통합 검증 완료 · 실제 웹 QA 대기",
-   "body": "10/16 전달 검산 보고: 원시 4개 11,200행·기본 72검사·민감도 3,516검사에서 불일치 0, 표 2 전체와 Normal→43-step 5.10%/13.97% 원시 재계산 완료. 별도 로컬 통합 2cd832c에서 strict 779 passed·4 skipped·32 subtests, 120사례(86 OPTIMAL·34 INFEASIBLE) 재현 및 handoff·446원장 일치, 웹 소스회귀 9/9 PASS를 확인했다. 사용자 PC 브라우저 초기화 실패로 클릭·JSON 다운로드·단계/탭·한/영·360/390px 실제 QA는 미검증이다. 연구 PR 병합·push는 없으며 main CI 완료나 실선 검증 완료를 뜻하지 않는다. 최종 문서·영상·보고서 준비가 남아 있다.",
+   "title": "최종 원고 표·주장·한계 대조",
+   "body": "원시 재계산 완료와 별도로 최종 논문·보고서의 표 2·민감도표·그림·본문 수치 및 주장 범위를 대조해야 한다. 실선 평가 준비 미충족·비용 절감 미입증·기타선 67% 원문 불일치를 명시하고, 외부 후보·계획기·구매 최적화 등 확장을 본 연구의 완료나 실선 성과로 확대하지 않는다. 최종 제출본 기준 대조 완료는 미확인이다.",
    "evidence": [
     {
      "text": "2026-10-16 별도 검산 작업 최종보고 · 로컬 통합 2cd832c (공개 main과 별도)"
     }
-   ]
+   ],
+   "countScope": "submission",
+   "countScopeReason": "현재 최종 원고의 표·수치·주장·실선 한계 대조. 실선 추가 실험의 완료와 구분."
   },
   {
    "id": "overview",
@@ -164,7 +176,9 @@
      "mono": true,
      "href": "https://github.com/heechan9/bunkering-ai/blob/a4634faa261e1a433bbbddbee6106dfac73dd6a5/docs/technical/evaluation_contract.md"
     }
-   ]
+   ],
+   "countScope": "submission",
+   "countScopeReason": "제출 본 연구의 목표·합성환경 범위 기록."
   },
   {
    "id": "official",
@@ -227,7 +241,9 @@
      "text": "Release official-eval-2026-09-01 (dqn_final.pt)",
      "href": "https://github.com/heechan9/bunkering-ai/releases/tag/official-eval-2026-09-01"
     }
-   ]
+   ],
+   "countScope": "submission",
+   "countScopeReason": "제출 본 연구의 규칙·Double DQN 공식 비교 결과."
   },
   {
    "id": "seeds",
@@ -280,11 +296,13 @@
      "mono": true,
      "href": "https://github.com/heechan9/bunkering-ai/blob/a4634faa261e1a433bbbddbee6106dfac73dd6a5/docs/technical/reward_diagnostics_results_4seed.md"
     }
-   ]
+   ],
+   "countScope": "submission",
+   "countScopeReason": "제출 본 연구의 다중 seed·소비량/horizon 민감도 근거."
   },
   {
    "id": "research",
-   "lane": 2,
+   "lane": 5,
    "col": 3,
    "label": "외부자료 후속 연구",
    "sub": "교체 보류",
@@ -336,7 +354,9 @@
      "text": "PR #96",
      "href": "https://github.com/heechan9/bunkering-ai/pull/96"
     }
-   ]
+   ],
+   "countScope": "after-submission",
+   "countScopeReason": "본 연구 기본 비교 밖의 추가 실험·새 기능·운영/실선 확장. 완료 여부와 관계없이 필수 집계 제외. 관련 한계 표시는 필수 제출본 검토에 포함."
   },
   {
    "id": "public",
@@ -371,11 +391,13 @@
      "icon": "pr",
      "text": "PR #89 · PR #90 · PR #93 · PR #97"
     }
-   ]
+   ],
+   "countScope": "submission",
+   "countScopeReason": "본 연구에서 인용한 공공자료의 검산·성능 근거 제외 원칙."
   },
   {
    "id": "fair",
-   "lane": 2,
+   "lane": 5,
    "col": 5,
    "label": "공정 비교·shadow",
    "sub": "PR #100~#109",
@@ -411,11 +433,13 @@
      "text": "criteria.json · R2·사전 한계·모집단",
      "href": "https://github.com/heechan9/bunkering-ai/blob/a4634faa261e1a433bbbddbee6106dfac73dd6a5/research/fair_replacement_eval/criteria.json"
     }
-   ]
+   ],
+   "countScope": "after-submission",
+   "countScopeReason": "본 연구 기본 비교 밖의 추가 실험·새 기능·운영/실선 확장. 완료 여부와 관계없이 필수 집계 제외. 관련 한계 표시는 필수 제출본 검토에 포함."
   },
   {
    "id": "time-intake",
-   "lane": 2,
+   "lane": 5,
    "label": "추가시간·입력 검증",
    "sub": "#113–117",
    "state": "done",
@@ -448,11 +472,13 @@
      "text": "PR #117",
      "href": "https://github.com/heechan9/bunkering-ai/pull/117"
     }
-   ]
+   ],
+   "countScope": "after-submission",
+   "countScopeReason": "본 연구 기본 비교 밖의 추가 실험·새 기능·운영/실선 확장. 완료 여부와 관계없이 필수 집계 제외. 관련 한계 표시는 필수 제출본 검토에 포함."
   },
   {
    "id": "arctic",
-   "lane": 2,
+   "lane": 5,
    "label": "북극 관측·지도",
    "sub": "#121·#122",
    "state": "done",
@@ -470,11 +496,13 @@
      "text": "PR #122",
      "href": "https://github.com/heechan9/bunkering-ai/pull/122"
     }
-   ]
+   ],
+   "countScope": "after-submission",
+   "countScopeReason": "본 연구 기본 비교 밖의 추가 실험·새 기능·운영/실선 확장. 완료 여부와 관계없이 필수 집계 제외. 관련 한계 표시는 필수 제출본 검토에 포함."
   },
   {
    "id": "english",
-   "lane": 2,
+   "lane": 5,
    "label": "영문 문서·시각자료",
    "sub": "#123–125",
    "state": "done",
@@ -497,11 +525,13 @@
      "text": "PR #125",
      "href": "https://github.com/heechan9/bunkering-ai/pull/125"
     }
-   ]
+   ],
+   "countScope": "after-submission",
+   "countScopeReason": "본 연구 기본 비교 밖의 추가 실험·새 기능·운영/실선 확장. 완료 여부와 관계없이 필수 집계 제외. 관련 한계 표시는 필수 제출본 검토에 포함."
   },
   {
    "id": "voyage-demand",
-   "lane": 2,
+   "lane": 5,
    "label": "연료수요 검증 기반",
    "sub": "#127 · 준비",
    "state": "done",
@@ -514,7 +544,9 @@
      "text": "PR #127",
      "href": "https://github.com/heechan9/bunkering-ai/pull/127"
     }
-   ]
+   ],
+   "countScope": "after-submission",
+   "countScopeReason": "본 연구 기본 비교 밖의 추가 실험·새 기능·운영/실선 확장. 완료 여부와 관계없이 필수 집계 제외. 관련 한계 표시는 필수 제출본 검토에 포함."
   },
   {
    "id": "current-ci-snapshot",
@@ -536,7 +568,9 @@
      "text": "main CI #38705192647",
      "href": "https://github.com/heechan9/bunkering-ai/actions/runs/38705192647"
     }
-   ]
+   ],
+   "countScope": "reference",
+   "countScopeReason": "기존 CI·검증·문서 이력의 참고 정보이며 별도 필수 작업과 중복 집계하지 않음."
   },
   {
    "id": "draft-work",
@@ -560,7 +594,9 @@
      "text": "PR #126 · 57de151 이전 base 검증",
      "href": "https://github.com/heechan9/bunkering-ai/pull/126"
     }
-   ]
+   ],
+   "countScope": "after-submission",
+   "countScopeReason": "본 연구 기본 비교 밖의 추가 실험·새 기능·운영/실선 확장. 완료 여부와 관계없이 필수 집계 제외. 관련 한계 표시는 필수 제출본 검토에 포함."
   },
   {
    "id": "v-codex",
@@ -596,7 +632,9 @@
      "href": "https://github.com/heechan9/bunkering-ai/pull/109#issuecomment-6033066838"
     }
    ],
-   "col": 1
+   "col": 1,
+   "countScope": "reference",
+   "countScopeReason": "기존 CI·검증·문서 이력의 참고 정보이며 별도 필수 작업과 중복 집계하지 않음."
   },
   {
    "id": "v-win",
@@ -621,7 +659,9 @@
      "href": "https://github.com/heechan9/bunkering-ai/commit/7df50a5f0f34cc2dc33928ea2583645c9762f75d"
     }
    ],
-   "col": 2
+   "col": 2,
+   "countScope": "reference",
+   "countScopeReason": "기존 CI·검증·문서 이력의 참고 정보이며 별도 필수 작업과 중복 집계하지 않음."
   },
   {
    "id": "ocean",
@@ -645,11 +685,13 @@
      "text": "PR #99",
      "href": "https://github.com/heechan9/bunkering-ai/pull/99"
     }
-   ]
+   ],
+   "countScope": "reference",
+   "countScopeReason": "기존 CI·검증·문서 이력의 참고 정보이며 별도 필수 작업과 중복 집계하지 않음."
   },
   {
    "id": "wait",
-   "lane": 4,
+   "lane": 5,
    "col": 0,
    "label": "실선 평가 자료",
    "sub": "준비 조건 미충족",
@@ -666,7 +708,9 @@
      "text": "연료수요 검증 프로토콜",
      "href": "https://github.com/heechan9/bunkering-ai/blob/a4634faa261e1a433bbbddbee6106dfac73dd6a5/research/voyage_demand/README.md"
     }
-   ]
+   ],
+   "countScope": "after-submission",
+   "countScopeReason": "본 연구 기본 비교 밖의 추가 실험·새 기능·운영/실선 확장. 완료 여부와 관계없이 필수 집계 제외. 관련 한계 표시는 필수 제출본 검토에 포함."
   },
   {
    "id": "c-ulsan",
@@ -689,11 +733,13 @@
      "href": "https://github.com/heechan9/bunkering-ai/pull/117"
     }
    ],
-   "badge": "필수 · 원문 확인 대기"
+   "badge": "필수 · 원문 확인 대기",
+   "countScope": "submission",
+   "countScopeReason": "인용 자료의 67% 원문 불일치가 남아 있어 최종 제출본 사용 제외·한계 처리가 필요한 필수 검증."
   },
   {
    "id": "realship",
-   "lane": 4,
+   "lane": 5,
    "col": 2,
    "label": "실선 적용",
    "sub": "미입증",
@@ -712,23 +758,27 @@
      "text": "PR #104",
      "href": "https://github.com/heechan9/bunkering-ai/pull/104"
     }
-   ]
+   ],
+   "countScope": "after-submission",
+   "countScopeReason": "본 연구 기본 비교 밖의 추가 실험·새 기능·운영/실선 확장. 완료 여부와 관계없이 필수 집계 제외. 관련 한계 표시는 필수 제출본 검토에 포함."
   },
   {
    "id": "n-web",
    "lane": 4,
    "col": 3,
-   "label": "실기기 웹 확인",
+   "label": "제출용 실제 웹 QA",
    "sub": "미검증",
    "state": "left",
-   "title": "Ocean Lab 실제 휴대폰·iOS Safari 확인",
-   "body": "Sites 36판의 10/07 데스크톱 모바일 폭 측정은 과거 기록이다. 10/16 별도 검산 작업의 웹 소스회귀 9/9 PASS와 실제 브라우저 조작은 구분한다. 사용자 PC 브라우저 초기화 오류로 클릭·JSON 다운로드·단계/탭 전환·한/영·360/390px 검증은 미완료다. 실제 휴대폰·iOS Safari·다른 브라우저의 초기 로딩 및 배포판 확인도 남아 있다.",
+   "title": "제출용 웹 시연의 실제 클릭·다운로드 확인",
+   "body": "발표영상·최종보고서에 사용할 웹 시연은 실제 브라우저의 클릭·JSON 다운로드·단계/탭 전환·한/영·360/390px를 확인해야 한다. 10/16 사용자 PC 브라우저 초기화 오류로 이 조작 검증은 미완료다. 소스회귀 9/9 PASS나 Sites 36판의 과거 모바일 폭 측정을 현재 시연 확인으로 대신하지 않는다. 실제 휴대폰·iOS Safari 추가 검증은 제출 이후로 별도 보존한다.",
    "badge": "필수 · 미검증",
    "evidence": [
     {
      "text": "2026-10-16 별도 검산 작업 최종보고 · 실제 브라우저 미검증"
     }
-   ]
+   ],
+   "countScope": "submission",
+   "countScopeReason": "이번 발표영상·보고서에 사용할 실제 웹 시연의 확인."
   },
   {
    "id": "o-ops",
@@ -747,7 +797,9 @@
    "lane": 5,
    "state": "left",
    "badge": "선택적 확장",
-   "col": 0
+   "col": 0,
+   "countScope": "after-submission",
+   "countScopeReason": "본 연구 기본 비교 밖의 추가 실험·새 기능·운영/실선 확장. 완료 여부와 관계없이 필수 집계 제외. 관련 한계 표시는 필수 제출본 검토에 포함."
   },
   {
    "id": "o-ci",
@@ -766,7 +818,9 @@
    "lane": 3,
    "state": "done",
    "badge": "공개 문서 기록",
-   "col": 1
+   "col": 1,
+   "countScope": "reference",
+   "countScopeReason": "기존 CI·검증·문서 이력의 참고 정보이며 별도 필수 작업과 중복 집계하지 않음."
   },
   {
    "id": "o-overflow",
@@ -777,7 +831,9 @@
    "lane": 5,
    "state": "left",
    "badge": "선택적 확장",
-   "col": 2
+   "col": 2,
+   "countScope": "after-submission",
+   "countScopeReason": "본 연구 기본 비교 밖의 추가 실험·새 기능·운영/실선 확장. 완료 여부와 관계없이 필수 집계 제외. 관련 한계 표시는 필수 제출본 검토에 포함."
   },
   {
    "id": "o-data",
@@ -796,10 +852,65 @@
    "lane": 5,
    "state": "left",
    "badge": "선택적 확장",
-   "col": 3
+   "col": 3,
+   "countScope": "after-submission",
+   "countScopeReason": "본 연구 기본 비교 밖의 추가 실험·새 기능·운영/실선 확장. 완료 여부와 관계없이 필수 집계 제외. 관련 한계 표시는 필수 제출본 검토에 포함."
+  },
+  {
+   "id": "submission-raw-recheck",
+   "lane": 4,
+   "col": 0,
+   "label": "본 연구 원시 재검산",
+   "sub": "10/16 전달 검산",
+   "state": "done",
+   "badge": "기존 원시 결과 재계산",
+   "title": "표 2·Normal→43-step 원시 재계산 완료",
+   "body": "10/16 별도 검산 보고: 원시 4개 11,200행·기본 72검사·민감도 3,516검사에서 불일치 0. 표 2 전체와 Normal→43-step SCI/step +5.10%·급유횟수/30-step +13.97% 원시 재계산을 완료했다. 새 모델 학습이나 실선 평가가 아니며 최종 원고 전체 대조는 별도다.",
+   "evidence": [
+    {
+     "text": "2026-10-16 별도 검산 작업 최종보고 · 본 연구 표·원시 재계산"
+    }
+   ],
+   "countScope": "submission",
+   "countScopeReason": "본 연구 표 2·민감도 수치의 제출 전 원시 재검산."
+  },
+  {
+   "id": "local-integration-extension",
+   "lane": 5,
+   "col": 0,
+   "label": "확장 로컬 통합 검증",
+   "sub": "2cd832c · 원격 미반영",
+   "state": "done",
+   "badge": "제출 이후 확장 · 집계 제외",
+   "title": "PR #126 로컬 통합 strict·120사례·웹 소스회귀",
+   "body": "별도 로컬 통합 2cd832c에서 strict 779 passed·4 skipped·32 subtests, 120사례 86 OPTIMAL·34 INFEASIBLE 재현, handoff·446원장 일치, 웹 소스회귀 9/9 PASS. 확장 구매 비교를 포함한 로컬 검증이며 연구 PR 병합·push나 공개 main CI 완료가 아니다. 실제 브라우저 조작·360/390px는 미검증이다.",
+   "evidence": [
+    {
+     "text": "2026-10-16 별도 검산 작업 최종보고 · 공개 main과 별도"
+    }
+   ],
+   "countScope": "after-submission",
+   "countScopeReason": "본 연구 기본 비교 밖의 추가 실험·새 기능·운영/실선 확장. 완료 여부와 관계없이 필수 집계 제외. 관련 한계 표시는 필수 제출본 검토에 포함."
+  },
+  {
+   "id": "device-followup",
+   "lane": 5,
+   "col": 0,
+   "label": "실기기 후속 검증",
+   "sub": "후속 작업",
+   "state": "left",
+   "badge": "제출 이후 · 집계 제외",
+   "title": "실제 휴대폰·iOS Safari 확인",
+   "body": "실제 휴대폰·iOS Safari·다른 브라우저의 초기 로딩과 동작 확인은 미검증이다. 제출용 웹 시연의 필수 클릭·다운로드 검증과 별도로 보존한다.",
+   "countScope": "after-submission",
+   "countScopeReason": "본 연구 기본 비교 밖의 추가 실험·새 기능·운영/실선 확장. 완료 여부와 관계없이 필수 집계 제외. 관련 한계 표시는 필수 제출본 검토에 포함."
   }
  ],
  "changes": [
+  {
+   "title": "2026-10-16 제출 필수 집계·원래 진행 그래프 복원",
+   "body": "완료한 본 연구와 이번 제출 절차·현재 주장에 영향을 주는 미해결 검증을 필수로 분류했다. 완료 여부와 관계없이 확장·후속 연구는 분자와 분모에서 제외하고 아래 제출 이후로 보존한다. 자동 Git/CI·과거 검증은 참고 정보다. 각 카드 분류 근거는 docs/status-counting.md에 기록한다."
+  },
   {
    "title": "2026-10-16 전체 상태 대조 · 10:35 KST",
    "body": "공개 main·#119/#126 원격 refs와 문서를 대조했다. #119 계산 모듈 main 존재와 잔여 문서·실제 QA를 구분했다. 별도 검산 작업의 원시 재계산·로컬 strict/120사례/웹 소스회귀를 main CI와 분리했다. 실선 준비 미충족·기타선 67% 원문 불일치와 최종 제출 미확인은 유지한다."

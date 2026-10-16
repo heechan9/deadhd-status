@@ -243,15 +243,36 @@ def render(data, out):
     with open(out, encoding='utf-8') as fh:
         html = fh.read()
     html = html.replace('</head>', '''<style id="research-scope-style">
-.progress .bar,.cx-bar,.cc-ring svg,.cc-seg,#countLabel{display:none!important}
-.progress{grid-template-columns:1fr}.count-col{justify-self:end}
 .research-scope-note{max-width:1100px;margin:16px auto;padding:12px 18px;color:#9aa3b2;font:14px/1.6 system-ui,sans-serif}
 </style></head>''')
+    html = html.replace('const total = items.length;', '''const total = items.length;
+  const requiredItems = items.filter(i => i.countScope === 'submission');
+  const requiredDone = requiredItems.filter(i => i.state === 'done').length;
+  const requiredTotal = requiredItems.length;''')
     html = html.replace("$('countB').textContent = doneList.length + '/' + total;",
-                        "$('countB').textContent = '완료 항목 ' + doneList.length + '/' + total;")
-    html = html.replace('<b>${doneList.length}/${total}</b>', '<b>완료 항목 ${doneList.length}/${total}</b>')
-    html = html.replace('</b>${L.countDone}${data.eta', '</b>${data.eta')
-    html = html.replace('<div id="compact" hidden></div>', '''<aside class="research-scope-note">표시된 작업 항목 기준이며 연구 완성률은 아닙니다. 본 연구·재현과 후속 확장·최종 제출 절차를 구분해 읽어 주세요. 자동 Git·CI 결과는 해당 코드 검사의 상태이며 실험·제출 완료를 뜻하지 않습니다.</aside>
+                        "$('countB').textContent = requiredDone + '/' + requiredTotal;")
+    html = html.replace("countDone: '완료'", "countDone: '제출 필수 완료'")
+    html = html.replace('<b>${doneList.length}/${total}</b>', '<b>${requiredDone}/${requiredTotal}</b>')
+    html = html.replace('const pct = total ? (doneList.length / total * 100) : 0;',
+                        'const pct = requiredTotal ? (requiredDone / requiredTotal * 100) : 0;')
+    html = html.replace('const C = 2 * Math.PI * 15, f = total ? doneList.length / total * C : 0;',
+                        'const C = 2 * Math.PI * 15, f = requiredTotal ? requiredDone / requiredTotal * C : 0;')
+    html = html.replace('${items.map(i => `<span class="${i.state}" title="${esc(i.label)}"></span>`)',
+                        '${requiredItems.map(i => `<span class="${i.state}" title="${esc(i.label)}"></span>`)')
+    html = html.replace('blockedList.forEach(it => blockedWrap', "blockedList.filter(i => i.countScope === 'submission').forEach(it => blockedWrap")
+    html = html.replace("L.secDone, doneList, () => 'done'", "L.secDone, doneList.filter(i => i.countScope === 'submission'), () => 'done'")
+    html = html.replace('const rest = sideList.concat(leftList);', "const rest = sideList.concat(leftList).filter(i => i.countScope === 'submission');")
+    html = html.replace('const vNow = nowList[0] || blockedList[0] || null;', "const vNow = requiredItems.find(i => i.state === 'now') || requiredItems.find(i => i.state === 'blocked') || null;")
+    html = html.replace('const order = [...doneList, ...(vNow ? [vNow] : []), ...leftList, ...sideList];', "const order = [...doneList, ...(vNow ? [vNow] : []), ...leftList, ...sideList].filter(i => i.countScope === 'submission');")
+    for state, variable in [('done', 'doneList'), ('blocked', 'blockedList'), ('left', 'leftList'), ('side', 'sideList')]:
+        html = html.replace(f"['{state}', L.tally.{state}, {variable}]", f"['{state}', L.tally.{state}, requiredItems.filter(i => i.state === '{state}')]")
+    html = html.replace('  if (Array.isArray(data.changes)', '''  const referenceItems = items.filter(i => i.countScope !== 'submission' && i.countScope !== 'after-submission');
+  if (referenceItems.length) section('left', 'ℹ', '참고 정보 · 자동 Git/CI·검증 이력 (필수 집계 제외)', referenceItems, i => i.state);
+  const afterSubmission = items.filter(i => i.countScope === 'after-submission');
+  if (afterSubmission.length) section('left', '○', '제출 이후 · 확장·후속 작업 (필수 집계 제외)', afterSubmission, i => i.state);
+  if (Array.isArray(data.changes)''')
+    html = html.replace('<div class="tally" id="tally"></div>', '<p class="research-scope-note">아래 상태별 카드 수는 참고 정보이며 제출 필수 집계와 다릅니다.</p><div class="tally" id="tally"></div>')
+    html = html.replace('<div id="compact" hidden></div>', '''<aside class="research-scope-note">이번 최종제출 필수 항목만 집계하며 연구 완성률은 아닙니다. 완료한 본 연구와 현재 주장에 영향을 주는 미해결 검증은 포함합니다. 제출 이후 연구·새 기능과 자동 Git·CI 참고 정보는 집계에서 제외합니다.</aside>
 <div id="compact" hidden></div>''')
     with open(out, 'w', encoding='utf-8') as fh:
         fh.write(html)

@@ -43,15 +43,27 @@ class ReviewTracking(unittest.TestCase):
                     self.assertEqual(items[key]['lane'], 0)
                 self.assertTrue(all(s['lane'] > 0 for s in project['repos']))
                 self.assertEqual(len(items),len(base['items']))
-                self.assertIn('연구 완성도 비율이 아니다', base['goal'])
+                self.assertIn('이번 최종제출 필수 항목만 집계', base['goal'])
+                for item in items.values():
+                    self.assertIn(item['countScope'], ('submission','after-submission','reference'))
+                    self.assertTrue(item['countScopeReason'])
+                self.assertTrue(all(items[k]['countScope']=='submission' for k in
+                                    ('accept','submission-final-paper','submission-video','submission-project-report')))
                 if project['slug']=='bunkering-ai':
                     self.assertEqual(items['wait']['state'], 'blocked')
                     self.assertEqual(items['c-ulsan']['state'], 'blocked')
                     self.assertEqual(items['n-web']['state'], 'left')
-                    self.assertIn('main CI 완료',items['submission-research-remaining']['body'])
+                    self.assertEqual(items['c-ulsan']['countScope'],'submission')
+                    self.assertEqual(items['local-integration-extension']['countScope'],'after-submission')
+                    self.assertEqual(items['fair']['countScope'],'after-submission')
+                    self.assertEqual(items['current-ci-snapshot']['countScope'],'reference')
                 else:
                     self.assertEqual(items['verify']['state'], 'blocked')
                     self.assertEqual(items['gate']['state'], 'side')
                     self.assertEqual(items['iterative-gpu']['state'], 'side')
+                    self.assertEqual(items['verify']['countScope'],'submission')
+                    self.assertEqual(items['disc']['countScope'],'submission')
+                    self.assertTrue(all(items[k]['countScope']=='after-submission' for k in
+                                        ('cnn-train','square','surfree','iterative-gpu','bim-environment-comparison')))
 
 if __name__=='__main__':unittest.main()
