@@ -27,10 +27,10 @@ NOTE = '병합·CI 성공은 코드 반영과 자동 검사 범위의 기록이�
 
 PROJECTS = [
     {'slug': 'bunkering-ai', 'name': '병커시유',
-     'repos': [{'id': 'official', 'repo': 'heechan9/bunkering-ai', 'lane': 0, 'label': '공식'}]},
+     'repos': [{'id': 'official', 'repo': 'heechan9/bunkering-ai', 'lane': 1, 'label': '공식'}]},
     {'slug': 'adversarial-ai', 'name': '적대적 AI',
-     'repos': [{'id': 'official', 'repo': 'th0oel/AdversarialAI_Security', 'lane': 0, 'label': '공식'},
-               {'id': 'fork', 'repo': 'heechan9/AdversarialAI_Security', 'lane': 1, 'label': '개인 포크',
+     'repos': [{'id': 'official', 'repo': 'th0oel/AdversarialAI_Security', 'lane': 1, 'label': '공식'},
+               {'id': 'fork', 'repo': 'heechan9/AdversarialAI_Security', 'lane': 2, 'label': '개인 포크',
                 'upstream': 'th0oel/AdversarialAI_Security'}]},
 ]
 
@@ -205,7 +205,8 @@ def build_project(project, prev, at):
         current = next((p for p in entry.get('data', {}).get('open', []) if p['n'] == review['number']), None)
         meta.append({'text': '수동 검토 PR' + f" #{review['number']} @ {review['sha'][:7]}", 'href': f"https://github.com/{review['repo']}/commit/{review['sha']}"})
         if entry.get('ok') and (not current or current.get('headSha') != review['sha']):
-            auto.append({'id': f"pr-drift-{review['repo'].split('/')[0]}-{review['number']}", 'lane': 1 if review['repo'].startswith('heechan9/') else 0, 'label': 'PR 정리 이후 변경', 'sub': '검토 필요', 'state': 'side', 'title': f"PR #{review['number']} 수동 기록 재검토 필요", 'body': '검토한 head와 달라졌거나 열린 PR 목록에서 사라졌다. 병합·완료로 자동 승격하지 않는다.', 'evidence': [{'text': 'PR 상태 확인', 'href': f"https://github.com/{review['repo']}/pull/{review['number']}"}]})
+            lane = next(s['lane'] for s in project['repos'] if s['repo'] == review['repo'])
+            auto.append({'id': f"pr-drift-{review['repo'].split('/')[0]}-{review['number']}", 'lane': lane, 'label': 'PR 정리 이후 변경', 'sub': '검토 필요', 'state': 'side', 'title': f"PR #{review['number']} 수동 기록 재검토 필요", 'body': '검토한 head와 달라졌거나 열린 PR 목록에서 사라졌다. 병합·완료로 자동 승격하지 않는다.', 'evidence': [{'text': 'PR 상태 확인', 'href': f"https://github.com/{review['repo']}/pull/{review['number']}"}]})
     for spec, reason, prev_repo in failures:
         when = (prev_repo or {}).get('fetchedAt')
         kept = ('직전 성공 조회(' + datetime.fromisoformat(when).astimezone(KST).strftime('%Y-%m-%d %H:%M KST') + ') 내용을 유지한다.') if when else '유지할 이전 조회 결과가 없다.'
@@ -237,6 +238,18 @@ def render(data, out):
                    DEADHD_STATE_DIR=os.path.join(tmp, 'state'), DEADHD_NOW=now_kst().isoformat(timespec='seconds'))
         subprocess.run([sys.executable, os.path.join(vendor, 'render.py'), '--theme', 'dark', '--font', 'pretendard',
                         src, out], check=True, env=env, cwd=tmp)
+    # Code, experiments, extensions and submission steps have different weights.
+    # Keep the upstream design, but do not present their card ratio as research progress.
+    with open(out, encoding='utf-8') as fh:
+        html = fh.read()
+    html = html.replace('</head>', '''<style id="research-scope-style">
+.progress,.cx-bar,.cx-count,.cc-ring,.cc-seg,.cc-tile:first-child{display:none!important}
+.research-scope-note{max-width:1100px;margin:16px auto;padding:12px 18px;color:#9aa3b2;font:14px/1.6 system-ui,sans-serif}
+</style></head>''')
+    html = html.replace('<div id="compact" hidden></div>', '''<aside class="research-scope-note">카드 상태 집계는 연구 완성도 비율이 아닙니다. 본 연구·재현과 후속 확장·최종 제출 절차를 구분해 읽어 주세요. 자동 Git·CI 결과는 해당 코드 검사의 상태이며 실험·제출 완료를 뜻하지 않습니다.</aside>
+<div id="compact" hidden></div>''')
+    with open(out, 'w', encoding='utf-8') as fh:
+        fh.write(html)
 
 
 INDEX = """<!doctype html><html lang="ko"><head><meta charset="utf-8">

@@ -2,8 +2,8 @@
  "key": "적대적 AI",
  "keyHref": "https://github.com/th0oel/AdversarialAI_Security",
  "title": "자율운항선박 이미지 분류 모델 적대적 AI 검증 프로젝트 현황",
- "goal": "제출 일정(모두 한국시간): 10/19 23:59 ACK 최종본·논문별 발표자 등록, 10/20 23:59 발표영상, 10/31 23:59 프로젝트 최종보고서. 팀원 1차 취합은 10/19 10:00 내부 일정이다. 등록·제출·업로드 완료는 미확인이다. 781장·선종 10클래스의 Clean·FGSM·필터 방어 비교를 제출한 본 연구로, 방어 인지 FGSM은 기존 완료 범위다. CNN 적대적 학습·블랙박스 및 반복 공격은 제출 이후 확장으로 구분한다. 자동 코드 조회와 아래 공개 근거의 수동 내용 검토는 별개다.",
- "doneWhen": "본 연구 실험·제출 기록은 보존한다. 외부 재현 FAIL과 미해결 불일치, 공식 실행 기록·접수 확인·포크의 공식 통합은 별도 작업이다. 후속 확장 잔여 과제를 제출 연구의 미완료로 계산하지 않는다.",
+ "goal": "제출 일정(모두 한국시간): 10/19 23:59 ACK 최종본·논문별 발표자 등록, 10/20 23:59 발표영상, 10/31 23:59 프로젝트 최종보고서. 팀원 1차 취합은 10/19 10:00 내부 일정이다. 등록·제출·업로드 완료는 미확인이다. 781장·선종 10클래스의 Clean·FGSM·필터 방어 비교를 제출한 본 연구로, 방어 인지 FGSM은 기존 완료 범위다. CNN 적대적 학습·블랙박스 및 반복 공격은 제출 이후 확장으로 구분한다. 자동 코드 조회와 아래 공개 근거의 수동 내용 검토는 별개다. 카드 상태 집계는 연구 완성도 비율이 아니다. 본 연구·재현과 후속 확장·최종 제출 절차를 구분한다.",
+ "doneWhen": "본 연구의 Clean·FGSM·방어 비교와 기존 제출 이력은 보존한다. ACK 게재가·구두 동영상 발표는 확인했으나 최종논문·등록·영상·10/31 보고서 제출은 미확인이다. 외부 독립 재현 FAIL, 공식 실행계약, 포크 코드 통합, 후속 확장 잔여 실험은 각각 별도 과제로 남아 있다.",
  "lang": "ko",
  "links": {
   "PR #22": "https://github.com/th0oel/AdversarialAI_Security/pull/22",
@@ -13,13 +13,14 @@
   "포크 PR #81": "https://github.com/heechan9/AdversarialAI_Security/pull/81"
  },
  "curatedSha": "2e9bf4ac0e4c5506f6b65d1ffad4e10059220d7b",
- "curatedAt": "2026-10-16 00:23 KST",
+ "curatedAt": "2026-10-16 10:35 KST",
  "lanes": [
+  "최종 제출 절차 · 채택과 최종 제출 구분",
   "자동 조회 · 공식 main",
   "자동 조회 · 개인 포크 main",
-  "제출한 본 연구 · 완료 범위와 기록",
-  "제출 이후 확장 성과 · 포크/미병합 구분",
-  "남은 재현·검증·공식 통합",
+  "본 연구 · 실험과 제출 이력",
+  "후속 확장 · 포크/미병합 구분",
+  "남은 재현·검증·공식 코드 통합",
   "문서 시점 차이 · 해석 주의"
  ],
  "items": [
@@ -69,7 +70,7 @@
   },
   {
    "id": "overview",
-   "lane": 2,
+   "lane": 3,
    "col": 0,
    "label": "목표·주요 기능",
    "sub": "README",
@@ -109,7 +110,7 @@
   },
   {
    "id": "clean",
-   "lane": 2,
+   "lane": 3,
    "col": 1,
    "label": "Clean 기준선",
    "sub": "781장",
@@ -143,7 +144,7 @@
   },
   {
    "id": "fgsm",
-   "lane": 2,
+   "lane": 3,
    "col": 2,
    "label": "FGSM 실험",
    "sub": "ε 4개",
@@ -191,7 +192,7 @@
   },
   {
    "id": "defense",
-   "lane": 2,
+   "lane": 3,
    "col": 3,
    "label": "전처리 방어 비교",
    "sub": "가우시안·평균",
@@ -238,7 +239,7 @@
   },
   {
    "id": "verify",
-   "lane": 4,
+   "lane": 5,
    "col": 4,
    "label": "재현 검증 기록",
    "sub": "LOCAL_PASS · FAIL",
@@ -277,14 +278,14 @@
   },
   {
    "id": "paper",
-   "lane": 2,
+   "lane": 3,
    "col": 5,
    "label": "논문 제출",
    "sub": "사용자 확인",
    "state": "done",
    "badge": "공식 반영 · 2e9bf4a",
    "title": "논문 제출 기록",
-   "body": "0930 멘토검토본 DOC 제출이 2026-10-01 사용자 확인으로 기록되어 있다. 접수증·학회 채택은 별도 확인 대상이며 원고 파일은 저장소에 게시되지 않았다.",
+   "body": "0930 멘토검토본 DOC 제출이 2026-10-01 사용자 확인으로 기록되어 있다. 이후 공식 심사결과 메일로 ACK 게재가·구두 동영상 발표를 확인했다(접수·채택 확인 카드). ACK 최종본 제출 완료는 여전히 미확인이며 원고 파일은 저장소에 게시되지 않았다.",
    "evidence": [
     {
      "icon": "doc",
@@ -296,7 +297,7 @@
   },
   {
    "id": "disc",
-   "lane": 4,
+   "lane": 5,
    "col": 0,
    "label": "환경 간 불일치",
    "sub": "open",
@@ -326,7 +327,7 @@
   },
   {
    "id": "gate",
-   "lane": 4,
+   "lane": 5,
    "col": 1,
    "label": "FGSM 공식 실행 게이트",
    "sub": "팀 확인 대기",
@@ -351,32 +352,29 @@
   },
   {
    "id": "accept",
-   "lane": 4,
-   "col": 2,
+   "lane": 0,
+   "col": 0,
    "label": "접수·채택 확인",
-   "sub": "별도 확인",
-   "state": "side",
-   "badge": "공식 반영 · 2e9bf4a",
-   "title": "논문 접수증과 학회 채택",
-   "body": "제출 이후 접수증·채택 여부는 별도 확인 대상으로 기록되어 있다. 저장소에 확인 결과는 없다.",
+   "sub": "ACK2026",
+   "state": "done",
+   "badge": "공식 심사결과 메일 확인",
+   "title": "ACK 게재가 · 구두 동영상 발표",
+   "body": "공식 심사결과 메일에서 게재가 및 구두 동영상 발표를 확인했다. 접수·채택 확인 범위의 완료이며 최종 게재나 최종 제출 완료를 뜻하지 않는다. ACK 최종본 업로드·발표자 등록·발표영상 제출은 여전히 미확인이다.",
    "evidence": [
     {
-     "icon": "doc",
-     "text": "docs/PAPER_RELEASE_STATUS.md",
-     "mono": true,
-     "href": "https://github.com/th0oel/AdversarialAI_Security/blob/2e9bf4ac0e4c5506f6b65d1ffad4e10059220d7b/docs/PAPER_RELEASE_STATUS.md"
+     "text": "공식 심사결과 메일 확인"
     }
    ]
   },
   {
    "id": "c-eps",
-   "lane": 5,
+   "lane": 6,
    "col": 0,
    "label": "ε 승인 문구",
    "sub": "문서 간 상이",
    "state": "blocked",
    "title": "FGSM ε 범위 상태가 문서마다 다름",
-   "body": "README·CURRENT_RESEARCH_STATUS 는 ε 범위가 확정되었다고 기록하지만, PAPER_CLAIM_AUDIT.md 44행과 ROLE_ALIGNMENT.md 40·56행은 아직 '멘토 ε 범위 승인 전'으로 적혀 있다. 어느 표기가 현재 사실인지 팀 확인이 필요하며, 상태판은 확정 표기를 최신 사실로 단정하지 않는다.",
+   "body": "10/16 공개 소스 대조: 공식 CURRENT_RESEARCH_STATUS는 2026-09-20 사용자 확인으로 ε=0/.01/.03/.05 범위가 확정됐다고 기록한다. 공식 PAPER_CLAIM_AUDIT·ROLE_ALIGNMENT에는 승인 전 문구가 남고 공식 실행계약은 pending_team_confirmation이다. 범위 확인, 문서 시점 불일치, 별도 공식 실행 승인·재실행은 서로 다른 항목이다. 문서 정정 PR #23(76786c9)은 Open·미병합이다. 미확인 실행 승인이나 독립 재현 PASS를 추정하지 않는다.",
    "evidence": [
     {
      "icon": "doc",
@@ -401,7 +399,7 @@
   },
   {
    "id": "cnn-train",
-   "lane": 3,
+   "lane": 4,
    "col": 0,
    "label": "CNN 적대적 학습·평가 완료",
    "sub": "9b64b8e",
@@ -419,7 +417,7 @@
   },
   {
    "id": "square",
-   "lane": 3,
+   "lane": 4,
    "col": 0,
    "label": "Square 평가 완료",
    "sub": "9b64b8e",
@@ -442,7 +440,7 @@
   },
   {
    "id": "surfree",
-   "lane": 3,
+   "lane": 4,
    "col": 0,
    "label": "SurFree 평가 완료",
    "sub": "9b64b8e",
@@ -460,7 +458,7 @@
   },
   {
    "id": "cpu-ci",
-   "lane": 3,
+   "lane": 4,
    "col": 0,
    "label": "CPU 검증 자동화 반영",
    "sub": "9b64b8e",
@@ -493,7 +491,7 @@
   },
   {
    "id": "iterative-cpu",
-   "lane": 3,
+   "lane": 4,
    "col": 0,
    "label": "BIM·PGD CPU 부분 결과 보존",
    "sub": "9b64b8e",
@@ -516,7 +514,7 @@
   },
   {
    "id": "iterative-gpu",
-   "lane": 3,
+   "lane": 4,
    "col": 0,
    "label": "BIM 16/16 · PGD 13/16 저장 감사",
    "sub": "0657658",
@@ -539,14 +537,14 @@
   },
   {
    "id": "remaining-expansion",
-   "lane": 4,
+   "lane": 5,
    "col": 0,
    "label": "확장 실험 잔여 · 본 연구와 별도",
    "sub": "0657658",
    "state": "left",
    "badge": "미병합 PR #78 · 0657658",
    "title": "확장 실험 잔여 · 본 연구와 별도",
-   "body": "PGD MobileNet Mean ε=.01/.03/.05, CNN JSMA 781장, MobileNet PGD7 학습 3 epoch·원본/학습 test 781장 비교 및 통합 감사가 남아 있다. 10/13 자료 이동 후 Colab 마운트·부모·백업 경로는 미검증이다. 경로·13조건 부모·환경·입력·가중치 무결성 확인 전 실행하지 않으며 PR #78은 draft·미병합이다.",
+   "body": "PGD MobileNet Mean ε=.01/.03/.05, CNN JSMA 781장, MobileNet PGD7 학습 3 epoch·원본/학습 test 781장 비교 및 통합 감사가 남아 있다. 10/13 자료 이동 후 Colab 마운트·부모·백업 경로는 미검증이다. 경로·13조건 부모·환경·입력·가중치 무결성 확인 전 실행하지 않으며 PR #78은 draft·미병합이다. 10/16 원격 확인에서도 PR #78 head 0657658은 Draft·미병합으로 유지된다. 신규 전체 완료 근거는 확인되지 않았다.",
    "evidence": [
     {
      "icon": "doc",
@@ -557,7 +555,7 @@
   },
   {
    "id": "readme-history",
-   "lane": 5,
+   "lane": 6,
    "col": 0,
    "label": "README 최신 설명과 옛 상태표 구분",
    "sub": "9b64b8e",
@@ -580,14 +578,14 @@
   },
   {
    "id": "integration",
-   "lane": 4,
+   "lane": 5,
    "col": 0,
    "label": "공식 통합·검토 대기",
    "sub": "9b64b8e",
    "state": "left",
    "badge": "개인 포크 main · 공식 미반영 · 9b64b8e",
    "title": "공식 통합·검토 대기",
-   "body": "포크 main의 확장 성과와 CPU CI는 공식 main 반영과 구분한다. 공식 PR #23(76786c9)은 미병합 상태이므로 승인·접수 관련 변경을 공식 완료로 취급하지 않는다. 공식 열린 PR #13·#14도 별도 자동 조회한다. 최종 통합은 대상 SHA 검토와 별도 병합 판단이 필요하다.",
+   "body": "10/16 원격 확인: 공식 PR #23(76786c9)은 Open·미병합이며 공식 main 2e9bf4a·포크 main 9b64b8e는 유지된다. 포크 확장 성과·CPU CI와 문서 정정은 공식 코드 반영과 구분한다. 논문 접수·채택 확인은 공식 심사결과 메일에 근거한 별도 제출 절차이며 PR 병합 여부로 판정하지 않는다. 최종 코드 통합은 대상 SHA 검토와 별도 병합 판단이 필요하다.",
    "evidence": [
     {
      "icon": "doc",
@@ -598,7 +596,7 @@
   },
   {
    "id": "bim-environment-comparison",
-   "lane": 4,
+   "lane": 5,
    "col": 0,
    "label": "BIM CPU·GPU 수치 차이",
    "sub": "0657658",
@@ -616,7 +614,7 @@
   },
   {
    "id": "recovery-audit-boundary",
-   "lane": 4,
+   "lane": 5,
    "col": 0,
    "label": "복구 실행·최신 감사 분리",
    "sub": "0657658",
@@ -639,14 +637,14 @@
   },
   {
    "id": "parser-hardening",
-   "lane": 3,
+   "lane": 4,
    "col": 0,
    "label": "감사 파서 보강 · 검토 대기",
    "sub": "5d138ea",
    "state": "side",
    "badge": "미병합 PR #81 · 5d138ea",
    "title": "중복 JSON 키·모호한 CSV 증거 거부",
-   "body": "PR #81은 중첩 JSON 중복 키, CSV 중복·초과 열/행 너비/인용 오류를 거부하도록 보강한다. PR 보고의 로컬 집중 검사 22개, 확장 검사 148개·13 subtest와 head GitHub CI 2개 성공을 확인했다. 기존 지원 보고서 11개는 PARTIAL_OUTPUTS_ONLY 유지로 보고됐다. 미병합이므로 main 수정 완료로 표시하지 않으며 원자료·GPU 실험·외부 승인 상태는 바뀌지 않는다.",
+   "body": "PR #81은 중첩 JSON 중복 키, CSV 중복·초과 열/행 너비/인용 오류를 거부하도록 보강한다. PR 보고의 로컬 집중 검사 22개, 확장 검사 148개·13 subtest와 head GitHub CI 2개 성공을 확인했다. 기존 지원 보고서 11개는 PARTIAL_OUTPUTS_ONLY 유지로 보고됐다. 미병합이므로 main 수정 완료로 표시하지 않으며 원자료·GPU 실험·외부 승인 상태는 바뀌지 않는다. 10/16 원격 재확인에서도 PR #81은 Open·미병합이며 head 5d138ea는 유지된다.",
    "evidence": [
     {
      "icon": "doc",
@@ -662,6 +660,10 @@
   }
  ],
  "changes": [
+  {
+   "title": "2026-10-16 전체 상태 대조 · 10:35 KST",
+   "body": "공식/포크 main과 #78/#81/공식 #23의 원격 refs·PR 상태 및 문서를 대조했다. 외부 FGSM 14장·16예측 FAIL, BIM 65셀 중 12개 차이, PGD 13/16과 공식 실행 게이트를 유지했다. 접수·채택 확인을 최종 제출과 코드 통합에서 분리했다."
+  },
   {
    "title": "2026-10-16 제출 일정·잔여 작업 정리",
    "body": "ACK 최종본·발표자 등록(10/19), 영상(10/20), 프로젝트 최종보고서(10/31)를 한국시간 공식 마감으로 추가했다. 10/19 오전 10시 팀 내부 취합을 분리하고 모든 제출·등록·업로드 완료는 미확인으로 유지한다. 기존 연구 판정과 PR 병합 상태는 변경하지 않았다."

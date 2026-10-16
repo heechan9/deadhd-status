@@ -2,8 +2,8 @@
  "key": "병커시유",
  "keyHref": "https://github.com/heechan9/bunkering-ai",
  "title": "병커시유 선박 급유 의사결정 강화학습 프로젝트 현황",
- "goal": "제출 일정(모두 한국시간): 10/19 23:59 ACK 최종본·논문별 발표자 등록, 10/20 23:59 발표영상, 10/31 23:59 프로젝트 최종보고서. 팀원 1차 취합은 10/19 10:00 내부 일정이다. 등록·제출·업로드 완료는 미확인이다. 선박의 유가·환율·연료잔량·잔여항로를 입력으로 급유 시점과 행동을 결정하는 정책을 합성 항해 환경에서 비교한다. 맨 위 줄은 코드 상태 자동조회(main·PR·CI), 아래 본문은 공개 근거를 사람이 검토해 갱신하는 연구 내용이다. 15초 새로고침은 배포된 페이지를 다시 읽으며 연구 본문을 자동 작성하지 않는다.",
- "doneWhen": "저장소 기준 남은 필수 작업: 같은 선박·기간의 공급량·ROB·소비·구매가격 자료를 확보해 독립 실선 평가를 하고, Ocean Lab 을 실제 휴대폰·iOS Safari 에서 확인한다.",
+ "goal": "제출 일정(모두 한국시간): 10/19 23:59 ACK 최종본·논문별 발표자 등록, 10/20 23:59 발표영상, 10/31 23:59 프로젝트 최종보고서. 팀원 1차 취합은 10/19 10:00 내부 일정이다. 등록·제출·업로드 완료는 미확인이다. 선박의 유가·환율·연료잔량·잔여항로를 입력으로 급유 시점과 행동을 결정하는 정책을 합성 항해 환경에서 비교한다. 맨 위 줄은 코드 상태 자동조회(main·PR·CI), 아래 본문은 공개 근거를 사람이 검토해 갱신하는 연구 내용이다. 15초 새로고침은 배포된 페이지를 다시 읽으며 연구 본문을 자동 작성하지 않는다. 카드 상태 집계는 연구 완성도 비율이 아니다. 본 연구·재현과 후속 확장·최종 제출 절차를 구분한다.",
+ "doneWhen": "최종논문·발표자 등록(10/19), 영상(10/20), 프로젝트 최종보고서(10/31)는 제출 확인이 남아 있다. 합성 실험·원시 재계산과 실선 성능 입증을 구분한다. 실제 웹 QA, 실제 휴대폰·iOS Safari, 독립 실선 평가가 남아 있다.",
  "lang": "ko",
  "links": {
   "PR #66": "https://github.com/heechan9/bunkering-ai/pull/66",
@@ -43,15 +43,32 @@
   "PR #127": "https://github.com/heechan9/bunkering-ai/pull/127"
  },
  "curatedSha": "a4634faa261e1a433bbbddbee6106dfac73dd6a5",
- "curatedAt": "2026-10-16 00:12 KST",
+ "curatedAt": "2026-10-16 10:35 KST",
  "lanes": [
-  "코드 상태 자동조회 · GitHub 공개 기록",
-  "연구 내용 수동검토 · 구현·합성 실험",
+  "최종 제출 절차 · 채택과 최종 제출 구분",
+  "자동 조회 · 공개 main·PR·CI",
+  "본 연구 · 구현·합성 실험",
   "검증 기록 · 시점·환경·SHA 구분",
-  "남은 필수 작업",
-  "선택적 확장"
+  "남은 필수 작업 · 실선·실제 웹",
+  "선택적 확장 · 미병합 연구"
  ],
  "items": [
+  {
+   "id": "accept",
+   "lane": 0,
+   "col": 0,
+   "label": "접수·채택 확인",
+   "sub": "ACK2026",
+   "state": "done",
+   "badge": "공식 심사결과 메일 확인",
+   "title": "ACK 게재가 · 구두 동영상 발표",
+   "body": "공식 심사결과 메일에서 게재가 및 구두 동영상 발표를 확인했다. 접수·채택 확인 범위의 완료이며 최종 게재나 최종 제출 완료를 뜻하지 않는다. ACK 최종본 업로드·발표자 등록·발표영상 제출은 여전히 미확인이다.",
+   "evidence": [
+    {
+     "text": "공식 심사결과 메일 확인"
+    }
+   ]
+  },
   {
    "id": "submission-final-paper",
    "label": "10/19 논문 최종제출",
@@ -104,12 +121,17 @@
    "sub": "10/16 진행 기록",
    "state": "left",
    "badge": "진행 중",
-   "title": "민감도표 최종대조·strict 통합·실제 웹 QA",
-   "body": "10/16 원시 4개 11,200행과 3,516개 검사에서 불일치 0을 확인했다. 표 2 전체와 Normal→43-step 5.10%/13.97% 원시 재계산은 완료했다. 민감도표 최종대조, 최신 main + PR #126 strict 통합 검증, 120 재현, 실제 웹 QA, 최종 논문·발표영상·프로젝트 보고서 준비는 남아 있다. 이 확인은 실선 평가 준비 미충족이나 공개 원문 일부 불일치의 해결을 뜻하지 않는다."
+   "title": "원시 재계산·로컬 통합 검증 완료 · 실제 웹 QA 대기",
+   "body": "10/16 전달 검산 보고: 원시 4개 11,200행·기본 72검사·민감도 3,516검사에서 불일치 0, 표 2 전체와 Normal→43-step 5.10%/13.97% 원시 재계산 완료. 별도 로컬 통합 2cd832c에서 strict 779 passed·4 skipped·32 subtests, 120사례(86 OPTIMAL·34 INFEASIBLE) 재현 및 handoff·446원장 일치, 웹 소스회귀 9/9 PASS를 확인했다. 사용자 PC 브라우저 초기화 실패로 클릭·JSON 다운로드·단계/탭·한/영·360/390px 실제 QA는 미검증이다. 연구 PR 병합·push는 없으며 main CI 완료나 실선 검증 완료를 뜻하지 않는다. 최종 문서·영상·보고서 준비가 남아 있다.",
+   "evidence": [
+    {
+     "text": "2026-10-16 별도 검산 작업 최종보고 · 로컬 통합 2cd832c (공개 main과 별도)"
+    }
+   ]
   },
   {
    "id": "overview",
-   "lane": 1,
+   "lane": 2,
    "col": 0,
    "label": "목표·주요 기능",
    "sub": "README",
@@ -146,7 +168,7 @@
   },
   {
    "id": "official",
-   "lane": 1,
+   "lane": 2,
    "col": 1,
    "label": "공식 동일조건 평가",
    "sub": "100 항차",
@@ -209,7 +231,7 @@
   },
   {
    "id": "seeds",
-   "lane": 1,
+   "lane": 2,
    "col": 2,
    "label": "4시드·V1.5 강건성",
    "sub": "합성 환경",
@@ -262,7 +284,7 @@
   },
   {
    "id": "research",
-   "lane": 1,
+   "lane": 2,
    "col": 3,
    "label": "외부자료 후속 연구",
    "sub": "교체 보류",
@@ -318,7 +340,7 @@
   },
   {
    "id": "public",
-   "lane": 1,
+   "lane": 2,
    "col": 4,
    "label": "공공자료 검산",
    "sub": "UPA·EMSA·울산",
@@ -353,7 +375,7 @@
   },
   {
    "id": "fair",
-   "lane": 1,
+   "lane": 2,
    "col": 5,
    "label": "공정 비교·shadow",
    "sub": "PR #100~#109",
@@ -393,7 +415,7 @@
   },
   {
    "id": "time-intake",
-   "lane": 1,
+   "lane": 2,
    "label": "추가시간·입력 검증",
    "sub": "#113–117",
    "state": "done",
@@ -430,7 +452,7 @@
   },
   {
    "id": "arctic",
-   "lane": 1,
+   "lane": 2,
    "label": "북극 관측·지도",
    "sub": "#121·#122",
    "state": "done",
@@ -452,7 +474,7 @@
   },
   {
    "id": "english",
-   "lane": 1,
+   "lane": 2,
    "label": "영문 문서·시각자료",
    "sub": "#123–125",
    "state": "done",
@@ -479,7 +501,7 @@
   },
   {
    "id": "voyage-demand",
-   "lane": 1,
+   "lane": 2,
    "label": "연료수요 검증 기반",
    "sub": "#127 · 준비",
    "state": "done",
@@ -496,13 +518,13 @@
   },
   {
    "id": "current-ci-snapshot",
-   "lane": 2,
-   "label": "검토 시점 main CI",
+   "lane": 3,
+   "label": "공개 main CI 고정 기록",
    "sub": "736 passed · 32 subtests",
    "state": "done",
    "badge": "공개 근거 수동검토",
    "title": "a4634fa Linux Python 3.12 CPU strict CI",
-   "body": "2026-10-15 main push CI에서 736 passed · 32 subtests passed, skip 없음. strict-config·strict-markers·경고 오류 처리를 적용했다. 이 수는 검토 시점 고정 기록이며 최신 자동조회는 맨 위 줄에서 확인한다. 소프트웨어 검사 성공이 실선 성능 검증을 뜻하지 않는다.",
+   "body": "2026-10-15 main push CI에서 736 passed · 32 subtests passed, skip 없음. strict-config·strict-markers·경고 오류 처리를 적용했다. 이 수는 검토 시점 고정 기록이며 최신 자동조회는 맨 위 줄에서 확인한다. 소프트웨어 검사 성공이 실선 성능 검증을 뜻하지 않는다. 10/16 로컬 통합 2cd832c의 strict 779/32 subtests·4 skips는 별도 검산 보고이며 이 공개 main의 CI 수치가 아니다.",
    "evidence": [
     {
      "icon": "pr",
@@ -518,29 +540,31 @@
   },
   {
    "id": "draft-work",
-   "lane": 4,
+   "lane": 5,
    "label": "검토 중 작업",
    "sub": "#119·#126 Draft",
    "state": "side",
    "badge": "Draft · 미병합",
-   "title": "고정 시나리오·구매 최적화 비교는 미병합",
-   "body": "#119의 웹 고정 합성 1~2단계 검토와 #126의 고정 항로·단일 연료 LP/MILP 구매 비교 및 Windows 보강은 확인 시점 Draft다. main 완료 항목에 포함하지 않는다. 합성 비교를 AI 우위·실제 구매 절감·미사용 holdout 근거로 확대하지 않는다.",
+   "title": "고정 시나리오 계산은 main 존재 · #119 문서·실제 QA와 #126 병합은 대기",
+   "body": "10/16 원격 확인: PR #119(603aac9)와 #126(57de151)은 모두 Draft·미병합이다. 공개 main a4634fa에는 scenario-review.ts와 소스회귀 코드가 이미 있어 #119 관련 계산 기능 전체가 없는 것으로 해석하지 않는다. #119 잔여 문서·실제 QA와 PR 정리는 남아 있다. #126 head 57de151의 이전 base Linux strict 750 passed·32 subtests(무 skip), Windows 746 passed·32 subtests·4 POSIX skips 기록은 최신 main 통합과 구분한다. 로컬 통합 2cd832c 결과는 제출 준비 카드에 표시하며 원격 병합·배포 완료가 아니다. 합성 구매 비교는 AI 우위·실선 절감·미사용 holdout 증거가 아니다.",
    "evidence": [
     {
-     "icon": "pr",
-     "text": "PR #119",
+     "text": "공개 main · 계산 모듈",
+     "href": "https://github.com/heechan9/bunkering-ai/blob/a4634faa261e1a433bbbddbee6106dfac73dd6a5/web/ocean-lab/lib/scenario-review.ts"
+    },
+    {
+     "text": "PR #119 · Draft/잔여 검토",
      "href": "https://github.com/heechan9/bunkering-ai/pull/119"
     },
     {
-     "icon": "pr",
-     "text": "PR #126",
+     "text": "PR #126 · 57de151 이전 base 검증",
      "href": "https://github.com/heechan9/bunkering-ai/pull/126"
     }
    ]
   },
   {
    "id": "v-codex",
-   "lane": 2,
+   "lane": 3,
    "label": "과거 PR #109 검증",
    "sub": "당시 514 passed",
    "state": "done",
@@ -576,7 +600,7 @@
   },
   {
    "id": "v-win",
-   "lane": 2,
+   "lane": 3,
    "label": "과거 Windows 검증",
    "sub": "당시 288 passed · 8/8",
    "state": "done",
@@ -601,7 +625,7 @@
   },
   {
    "id": "ocean",
-   "lane": 2,
+   "lane": 3,
    "col": 3,
    "label": "과거 운영 화면 검증",
    "sub": "2026-10-07 · Sites 36",
@@ -625,7 +649,7 @@
   },
   {
    "id": "wait",
-   "lane": 3,
+   "lane": 4,
    "col": 0,
    "label": "실선 평가 자료",
    "sub": "준비 조건 미충족",
@@ -646,13 +670,13 @@
   },
   {
    "id": "c-ulsan",
-   "lane": 3,
+   "lane": 4,
    "col": 1,
    "label": "공개 원문 정합성",
    "sub": "부분 해결",
    "state": "blocked",
    "title": "날짜 확인과 남은 비율 불일치 구분",
-   "body": "공개 PR #117·README는 기존 공급일 문의가 확인됐다고 기록한다. 세관 원문 자체가 정정된 것은 아니며 과거 불일치 이력을 보존한다. 기타선 척수 비율 67%와 재계산 150%의 차이는 별도 미해결로 분석에 쓰지 않는다.",
+   "body": "공개 README·PROJECT_STATUS는 UPA의 2026-10-08 회신으로 ATLANTIC TOPAZ 작업일 8/8을 확인했다고 기록한다. 세관 원문 8/6 자체가 정정된 것은 아니며 과거 충돌 이력은 보존한다. 기타선 척수 비율 67%와 재계산 150%의 차이는 별도 미해결로 분석에 쓰지 않는다. 선사 자료 수령·실선 평가 준비 완료로 확대하지 않는다.",
    "evidence": [
     {
      "icon": "doc",
@@ -669,7 +693,7 @@
   },
   {
    "id": "realship",
-   "lane": 3,
+   "lane": 4,
    "col": 2,
    "label": "실선 적용",
    "sub": "미입증",
@@ -692,14 +716,19 @@
   },
   {
    "id": "n-web",
-   "lane": 3,
+   "lane": 4,
    "col": 3,
    "label": "실기기 웹 확인",
    "sub": "미검증",
    "state": "left",
    "title": "Ocean Lab 실제 휴대폰·iOS Safari 확인",
-   "body": "Sites 36판 확인은 데스크톱 브라우저의 모바일 폭 측정이다. 완료 조건: 실제 휴대폰·iOS Safari·다른 브라우저에서 열어 동작과 초기 로딩 넘침 여부를 확인한 기록과 배포 판이 남는다.",
-   "badge": "필수 · 미검증"
+   "body": "Sites 36판의 10/07 데스크톱 모바일 폭 측정은 과거 기록이다. 10/16 별도 검산 작업의 웹 소스회귀 9/9 PASS와 실제 브라우저 조작은 구분한다. 사용자 PC 브라우저 초기화 오류로 클릭·JSON 다운로드·단계/탭 전환·한/영·360/390px 검증은 미완료다. 실제 휴대폰·iOS Safari·다른 브라우저의 초기 로딩 및 배포판 확인도 남아 있다.",
+   "badge": "필수 · 미검증",
+   "evidence": [
+    {
+     "text": "2026-10-16 별도 검산 작업 최종보고 · 실제 브라우저 미검증"
+    }
+   ]
   },
   {
    "id": "o-ops",
@@ -715,7 +744,7 @@
      "href": "https://github.com/heechan9/bunkering-ai/blob/a4634faa261e1a433bbbddbee6106dfac73dd6a5/research/fair_replacement_eval/SHADOW_MODE.md"
     }
    ],
-   "lane": 4,
+   "lane": 5,
    "state": "left",
    "badge": "선택적 확장",
    "col": 0
@@ -734,7 +763,7 @@
      "href": "https://github.com/heechan9/bunkering-ai/blob/a4634faa261e1a433bbbddbee6106dfac73dd6a5/docs/technical/python_ci.md"
     }
    ],
-   "lane": 2,
+   "lane": 3,
    "state": "done",
    "badge": "공개 문서 기록",
    "col": 1
@@ -745,7 +774,7 @@
    "sub": "선택 개선",
    "title": "모바일 초기 로딩 2~4px 넘침 개선",
    "body": "Windows 재검증 기록은 초기 모바일 넘침을 선택 개선으로 분류한다. 완료 조건: 로딩 직후에도 scrollWidth 와 clientWidth 가 같은 측정 기록.",
-   "lane": 4,
+   "lane": 5,
    "state": "left",
    "badge": "선택적 확장",
    "col": 2
@@ -764,13 +793,17 @@
      "href": "https://github.com/heechan9/bunkering-ai/blob/a4634faa261e1a433bbbddbee6106dfac73dd6a5/research/external_validation/DECISIONS.md"
     }
    ],
-   "lane": 4,
+   "lane": 5,
    "state": "left",
    "badge": "선택적 확장",
    "col": 3
   }
  ],
  "changes": [
+  {
+   "title": "2026-10-16 전체 상태 대조 · 10:35 KST",
+   "body": "공개 main·#119/#126 원격 refs와 문서를 대조했다. #119 계산 모듈 main 존재와 잔여 문서·실제 QA를 구분했다. 별도 검산 작업의 원시 재계산·로컬 strict/120사례/웹 소스회귀를 main CI와 분리했다. 실선 준비 미충족·기타선 67% 원문 불일치와 최종 제출 미확인은 유지한다."
+  },
   {
    "title": "2026-10-16 제출 일정·잔여 작업 정리",
    "body": "ACK 최종본·발표자 등록(10/19), 영상(10/20), 프로젝트 최종보고서(10/31)를 한국시간 공식 마감으로 추가했다. 10/19 오전 10시 팀 내부 취합을 분리하고 모든 제출·등록·업로드 완료는 미확인으로 유지한다. 기존 연구 판정과 PR 병합 상태는 변경하지 않았다."
@@ -782,6 +815,18 @@
   {
    "title": "자동조회와 수동검토의 갱신 주기",
    "body": "GitHub Actions가 매시 23분(UTC)·push·수동 실행 시 코드 기록을 조회해 배포한다. 브라우저의 15초 새로고침은 그 배포본을 다시 읽는다. 연구 본문은 공개 근거 재검토 후 갱신하며, 검토 SHA 이후 main 변경은 별도 경고한다."
+  }
+ ],
+ "curatedPrs": [
+  {
+   "repo": "heechan9/bunkering-ai",
+   "number": 119,
+   "sha": "603aac953eb512746557a187fc32e55b6b4342f5"
+  },
+  {
+   "repo": "heechan9/bunkering-ai",
+   "number": 126,
+   "sha": "57de151d19e54ec58248fd1edfe94fb1af9c6520"
   }
  ]
 }

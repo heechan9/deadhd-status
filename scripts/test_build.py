@@ -8,13 +8,14 @@ class ReviewTracking(unittest.TestCase):
         project=build.PROJECTS[1]
         import json
         from pathlib import Path
-        base=json.loads((Path(build.ROOT)/'content/adversarial-ai.base.json').read_text())
+        base=json.loads((Path(build.ROOT)/'content/adversarial-ai.base.json').read_text(encoding='utf-8'))
         def fetch(spec):
             sha=base['curatedRefs'][spec['id']]
             return dict(repo=spec['repo'],branch='main',head=dict(sha=sha,date='2026-10-09T00:00:00Z',title='test',url='https://github.com/'+spec['repo']+'/commit/'+sha),ci=[],merged=[],open=[dict(n=r['number'],title='review',url='https://github.com/'+r['repo']+'/pull/'+str(r['number']),draft=True,headSha=r['sha']) for r in base['curatedPrs'] if r['repo']==spec['repo']])
         with patch.object(build,'fetch_repo',side_effect=fetch):
             data,state=build.build_project(project,{},build.now_kst())
         self.assertFalse(any('drift' in i['id'] for i in data['items']))
+
         self.assertEqual(state['curatedRefs'],base['curatedRefs'])
         def changed(spec):
             f=fetch(spec); f['head']['sha']='a'*40
@@ -27,5 +28,30 @@ class ReviewTracking(unittest.TestCase):
             data,_=build.build_project(project,{'adversarial-ai':state},build.now_kst())
         self.assertEqual(sum(i['id'].endswith('-fail') for i in data['items']),2)
         self.assertFalse(any('drift' in i['id'] for i in data['items']))
+
+    def test_research_and_submission_boundaries(self):
+        import json
+        from pathlib import Path
+        for project in build.PROJECTS:
+            with self.subTest(project=project['slug']):
+                base=json.loads((Path(build.ROOT)/('content/'+project['slug']+'.base.json')).read_text(encoding='utf-8'))
+                items={i['id']:i for i in base['items']}
+                self.assertEqual(items['accept']['state'], 'done')
+                self.assertNotIn('href', items['accept']['evidence'][0])
+                for key in ('submission-final-paper','submission-video','submission-project-report','submission-team-intake'):
+                    self.assertEqual(items[key]['state'], 'left')
+                    self.assertEqual(items[key]['lane'], 0)
+                self.assertTrue(all(s['lane'] > 0 for s in project['repos']))
+                self.assertEqual(len(items),len(base['items']))
+                self.assertIn('연구 완성도 비율이 아니다', base['goal'])
+                if project['slug']=='bunkering-ai':
+                    self.assertEqual(items['wait']['state'], 'blocked')
+                    self.assertEqual(items['c-ulsan']['state'], 'blocked')
+                    self.assertEqual(items['n-web']['state'], 'left')
+                    self.assertIn('main CI 완료',items['submission-research-remaining']['body'])
+                else:
+                    self.assertEqual(items['verify']['state'], 'blocked')
+                    self.assertEqual(items['gate']['state'], 'side')
+                    self.assertEqual(items['iterative-gpu']['state'], 'side')
 
 if __name__=='__main__':unittest.main()
