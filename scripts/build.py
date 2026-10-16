@@ -243,10 +243,15 @@ def render(data, out):
     with open(out, encoding='utf-8') as fh:
         html = fh.read()
     html = html.replace('</head>', '''<style id="research-scope-style">
-.progress,.cx-bar,.cx-count,.cc-ring,.cc-seg,.cc-tile:first-child{display:none!important}
+.progress .bar,.cx-bar,.cc-ring svg,.cc-seg,#countLabel{display:none!important}
+.progress{grid-template-columns:1fr}.count-col{justify-self:end}
 .research-scope-note{max-width:1100px;margin:16px auto;padding:12px 18px;color:#9aa3b2;font:14px/1.6 system-ui,sans-serif}
 </style></head>''')
-    html = html.replace('<div id="compact" hidden></div>', '''<aside class="research-scope-note">카드 상태 집계는 연구 완성도 비율이 아닙니다. 본 연구·재현과 후속 확장·최종 제출 절차를 구분해 읽어 주세요. 자동 Git·CI 결과는 해당 코드 검사의 상태이며 실험·제출 완료를 뜻하지 않습니다.</aside>
+    html = html.replace("$('countB').textContent = doneList.length + '/' + total;",
+                        "$('countB').textContent = '완료 항목 ' + doneList.length + '/' + total;")
+    html = html.replace('<b>${doneList.length}/${total}</b>', '<b>완료 항목 ${doneList.length}/${total}</b>')
+    html = html.replace('</b>${L.countDone}${data.eta', '</b>${data.eta')
+    html = html.replace('<div id="compact" hidden></div>', '''<aside class="research-scope-note">표시된 작업 항목 기준이며 연구 완성률은 아닙니다. 본 연구·재현과 후속 확장·최종 제출 절차를 구분해 읽어 주세요. 자동 Git·CI 결과는 해당 코드 검사의 상태이며 실험·제출 완료를 뜻하지 않습니다.</aside>
 <div id="compact" hidden></div>''')
     with open(out, 'w', encoding='utf-8') as fh:
         fh.write(html)
