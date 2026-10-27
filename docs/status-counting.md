@@ -72,3 +72,7 @@
 |recovery-audit-boundary|after-submission|본 연구 기본 비교 밖의 추가 실험·새 기능·운영/실선 확장. 완료 여부와 관계없이 필수 집계 제외. 관련 한계 표시는 필수 제출본 검토에 포함.|
 |parser-hardening|after-submission|본 연구 기본 비교 밖의 추가 실험·새 기능·운영/실선 확장. 완료 여부와 관계없이 필수 집계 제외. 관련 한계 표시는 필수 제출본 검토에 포함.|
 |submission-evidence-review|submission|최종 제출본의 본 연구 주장과 미해결 재현·확장 제외·한계 검토.|
+
+## 자동 조회와 집계
+
+카드에 연결된 PR 의 열림·Draft·병합·CI 조회 결과는 카드 본문과 증거 링크의 텍스트로만 표시한다. 카드의 `state`·`countScope` 는 자동으로 바뀌지 않으며, 이 문서의 분류와 분자·분모는 수동 검토로만 바뀐다. 조회 실패·오래된 기록·`curatedAt` 경과를 알리는 자동 항목(`pr-live-failed`, `curated-stale`)은 `countScope` 가 없어 필수 집계에 들어가지 않는다.

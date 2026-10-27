@@ -13,6 +13,9 @@
 - 자동 조회(맨 위 줄)는 main HEAD·최근 병합 PR·열린 PR·main CI 만 다룬다. **병합이나 CI 성공은 실험·연구 완료로 표시하지 않는다.**
 - 그 아래 항목은 `content/*.base.json` 의 수동 정리로, 각 파일의 `curatedRefs`(공식·포크별 SHA, 기존 단일 저장소는 `curatedSha`) 시점 공개 문서에 근거한다. main 이 그 뒤로 바뀌면 페이지에 '정리 이후 변경 · 검토 필요'가 표시된다.
 - 조회가 실패하면 직전 배포의 `state.json` 에서 마지막 성공 결과를 유지하고 '갱신 실패'를 표시한다.
+- **카드에 연결된 PR 의 실제 상태**: 수동 카드의 `evidence` 에 PR 링크가 있으면(또는 카드에 `"linkedPrs": ["owner/repo#N"]` 을 적으면) 매시간 해당 PR 의 열림·Draft·병합·닫힘과 현재 head 의 워크플로 결과를 조회해 카드 본문 끝 `[자동 조회 …]` 줄과 증거 링크 옆에 덧붙인다. 카드에 `"liveStatus": false` 를 쓰면 제외한다. 수동 검토 때 고정한 head(`curatedPrs`)와 달라지면 '수동 검토 head 이후 변경'이 표시된다. 연결 PR 은 프로젝트당 60건까지 조회한다.
+- **카드 상태는 자동으로 바뀌지 않는다**: 위 조회는 카드의 `state`·`countScope`·`badge`·제목을 건드리지 않는다. PR 병합이나 CI 성공은 연구 성과·팀원 본인 확인·계약 채택·최종 제출의 완료가 아니며, 그 판단은 `content/*.base.json` 의 수동 검토로만 바꾼다.
+- **오래됨·실패 표시**: PR 조회가 실패하면 마지막 성공 기록과 경과 시간을 카드에 표시하고(3시간을 넘으면 '오래됨'), 기록이 없으면 '이전 성공 기록 없음'으로 표시한다. 실패는 맨 위 줄('일부 실패')·'PR 상태 갱신 실패' 항목·`state.json` 에 남는다. 수동 내용 검토 시각(`curatedAt`)이 3일을 넘거나 해석할 수 없으면 '수동 검토 오래됨'을 표시한다. 기록 없음(실행 기록 없음)은 CI 성공으로 쓰지 않는다.
 
 ## 구성
 
@@ -21,6 +24,6 @@
 - `vendor/deadhd/` — deadhd v1.9.0 원본 파일 (MIT, `THIRD_PARTY_NOTICES.md` 참고)
 - `.github/workflows/pages.yml` — 매시 23분(UTC)·수동·push 시 빌드와 Pages 배포
 
-로컬 확인: `python3 scripts/build.py` 후 `site/` 를 연다.
+로컬 확인: `python3 -m unittest discover -s scripts -p 'test_*.py'`(네트워크 없음) 후 `python3 scripts/build.py` 로 `site/` 를 만들어 연다.
 
 적대적 AI는 본 연구 완료 범위, 제출 이후 확장, 잔여 재현·검증·공식 통합을 분리한다. `curatedAt`은 수동 내용 검토 시각이고 자동 조회 시각과 별개다. `curatedPrs`에 고정한 PR head가 바뀌거나 열린 목록에서 사라지면 재검토를 표시하며 자동으로 완료 처리하지 않는다.
