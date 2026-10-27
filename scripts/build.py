@@ -2,9 +2,10 @@
 
 - 수동 정리 내용은 content/*.base.json 에 있다(정리 기준 SHA 시점의 공개 문서).
 - 자동 조회는 main HEAD·최근 병합 PR·열린 PR·main CI 와, 카드에 연결된 PR 의
-  Draft·병합 여부·head CI 결과를 다룬다. 카드의 state·countScope·badge 는 절대 바꾸지 않는다.
-  병합이나 CI 성공은 코드 반영·자동 검사 범위의 기록이며, 연구 성과·팀원 본인 확인·
-  계약 채택·최종 제출의 완료로 표시하지 않는다.
+  Draft·병합 여부·head CI 결과를 다룬다.
+- 카드 완료는 content/<slug>.completion.json 의 규칙(scripts/completion.py)으로만 바뀐다.
+  자동 완료는 '코드 반영(main 병합)'을 명시한 카드·하위 작업에 한정되고, countScope 는 바꾸지 않는다.
+  병합이나 CI 성공은 연구 성과·팀원 본인 확인·계약 채택·최종 제출의 완료로 표시하지 않는다.
 - 조회가 실패하면 직전 배포의 state.json 에서 마지막 성공 결과를 가져와 유지하고,
   실패 사실을 맨 위 줄에 표시한다.
 - 로컬 경로·IP·토큰·비공개 링크는 쓰지 않는다. 토큰은 요청 헤더에만 쓴다.
@@ -19,6 +20,9 @@ import urllib.error
 import urllib.request
 from datetime import datetime, timedelta, timezone
 from zoneinfo import ZoneInfo
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import completion  # noqa: E402
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SITE = os.path.join(ROOT, 'site')
@@ -378,13 +382,22 @@ def build_project(project, prev, at):
     default_repo = project['repos'][0]['repo']
     first_lane = project['repos'][0]['lane']
     curated_heads = {(r['repo'], r['number']): r['sha'] for r in curated_prs}
+    spec = completion.load_spec(ROOT, project['slug'])
+    if spec:
+        completion.validate_spec(spec, base['items'])  # 구성 오류는 조용히 넘기지 않고 빌드를 멈춘다
     pairs = []
     for card in base['items']:
         pairs += linked_prs(card)
     pairs += list(curated_heads)
+    if spec:
+        pairs += completion.rule_prs(spec)
     pairs = list(dict.fromkeys(pairs))
     prs = refresh_prs(pairs, (prev.get(project['slug']) or {}).get('prs', {}), at)
     pstate['prs'] = prs
+    if spec:
+        results = completion.apply(spec, base['items'], prs, at, parse_kst, CURATED_STALE_DAYS)
+        pstate['completion'] = {cid: {k: r[k] for k in ('status', 'done', 'total', 'state', 'target')}
+                                for cid, r in results.items()}
     overlay_live(base['items'], prs, at, default_repo, curated_heads)
     pr_failed = [k for k, e in prs.items() if not e.get('ok')]
     if pr_failed:
@@ -438,6 +451,31 @@ def build_project(project, prev, at):
     return data, pstate
 
 
+COMPLETION_JS = r"""
+  (function () {
+    const escC = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+    const box = document.getElementById('completionSummary');
+    const judged = items.filter(i => i.completion);
+    if (!box || !judged.length) return;
+    const sub = judged.filter(i => i.completion.total > 0);
+    const req = sub.filter(i => i.countScope === 'submission' && i.completion.status !== 'complete');
+    const other = sub.filter(i => i.countScope !== 'submission' && i.completion.status === 'partial');
+    const unverified = judged.reduce((n, i) => n + (i.completion.unverified || 0), 0);
+    const conflicts = judged.filter(i => i.completion.conflict).length;
+    const line = i => '<li>' + escC(i.label) + ' <b>' + i.completion.done + '/' + i.completion.total + '</b> 하위 조건 완료'
+      + (i.completion.remaining.length ? ' · 남은: ' + i.completion.remaining.slice(0, 4).map(escC).join(' / ') + (i.completion.remaining.length > 4 ? ' 외 ' + (i.completion.remaining.length - 4) + '건' : '') : '') + '</li>';
+    let h = '<b>완료 판정</b> 필수 ' + requiredDone + '/' + requiredTotal + ' 완료. 하위 조건 일부만 끝난 항목은 완료 수에 넣지 않고 아래에 따로 보인다.';
+    if (req.length) h += '<ul>' + req.map(line).join('') + '</ul>';
+    if (other.length) h += '<div>필수 집계 밖 부분 진행</div><ul>' + other.map(line).join('') + '</ul>';
+    if (unverified) h += '<div class="warn">자동 확인 불가·오래된 기록 하위 조건 ' + unverified + '건: 새 완료로 세지 않았다.</div>';
+    if (conflicts) h += '<div class="warn">수동 정리와 자동 조회가 어긋난 카드 ' + conflicts + '건: 자동으로 되돌리지 않고 재검토를 요청한다.</div>';
+    h += '<div>코드 반영(main 병합)만 자동으로 완료가 된다. 연구 성과·담당자 본인 확인·계약 채택·최종 제출은 CI 성공이나 병합으로 완료가 되지 않는다.</div>';
+    box.innerHTML = h;
+    box.hidden = false;
+  })();
+"""
+
+
 def render(data, out):
     vendor = os.path.join(ROOT, 'vendor', 'deadhd')
     with tempfile.TemporaryDirectory() as tmp:
@@ -455,6 +493,10 @@ def render(data, out):
         html = fh.read()
     html = html.replace('</head>', '''<style id="research-scope-style">
 .research-scope-note{max-width:1100px;margin:16px auto;padding:12px 18px;color:#9aa3b2;font:14px/1.6 system-ui,sans-serif}
+.completion-summary b{color:#e7e9ee}.completion-summary ul{margin:6px 0 0;padding-left:20px}.completion-summary .warn{color:#e5b567}
+.fnode.partial .node{border-style:dashed;border-width:3px;border-color:var(--now);color:var(--now)}
+.fnode.partial .sub{color:var(--now);font-weight:500}
+.cc-seg span.partial{box-shadow:inset 0 -3px 0 var(--now)}
 </style></head>''')
     html = html.replace('const total = items.length;', '''const total = items.length;
   const requiredItems = items.filter(i => i.countScope === 'submission');
@@ -463,7 +505,12 @@ def render(data, out):
     html = html.replace('const byState = st => items.filter(i => i.state === st);',
                         "const byState = st => items.filter(i => i.state === st && i.countScope === 'submission');")
     html = html.replace("$('countB').textContent = doneList.length + '/' + total;",
-                        "$('countB').textContent = requiredDone + '/' + requiredTotal;")
+                        "$('countB').textContent = requiredDone + '/' + requiredTotal;\n" + COMPLETION_JS)
+    # 부분 완료(하위 조건 일부만 충족)는 노드·점에 따로 표시한다. state 와 필수 집계는 바꾸지 않는다.
+    html = html.replace("const node = el('div', 'fnode ' + it.state);",
+                        "const node = el('div', 'fnode ' + it.state + (it.completion && it.completion.status === 'partial' ? ' partial' : ''));")
+    html = html.replace('${requiredItems.map(i => `<span class="${i.state}" title="${esc(i.label)}"></span>`)',
+                        '${requiredItems.map(i => `<span class="${i.state}${i.completion && i.completion.status === \'partial\' ? \' partial\' : \'\'}" title="${esc(i.label)}"></span>`)')
     html = html.replace("countDone: '완료'", "countDone: '제출 필수 완료'")
     html = html.replace('<b>${doneList.length}/${total}</b>', '<b>${requiredDone}/${requiredTotal}</b>')
     html = html.replace('const pct = total ? (doneList.length / total * 100) : 0;',
@@ -484,7 +531,7 @@ def render(data, out):
   const afterSubmission = items.filter(i => i.countScope === 'after-submission');
   if (afterSubmission.length) section('left', '○', '제출 이후 · 확장·후속 작업 (필수 집계 제외)', afterSubmission, i => i.state);
   if (Array.isArray(data.changes)''')
-    html = html.replace('<div class="tally" id="tally"></div>', '<p class="research-scope-note">아래 상태별 집계도 이번 제출 필수 항목 기준입니다.</p><div class="tally" id="tally"></div>')
+    html = html.replace('<div class="tally" id="tally"></div>', '<div id="completionSummary" class="research-scope-note completion-summary" hidden></div><p class="research-scope-note">아래 상태별 집계도 이번 제출 필수 항목 기준입니다.</p><div class="tally" id="tally"></div>')
     html = html.replace('<div id="compact" hidden></div>', '''<aside class="research-scope-note">이번 최종제출 필수 항목만 집계하며 연구 완성률은 아닙니다. 완료한 본 연구와 현재 주장에 영향을 주는 미해결 검증은 포함합니다. 제출 이후 연구·새 기능과 자동 Git·CI 참고 정보는 집계에서 제외합니다.</aside>
 <div id="compact" hidden></div>''')
     with open(out, 'w', encoding='utf-8') as fh:

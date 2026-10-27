@@ -1,5 +1,6 @@
 """카드에 연결된 PR 의 Draft·병합 여부·CI 가 실제 GitHub 응답을 따라가는지, 오래됨·실패가 보이는지,
-그리고 어떤 경우에도 카드 state·countScope 가 자동으로 바뀌지 않는지 확인한다. 네트워크를 쓰지 않는다."""
+그리고 필수 집계·countScope 가 PR 병합·CI 만으로 바뀌지 않는지 확인한다. 네트워크를 쓰지 않는다.
+카드 state 는 completion 규칙이 허용한 코드 반영 카드(AUTO_STATE)에서만 바뀔 수 있다(test_completion.py 가 상세 검증)."""
 import copy
 import json
 import os
@@ -14,7 +15,8 @@ import build
 
 AT = datetime(2026, 10, 27, 15, 40, tzinfo=build.KST)
 SHA_A, SHA_B = 'a' * 40, 'b' * 40
-FROZEN = ('state', 'countScope', 'countScopeReason', 'badge', 'label', 'sub', 'title', 'lane', 'id')
+FROZEN = ('countScope', 'countScopeReason', 'badge', 'label', 'title', 'lane', 'id')
+AUTO_STATE = {'draft-work'}   # 연결 PR 이 전부 main 에 병합됐을 때만 state 가 바뀔 수 있는 코드 반영 카드
 
 
 def run(name, status='completed', conclusion='success', event='pull_request', at='2026-10-27T05:00:00Z'):
@@ -225,11 +227,14 @@ class BuildProject(unittest.TestCase):
         for item in base['items']:
             for key in FROZEN:
                 self.assertEqual(got[item['id']].get(key), item.get(key), (item['id'], key))
+            if item['id'] not in AUTO_STATE:
+                self.assertEqual(got[item['id']]['state'], item['state'], (item['id'], 'state'))
+            self.assertTrue((got[item['id']].get('sub') or '').startswith(item.get('sub') or ''), item['id'])
         self.assertNotIn('linkedPrs', json.dumps(data))
         self.assertNotIn('liveStatus', json.dumps(data))
 
-    def test_best_case_never_changes_card_states_or_counts(self):
-        """모든 PR 이 병합되고 CI 가 성공해도 카드 state·countScope 는 수동 정리 그대로다."""
+    def test_best_case_never_changes_required_count_or_scopes(self):
+        """모든 PR 이 병합되고 CI 가 성공해도 필수 집계·countScope 는 그대로이고, state 는 허용된 코드 반영 카드만 바뀔 수 있다."""
         for project in build.PROJECTS:
             base = load_base(project['slug'])
             good = lambda repo, n: pr_record(n, repo, 'closed', False, True, [ci()])
@@ -246,6 +251,9 @@ class BuildProject(unittest.TestCase):
             bad = lambda repo, n: pr_record(n, repo, 'closed', False, False, [ci(conclusion='failure')])
             data, _ = build_with(project, bad)
             self.frozen(data, base)
+            got = {i['id']: i for i in data['items']}
+            for item in base['items']:      # 닫힘·실패는 어떤 카드도 완료로 만들거나 되돌리지 않는다
+                self.assertEqual(got[item['id']]['state'], item['state'], item['id'])
 
     def test_cards_follow_github_between_builds(self):
         project = build.PROJECTS[0]
