@@ -19,6 +19,8 @@
 
 ## 구성
 
+`subtasks`는 부모 카드의 완료 조건이다. `milestones`는 별도 접수·초안·고정 head CI 등 참고 하위 진행으로, 카드 상세와 요약에는 보이지만 부모의 완료 조건·분모에는 넣지 않는다. 외부 지원 최종 로그·계약 채택을 정식 팀원의 1차 접수 완료 조건으로 추가하지 않는다. CI 실행 결과가 skipped/neutral인 것은 성공으로 판정하지 않는다(성공한 실행 내부의 개별 테스트 skip 수와는 별개).
+
 - `scripts/build.py` — 조회·병합·렌더링 (표준 라이브러리만 사용)
 - `content/` — 수동 정리 내용
 - `vendor/deadhd/` — deadhd v1.9.0 원본 파일 (MIT, `THIRD_PARTY_NOTICES.md` 참고)

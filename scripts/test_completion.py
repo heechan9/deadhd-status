@@ -286,7 +286,8 @@ class BunkeringCards(unittest.TestCase):
         dw = got['draft-work']
         self.assertEqual(dw['state'], 'side')
         self.assertEqual((dw['completion']['status'], dw['completion']['done'], dw['completion']['total']), ('partial', 1, 5))
-        self.assertEqual([s['state'] for s in dw['substeps']], ['done', 'left', 'left', 'left', 'left'])
+        self.assertEqual([s['state'] for s in dw['substeps'] if s.get('completionRole') != 'supporting'],
+                         ['done', 'left', 'left', 'left', 'left'])
         self.assertIn('하위 1/5 완료', dw['sub'])
         self.assertIn('#119', dw['body'])
         self.assertEqual(tally(data), (6, 13))
@@ -322,7 +323,7 @@ class BunkeringCards(unittest.TestCase):
         self.assertTrue(any('Forms' in s['label'] and s['state'] == 'left' for s in report['substeps']))
         self.assertEqual(report['completion']['done'], 1)
         self.assertEqual(got['c-ulsan']['state'], 'blocked')
-        self.assertEqual(got['c-ulsan']['completion']['done'], 1)
+        self.assertEqual(got['c-ulsan']['completion']['done'], 2)
         for cid in ('submission-team-intake', 'submission-project-report', 'submission-research-remaining', 'c-ulsan'):
             self.assertIn('남은 조건', got[cid]['body'])
 
@@ -342,9 +343,13 @@ class BunkeringCards(unittest.TestCase):
                 continue
             self.assertEqual(state['completion'][item['id']]['state'], item['state'])
             self.assertEqual(state['completion'][item['id']]['status'], item['completion']['status'])
-            n = len(item.get('substeps', []))
+            acceptance = [s for s in item.get('substeps', []) if s.get('completionRole') != 'supporting']
+            supporting = [s for s in item.get('substeps', []) if s.get('completionRole') == 'supporting']
+            n = len(acceptance)
             self.assertEqual(n, item['completion']['total'])
-            self.assertEqual(sum(s['state'] == 'done' for s in item.get('substeps', [])), item['completion']['done'])
+            self.assertEqual(sum(s['state'] == 'done' for s in acceptance), item['completion']['done'])
+            self.assertEqual(len(supporting), item['completion']['milestonesTotal'])
+            self.assertEqual(sum(s['state'] == 'done' for s in supporting), item['completion']['milestonesDone'])
             if item['completion']['status'] == 'partial':
                 self.assertIn(f'하위 {item["completion"]["done"]}/{item["completion"]["total"]} 완료', item['sub'])
         with tempfile.TemporaryDirectory() as tmp:

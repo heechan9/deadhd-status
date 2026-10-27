@@ -66,7 +66,7 @@ def _urls(cid, card, base_item):
     urls = []
     for e in card.get('evidence', []):
         urls.append((e.get('text', ''), e['href'], card.get('checkedAt')))
-    for s in card.get('subtasks', []):
+    for s in card.get('subtasks', []) + card.get('milestones', []):
         for e in s.get('evidence', []):
             urls.append((e.get('text', ''), e['href'], s.get('checkedAt') or card.get('checkedAt')))
     if not urls and card['evidenceLevel'] != 'curated-only':
@@ -78,7 +78,7 @@ def _urls(cid, card, base_item):
         if h not in seen:
             seen.add(h)
             out.append((t, h, at))
-    return out[:4]
+    return out
 
 
 def _cell(text):
@@ -101,7 +101,10 @@ def generate():
 
         def verdict(c):
             word = completion.STATUS_WORD[c['status']]
-            return word + (f' {c["done"]}/{c["total"]}' if c['total'] else '')
+            word += (f' {c["done"]}/{c["total"]}' if c['total'] else '')
+            if c.get('milestonesTotal'):
+                word += f'; 참고 진행 {c["milestonesDone"]}/{c["milestonesTotal"]}(부모 조건 제외)'
+            return word
         urls = _urls(cid, card, item)
         url_cell = '<br>'.join(f'[{_cell(t) or h}]({h}) · {at or "미확인"}' for t, h, at in urls) if urls else '공개 URL 없음 · 미확인'
         remaining = cb['remaining'] or ([] if cb['status'] == 'complete' else ['(하위 조건 없음 — 카드 수동 상태 기준)'])
@@ -122,6 +125,7 @@ def generate():
         + f'{sum(a[i["id"]]["state"] == "done" for i in required)}/{len(required)}, 후 B {sum(b[i["id"]]["state"] == "done" for i in required)}/{len(required)}. 분모와 countScope 는 모든 카드에서 바뀌지 않는다.',
         '- 판정: 완료=모든 하위 조건 충족, 부분 완료=일부만 충족(완료 수에 넣지 않음), 대기=충족 없음, 차단=차단 상태. 하위 조건이 없는 카드는 수동 정리 state 를 따른다.',
         '- 근거 확인 시각이 `미확인` 이거나 URL 이 없으면 공개 근거로 확인되지 않은 수동 정리다.',
+        '- 참고 진행(milestones)은 별도 하위 작업 이력이며 부모의 완료 조건·분모에 추가하지 않는다. 고정 head CI 기록은 현재 head CI·병합·채택 완료와 구분한다.',
         '',
         '| 카드 | 라벨 | state 전 → 후 | countScope | 완료 대상과 승인 기준 | 판정 | 공개 근거 URL · 확인 시각 | 남은 조건 |',
         '|---|---|---|---|---|---|---|---|',

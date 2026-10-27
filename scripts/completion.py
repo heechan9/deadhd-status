@@ -92,15 +92,20 @@ def validate_spec(spec, items):
         if level not in EVIDENCE_LEVELS:
             problems.append(f'{where}: evidenceLevel {level!r} 오류')
         subs = card.get('subtasks', [])
-        sub_ids = [s.get('id') for s in subs]
+        milestones = card.get('milestones', [])
+        # Supporting receipts/history stay visible without expanding acceptance.
+        all_subs = subs + milestones
+        sub_ids = [s.get('id') for s in all_subs]
         if len(sub_ids) != len(set(sub_ids)):
             problems.append(f'{where}: subtasks id 중복')
-        for sub in subs:
+        for sub in all_subs:
             sw = f'{where}/{sub.get("id")}'
             kind, rule = sub.get('kind'), sub.get('rule') or {}
             if kind not in KINDS:
                 problems.append(f'{sw}: kind {kind!r} 오류')
             rtype = rule.get('type')
+            if sub in milestones and rtype != 'manual':
+                problems.append(f'{sw}: 참고 진행(milestones)은 수동 근거 기록만 허용된다')
             if rtype in RULE_KIND:
                 if kind != RULE_KIND[rtype]:
                     problems.append(f'{sw}: {rtype} 규칙은 kind={RULE_KIND[rtype]} 하위 작업에만 쓸 수 있다')
@@ -151,6 +156,8 @@ def judge_pr(rule, record):
     bad = [r['name'] for r in ci if r['conclusion'] not in ('success', 'skipped', 'neutral')]
     if bad:
         return 'left', 'CI 실패 ' + ', '.join(bad)
+    if any(r['conclusion'] != 'success' for r in ci):
+        return 'left', 'CI 성공 미확인(skipped/neutral은 성공을 대신하지 않음)'
     head = rule.get('head')
     if head and not record['headSha'].startswith(head[:7]):
         return 'mismatch', f'현재 head {record["headSha"][:7]} 가 기록 {head[:7]} 와 다름'
@@ -186,6 +193,7 @@ def evaluate(spec, items, prs):
     for cid, card in spec['cards'].items():
         item = by_id[cid]
         subs = [eval_subtask(s, prs) for s in card.get('subtasks', [])]
+        milestones = [eval_subtask(s, {}) for s in card.get('milestones', [])]
         done = sum(s['state'] == 'done' for s in subs)
         if subs:
             status = 'complete' if done == len(subs) else ('partial' if done else 'pending')
@@ -198,6 +206,7 @@ def evaluate(spec, items, prs):
         if state == 'done' and subs and status != 'complete':
             conflicts.append('카드는 완료로 정리돼 있으나 하위 조건이 모두 충족되지 않았다(자동으로 되돌리지 않음)')
         out[cid] = {'status': status, 'done': done, 'total': len(subs), 'state': state, 'subs': subs,
+                    'milestones': milestones,
                     'target': card['target'], 'criterion': card['criterion'], 'level': card['evidenceLevel'],
                     'evidence': card.get('evidence', []), 'checkedAt': card.get('checkedAt'), 'conflicts': conflicts,
                     'autoComplete': bool(card.get('autoComplete'))}
@@ -217,6 +226,9 @@ def describe(result, at, parse_kst, stale_days):
     text = f' [완료 판정] 대상: {KINDS[r["target"]]} · 기준: {r["criterion"]} · 판정: {word}'
     if left:
         text += ' · 남은 조건: ' + ' / '.join(left)
+    if r.get('milestones'):
+        text += ' · 참고 진행(부모 완료 조건 아님): ' + ' / '.join(
+            s['label'] + (' [완료]' if s['state'] == 'done' else ' [미완료]') for s in r['milestones'])
     basis = [s for s in r['subs'] if s['state'] == 'done' and s['basis'] in ('curated', 'live')]
     if basis:
         text += ' · 근거: ' + ', '.join(f'{s["label"]}({"자동 확인" if s["basis"] == "live" else "수동 정리"})' for s in basis)
@@ -237,7 +249,7 @@ def describe(result, at, parse_kst, stale_days):
 
 
 def _substep(sub):
-    out = {'label': sub['label'], 'state': sub['state']}
+    out = {'label': sub['label'], 'state': sub['state'], 'completionRole': 'acceptance'}
     href = next((e['href'] for e in sub['evidence'] if str(e.get('href', '')).startswith('https://')), None)
     if href:
         out['href'] = href
@@ -250,11 +262,18 @@ def apply(spec, items, prs, at, parse_kst, stale_days):
     for item in items:
         r = results[item['id']]
         item['state'] = r['state']
-        if r['subs']:
+        if r['subs'] or r['milestones']:
             item['substeps'] = [_substep(s) for s in r['subs']]
+            for s in r['milestones']:
+                step = _substep(s)
+                step['label'] = '참고 진행 · ' + step['label']
+                step['completionRole'] = 'supporting'
+                item['substeps'].append(step)
         if r['status'] == 'partial':
             item['sub'] = (item.get('sub') or '') + f' · 하위 {r["done"]}/{r["total"]} 완료'
         item['completion'] = {'status': r['status'], 'done': r['done'], 'total': r['total'], 'target': r['target'],
+                              'milestonesDone': sum(s['state'] == 'done' for s in r['milestones']),
+                              'milestonesTotal': len(r['milestones']),
                               'level': r['level'], 'conflict': bool(r['conflicts']),
                               'remaining': [s['label'] for s in r['subs'] if s['state'] != 'done'],
                               'unverified': sum(1 for s in r['subs'] if s['auto'] and s['basis'] != 'live')}

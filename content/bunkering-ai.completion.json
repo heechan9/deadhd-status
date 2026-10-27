@@ -1,6 +1,6 @@
 {
  "version": 1,
- "reviewedAt": "2026-10-27 16:05 KST",
+ "reviewedAt": "2026-10-27 16:20 KST",
  "basis": [
   {
    "id": "curated",
@@ -9,6 +9,10 @@
   {
    "id": "codex-public-read",
    "text": "Codex 공개 GitHub connector 조회 2026-10-27 06:09~06:23 UTC(전달 보고): #126 병합, #119·#146·#147·#148 Draft 미병합. 이 빌드의 Claude 실시간 조회와는 구분한다."
+  },
+  {
+   "id": "codex-independent-review",
+   "text": "2026-10-27 07:18~07:20 UTC Codex 공개 GitHub 재확인: PR #142 댓글 6386608455의 U01 20dd1c4 6조합 브라우저 기록, 36115d0 접수 문서, #146·#147·#148 각 고정 head의 별도 CI 성공. 원래 1차 팀 취합 기준과 최종 원고 제외·한계 범위를 보존하며 비공개 원본은 열지 않았다."
   }
  ],
  "cards": {
@@ -127,13 +131,13 @@
   },
   "submission-team-intake": {
    "target": "material-intake",
-   "criterion": "마감 전 팀 자료 취합: 접수(제출 사실)와 담당자 본인 확인·계약 채택·최종 로그 확보를 구분한다. 접수만으로 전체 취합 완료가 아니다.",
+   "criterion": "공식 마감 전 정식 팀원의 내부 1차 자료 취합: 정식 팀원 전체 명단과 각자의 요구 자료 접수 여부를 대조한다. 개인 제안 채택·본인 추가 검토·외부 지원 최종 실행은 이 접수 완료 조건이 아니다.",
    "evidenceLevel": "public",
-   "checkedAt": "2026-10-27 14:57 KST",
+   "checkedAt": "2026-10-27 16:20 KST",
    "subtasks": [
     {
      "id": "minjae-submitted",
-     "label": "민재 1차 도메인 검토·2차 19개 제안 제출(채택과 별개)",
+     "label": "민재 정식 팀원 1차 도메인 검토·2차 19개 제안 접수(채택과 별개)",
      "kind": "material-intake",
      "rule": {
       "type": "manual",
@@ -141,15 +145,26 @@
      },
      "evidence": [
       {
-       "text": "PR #149 · README 접수 기록",
-       "href": "https://github.com/heechan9/bunkering-ai/pull/149"
+       "text": "공개 기여·접수 기록 · 36115d0",
+       "href": "https://github.com/heechan9/bunkering-ai/blob/36115d09b40ec0e7506483b4bc062d5c7acd6a4d/CONTRIBUTIONS.md"
       }
      ],
-     "checkedAt": "2026-10-27 14:57 KST"
+     "checkedAt": "2026-10-27 16:20 KST"
     },
     {
+     "id": "formal-roster-receipts",
+     "label": "정식 팀원 전체 명단·요구 자료와 1차 접수 목록 대조(전체 취합 근거 미확인)",
+     "kind": "material-intake",
+     "rule": {
+      "type": "manual",
+      "status": "left"
+     }
+    }
+   ],
+   "milestones": [
+    {
      "id": "seungseop-cli-scope",
-     "label": "승섭 PR #136 고정 SHA CLI 화면 접수(범위: PR #136 한정)",
+     "label": "외부 지원 승섭 PR #136 고정 SHA CLI 화면 접수(전체 테스트 아님)",
      "kind": "material-intake",
      "rule": {
       "type": "manual",
@@ -157,15 +172,15 @@
      },
      "evidence": [
       {
-       "text": "PR #136",
-       "href": "https://github.com/heechan9/bunkering-ai/pull/136"
+       "text": "공개 제한 CLI 접수 기록",
+       "href": "https://github.com/heechan9/bunkering-ai/blob/36115d09b40ec0e7506483b4bc062d5c7acd6a4d/CONTRIBUTIONS.md"
       }
      ],
-     "checkedAt": "2026-10-27 14:57 KST"
+     "checkedAt": "2026-10-27 16:20 KST"
     },
     {
      "id": "giye-env-report",
-     "label": "기예 환경 준비 상태표 접수(보고만, 원로그·SHA 없음)",
+     "label": "외부 지원 기예 환경 준비 상태표 접수(원로그·실행 SHA 미확보)",
      "kind": "material-intake",
      "rule": {
       "type": "manual",
@@ -173,11 +188,11 @@
      },
      "evidence": [
       {
-       "text": "PR #149 · README 접수 기록",
-       "href": "https://github.com/heechan9/bunkering-ai/pull/149"
+       "text": "공개 환경 준비 보고 접수",
+       "href": "https://github.com/heechan9/bunkering-ai/blob/36115d09b40ec0e7506483b4bc062d5c7acd6a4d/CONTRIBUTIONS.md"
       }
      ],
-     "checkedAt": "2026-10-27 14:57 KST"
+     "checkedAt": "2026-10-27 16:20 KST"
     },
     {
      "id": "giye-python-tests",
@@ -654,7 +669,7 @@
    "target": "code-merge",
    "criterion": "연결된 PR 5건(#126·#119·#146·#147·#148)이 각각 main 에 병합됨. 병합은 코드 반영만 뜻하며 계약 채택·본인 확인·연구 성과·최종 제출은 이 카드의 완료 대상이 아니다.",
    "evidenceLevel": "public",
-   "checkedAt": "2026-10-27 14:57 KST",
+   "checkedAt": "2026-10-27 16:20 KST",
    "subtasks": [
     {
      "id": "pr126-merged",
@@ -758,7 +773,105 @@
      "checkedAt": "2026-10-27 14:57 KST"
     }
    ],
-   "autoComplete": true
+   "autoComplete": true,
+   "milestones": [
+    {
+     "id": "pr146-prepared",
+     "label": "#146 6436a0a 누적 native-v4 후보 작성(main 미병합)",
+     "kind": "draft-prepared",
+     "rule": {
+      "type": "manual",
+      "status": "done"
+     },
+     "evidence": [
+      {
+       "text": "PR #146 고정 초안",
+       "href": "https://github.com/heechan9/bunkering-ai/pull/146"
+      }
+     ],
+     "checkedAt": "2026-10-27 16:20 KST"
+    },
+    {
+     "id": "pr146-ci-record",
+     "label": "#146 6436a0a 별도 head의 main-target 임시 merge CI 성공(985 passed·2 skipped·140 subtests) — 고정 기록, 현재 head 판정 아님",
+     "kind": "record-history",
+     "rule": {
+      "type": "manual",
+      "status": "done"
+     },
+     "evidence": [
+      {
+       "text": "#146 독립 CI 기록",
+       "href": "https://github.com/heechan9/bunkering-ai/actions/runs/40296975591"
+      }
+     ],
+     "checkedAt": "2026-10-27 16:20 KST"
+    },
+    {
+     "id": "pr147-prepared",
+     "label": "#147 90ef2a6 근거·재현 체크리스트 초안 작성(main 미병합)",
+     "kind": "draft-prepared",
+     "rule": {
+      "type": "manual",
+      "status": "done"
+     },
+     "evidence": [
+      {
+       "text": "PR #147 고정 초안",
+       "href": "https://github.com/heechan9/bunkering-ai/pull/147"
+      }
+     ],
+     "checkedAt": "2026-10-27 16:20 KST"
+    },
+    {
+     "id": "pr147-ci-record",
+     "label": "#147 90ef2a6 별도 문서 head CI 성공(899 passed·32 subtests; native-v4와 별개) — 고정 기록, 현재 head 판정 아님",
+     "kind": "record-history",
+     "rule": {
+      "type": "manual",
+      "status": "done"
+     },
+     "evidence": [
+      {
+       "text": "#147 독립 CI 기록",
+       "href": "https://github.com/heechan9/bunkering-ai/actions/runs/40363957999"
+      }
+     ],
+     "checkedAt": "2026-10-27 16:20 KST"
+    },
+    {
+     "id": "pr148-prepared",
+     "label": "#148 36115d0 기여·접수 기록 초안 작성(main 미병합)",
+     "kind": "draft-prepared",
+     "rule": {
+      "type": "manual",
+      "status": "done"
+     },
+     "evidence": [
+      {
+       "text": "PR #148 고정 초안",
+       "href": "https://github.com/heechan9/bunkering-ai/pull/148"
+      }
+     ],
+     "checkedAt": "2026-10-27 16:20 KST"
+    },
+    {
+     "id": "pr148-ci-record",
+     "label": "#148 36115d0 별도 문서 head Python CPU CI 성공 — 고정 기록, 현재 head 판정 아님",
+     "kind": "record-history",
+     "rule": {
+      "type": "manual",
+      "status": "done"
+     },
+     "evidence": [
+      {
+       "text": "#148 독립 CI 기록",
+       "href": "https://github.com/heechan9/bunkering-ai/actions/runs/40455242934"
+      }
+     ],
+     "checkedAt": "2026-10-27 16:20 KST"
+    }
+   ]
   },
   "v-codex": {
    "target": "record-history",
@@ -786,9 +899,9 @@
   },
   "c-ulsan": {
    "target": "review-done",
-   "criterion": "울산세관 원문 정합성: 날짜 불일치 해소와 기타선 비율 불일치 해소. 둘 다 끝나야 제출본에 쓸 수 있다.",
+   "criterion": "최종 제출본에서 원문 날짜 충돌 이력을 보존하고 미해결 기타선 67% 대 재계산 150% 비율을 분석에서 제외·한계 명시했는지 확인한다. 기관 원문 정정이나 실선 성과 입증을 완료 조건으로 추가하지 않는다.",
    "evidenceLevel": "public",
-   "checkedAt": "2026-10-16 10:35 KST",
+   "checkedAt": "2026-10-27 16:20 KST",
    "subtasks": [
     {
      "id": "ulsan-date-8-8",
@@ -807,12 +920,28 @@
      "checkedAt": "2026-10-16 10:35 KST"
     },
     {
-     "id": "ulsan-ratio-67",
-     "label": "기타선 척수 비율 67% 대 재계산 150% 불일치 해소",
-     "kind": "research-result",
+     "id": "ulsan-ratio-excluded-source",
+     "label": "공개 검산 문서에 67%/150% 불일치 보존·분석 제외 기록(기관 정정 아님)",
+     "kind": "review-done",
      "rule": {
       "type": "manual",
-      "status": "blocked"
+      "status": "done"
+     },
+     "evidence": [
+      {
+       "text": "공개 울산세관 검산·제외 기록",
+       "href": "https://github.com/heechan9/bunkering-ai/blob/130e7c02cb9505103d092b9d29c27b0cd39c90be/research/public_bunker_review/results/ulsan_customs_202608_review.md"
+      }
+     ],
+     "checkedAt": "2026-10-27 16:20 KST"
+    },
+    {
+     "id": "ulsan-final-document-handling",
+     "label": "최종 제출본의 날짜 충돌 이력·비율 사용 제외·한계 표현 대조(완료 미확인)",
+     "kind": "review-done",
+     "rule": {
+      "type": "manual",
+      "status": "left"
      }
     }
    ]
@@ -825,9 +954,45 @@
   },
   "n-web": {
    "target": "review-done",
-   "criterion": "제출용 웹 시연의 실제 브라우저 클릭·JSON 다운로드·단계/탭 전환·한/영·360/390px 확인(소스회귀 PASS로 대신하지 않음).",
-   "evidenceLevel": "curated-only",
-   "checkedAt": "2026-10-16 10:35 KST"
+   "criterion": "제출용 최종 시연 후보의 실제 클릭·JSON 다운로드·단계/탭 전환·한/영·360/390px 확인. U01 고정본의 완료된 브라우저 하위 검토와 최종 시연 전체 확인을 구분하며 실제 휴대폰·iOS는 후속 범위다.",
+   "evidenceLevel": "public",
+   "checkedAt": "2026-10-27 16:20 KST",
+   "subtasks": [
+    {
+     "id": "u01-browser-six",
+     "label": "U01 20dd1c4: 1280/360/390px × KO/EN 6조합 브라우저 검토(클릭·키보드·오류/복구·초점·수치·넘침)",
+     "kind": "review-done",
+     "rule": {
+      "type": "manual",
+      "status": "done"
+     },
+     "evidence": [
+      {
+       "text": "PR #142 후속 브라우저 검토 · 20dd1c4",
+       "href": "https://github.com/heechan9/bunkering-ai/pull/142#issuecomment-6386608455"
+      }
+     ],
+     "checkedAt": "2026-10-27 16:20 KST"
+    },
+    {
+     "id": "submission-json-download",
+     "label": "최종 시연 후보의 JSON 다운로드·내용 확인",
+     "kind": "review-done",
+     "rule": {
+      "type": "manual",
+      "status": "left"
+     }
+    },
+    {
+     "id": "submission-demo-candidate",
+     "label": "발표영상·보고서에 사용할 최종 시연 후보 전체 흐름·단계/탭·한/영·모바일 폭 확인",
+     "kind": "review-done",
+     "rule": {
+      "type": "manual",
+      "status": "left"
+     }
+    }
+   ]
   },
   "o-ops": {
    "target": "review-done",

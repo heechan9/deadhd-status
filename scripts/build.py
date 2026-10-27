@@ -31,7 +31,7 @@ API = 'https://api.github.com/'
 PAGES_URL = os.environ.get('PAGES_URL', '').rstrip('/')
 TOKEN = os.environ.get('GITHUB_TOKEN', '')
 NOTE = '병합·CI 성공은 코드 반영과 자동 검사 범위의 기록이며 실험·연구 완료를 뜻하지 않는다.'
-LIVE_NOTE = '이 줄은 PR 상태와 해당 head 의 자동 검사 기록일 뿐 연구 성과·팀원 본인 확인·계약 채택·최종 제출의 완료를 뜻하지 않으며 카드 상태는 수동 검토로만 바뀐다.'
+LIVE_NOTE = '이 줄은 PR 상태와 해당 head 의 자동 검사 기록일 뿐 연구 성과·팀원 본인 확인·계약 채택·최종 제출의 완료를 뜻하지 않는다. 카드 상태는 명시된 완료 규칙을 따르며 코드 반영(main 병합) 대상만 자동 완료될 수 있다.'
 AUTO_STALE_HOURS = 3      # 매시간 조회하므로 3시간 넘게 갱신되지 못한 자동 기록은 '오래됨'
 CURATED_STALE_DAYS = 3    # 수동 내용 검토가 이보다 오래되면 '오래됨'
 MAX_LINKED_PRS = 60       # 한 프로젝트에서 조회할 연결 PR 상한(API 한도 보호)
@@ -110,6 +110,8 @@ def ci_state(ci):
     bad = [r for r in ci if r['conclusion'] not in ('success', 'skipped', 'neutral')]
     if bad:
         return 'blocked', '실패 ' + ', '.join(r['name'] for r in bad)
+    if any(r['conclusion'] != 'success' for r in ci):
+        return 'side', '성공 미확인(skipped/neutral 포함)'
     return 'done', '성공'
 
 
@@ -463,6 +465,7 @@ COMPLETION_JS = r"""
     const unverified = judged.reduce((n, i) => n + (i.completion.unverified || 0), 0);
     const conflicts = judged.filter(i => i.completion.conflict).length;
     const line = i => '<li>' + escC(i.label) + ' <b>' + i.completion.done + '/' + i.completion.total + '</b> 하위 조건 완료'
+      + (i.completion.milestonesTotal ? ' · 참고 진행 ' + i.completion.milestonesDone + '/' + i.completion.milestonesTotal + ' (부모 완료 조건 아님)' : '')
       + (i.completion.remaining.length ? ' · 남은: ' + i.completion.remaining.slice(0, 4).map(escC).join(' / ') + (i.completion.remaining.length > 4 ? ' 외 ' + (i.completion.remaining.length - 4) + '건' : '') : '') + '</li>';
     let h = '<b>완료 판정</b> 필수 ' + requiredDone + '/' + requiredTotal + ' 완료. 하위 조건 일부만 끝난 항목은 완료 수에 넣지 않고 아래에 따로 보인다.';
     if (req.length) h += '<ul>' + req.map(line).join('') + '</ul>';
@@ -509,8 +512,6 @@ def render(data, out):
     # 부분 완료(하위 조건 일부만 충족)는 노드·점에 따로 표시한다. state 와 필수 집계는 바꾸지 않는다.
     html = html.replace("const node = el('div', 'fnode ' + it.state);",
                         "const node = el('div', 'fnode ' + it.state + (it.completion && it.completion.status === 'partial' ? ' partial' : ''));")
-    html = html.replace('${requiredItems.map(i => `<span class="${i.state}" title="${esc(i.label)}"></span>`)',
-                        '${requiredItems.map(i => `<span class="${i.state}${i.completion && i.completion.status === \'partial\' ? \' partial\' : \'\'}" title="${esc(i.label)}"></span>`)')
     html = html.replace("countDone: '완료'", "countDone: '제출 필수 완료'")
     html = html.replace('<b>${doneList.length}/${total}</b>', '<b>${requiredDone}/${requiredTotal}</b>')
     html = html.replace('const pct = total ? (doneList.length / total * 100) : 0;',
@@ -518,7 +519,7 @@ def render(data, out):
     html = html.replace('const C = 2 * Math.PI * 15, f = total ? doneList.length / total * C : 0;',
                         'const C = 2 * Math.PI * 15, f = requiredTotal ? requiredDone / requiredTotal * C : 0;')
     html = html.replace('${items.map(i => `<span class="${i.state}" title="${esc(i.label)}"></span>`)',
-                        '${requiredItems.map(i => `<span class="${i.state}" title="${esc(i.label)}"></span>`)')
+                        '${requiredItems.map(i => `<span class="${i.state}${i.completion && i.completion.status === \'partial\' ? \' partial\' : \'\'}" title="${esc(i.label)}"></span>`)')
     html = html.replace('blockedList.forEach(it => blockedWrap', "blockedList.filter(i => i.countScope === 'submission').forEach(it => blockedWrap")
     html = html.replace("L.secDone, doneList, () => 'done'", "L.secDone, doneList.filter(i => i.countScope === 'submission'), () => 'done'")
     html = html.replace('const rest = sideList.concat(leftList);', "const rest = sideList.concat(leftList).filter(i => i.countScope === 'submission');")
