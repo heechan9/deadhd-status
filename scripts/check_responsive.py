@@ -17,7 +17,7 @@ for project in build.PROJECTS:
 results=[]
 with sync_playwright() as p:
  browser=p.chromium.launch(executable_path=args.chromium,headless=True,args=['--no-sandbox'])
- for slug in ['bunkering-ai','adversarial-ai']:
+ for slug in ['bunkering-ai','adversarial-ai','fabguard-ai']:
   for w in [360,390,430,1440]:
    page=browser.new_page(viewport={'width':w,'height':900},device_scale_factor=1)
    errors=[];page.on('pageerror',lambda err:errors.append(str(err)))
@@ -26,8 +26,9 @@ with sync_playwright() as p:
     const bounds=e=>e.getBoundingClientRect();
     const bands=[...document.querySelectorAll('.lane-band')];
     const overflow=[...document.querySelectorAll('.fnode, .lane-label, .card')].filter(e=>e.scrollWidth>e.clientWidth+1).map(e=>e.className);
+    const verticalLanes=bands.filter(b=>{const ns=[...b.querySelectorAll('.fnode .node')].map(bounds);return ns.length>1 && (Math.max(...ns.map(r=>r.top))-Math.min(...ns.map(r=>r.top))>1 || ns.some((r,i)=>i>0 && r.left<=ns[i-1].left));}).map(b=>b.dataset.lane);
     const overlap=bands.flatMap(b=>[...b.querySelectorAll('.fnode,.lane-label')].filter(n=>bounds(n).bottom>bounds(b).bottom+1 || bounds(n).right>bounds(b).right+1).map(n=>n.dataset.id||n.textContent));
-    return {viewport:innerWidth, pageWidth:document.documentElement.scrollWidth, overflow, overlap, first:document.querySelector('.fnode')?.dataset.id, nodes:document.querySelectorAll('.fnode').length, edges:document.querySelectorAll('.edges .edge').length, count:document.querySelector('#countB').textContent};
+    return {viewport:innerWidth, pageWidth:document.documentElement.scrollWidth, overflow, overlap, verticalLanes, flowScrollable:document.querySelector('#flow').scrollWidth>document.querySelector('#flow').clientWidth, first:document.querySelector('.fnode')?.dataset.id, nodes:document.querySelectorAll('.fnode').length, edges:document.querySelectorAll('.edges .edge').length, count:document.querySelector('#countB').textContent};
    }''')
    result.update(slug=slug,width=w,errors=errors);results.append(result)
    page.locator('#flow').screenshot(path=str(root/'qa'/f'{slug}-{w}-timeline.png'))
@@ -36,9 +37,12 @@ with sync_playwright() as p:
    assert result['pageWidth'] <= w + 1, result
    assert not result['overflow'] and not result['overlap'], result
    assert result['edges'] > 0, result
+   assert not result['verticalLanes'], result
+   if w <= 430: assert result['flowScrollable'], result
    if slug == 'bunkering-ai':
     assert result['first'] == 'submission-project-report', result
-    assert result['count'] == '7/13', result
+    assert page.locator('#projectSummary .summary-group').count() == 3
+    assert not page.locator('.progress').is_visible()
    # View toggles, repeated transitions and resize must keep the graph intact.
    for button in page.locator('.viewbar button[data-v]').all():
     button.click()

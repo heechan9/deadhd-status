@@ -658,8 +658,9 @@ body:not([data-view]) #orient, body[data-view="full"] #orient { display: none; }
 [data-theme="ink"] .status-waiting_permission { background-image: repeating-linear-gradient(-45deg, color-mix(in srgb, var(--ink) 7%, transparent) 0 6px, transparent 6px 12px); box-shadow: none; border-color: var(--ink); }
 [data-theme="ink"] .status-waiting_permission .status-main { display: inline-flex; padding: 4px 10px; margin-left: -10px; border-radius: 8px; background: var(--bg); }
 
-/* The status lanes are content, not a fixed-width drawing. Let text determine
-   their height and wrap nodes into rows; narrow screens get a readable list. */
+/* Preserve the original horizontal graph at every viewport width.
+   Text determines lane height; the existing .flow container provides horizontal
+   panning on small screens instead of changing the graph direction. */
 .responsive-timeline { width: max(100%, calc(var(--timeline-cols) * 146px)); display: grid; gap: 12px; min-width: 0; }
 .responsive-timeline .lane-band { position: relative; inset: auto; padding: 14px; min-width: 0; }
 .responsive-timeline .lane-label { position: static; margin: 0 0 18px; max-width: 100%; flex-wrap: wrap; border-radius: 12px; overflow-wrap: anywhere; }
@@ -669,15 +670,7 @@ body:not([data-view]) #orient, body[data-view="full"] #orient { display: none; }
 .responsive-timeline .fnode .node { flex-shrink: 0; }
 .responsive-timeline .fnode .sub { line-height: 1.55; }
 .card, .card p, .card h3 { min-width: 0; overflow-wrap: anywhere; }
-@media (max-width: 600px) {
-  .flow { padding: 12px; }
-  .responsive-timeline { width: 100%; }
-  .responsive-timeline .lane-band { padding: 14px 12px; }
-  .responsive-timeline .lane-nodes { grid-template-columns: minmax(0, 1fr); gap: 20px; }
-  .responsive-timeline .fnode { display: grid; grid-template-columns: 52px minmax(0, 1fr); text-align: left; align-items: start; column-gap: 16px; row-gap: 5px; }
-  .responsive-timeline .fnode .node { grid-column: 1; grid-row: 1 / span 3; }
-  .responsive-timeline .fnode .label, .responsive-timeline .fnode .sub, .responsive-timeline .fnode .when { grid-column: 2; }
-}
+
 </style>
 </head>
 <body data-fx="max">
@@ -1162,7 +1155,7 @@ body:not([data-view]) #orient, body[data-view="full"] #orient { display: none; }
   // ---- 흐름도: intrinsic lane/card sizing, no fixed-height text overlap ----
   const canvasEl = $('canvas');
   canvasEl.classList.add('responsive-timeline');
-  const cols = Math.max(1, ...Object.values(perLane).map(lane => lane.length));
+  const cols = items.reduce((max, it) => Math.max(max, it.col + 1), 1);
   canvasEl.style.setProperty('--timeline-cols', cols);
   let doneIndex = 0;
   Array.from({ length: laneCount }, (_, i) => lanes[i] || '').forEach((name, i) => {
@@ -1177,6 +1170,7 @@ body:not([data-view]) #orient, body[data-view="full"] #orient { display: none; }
     inLane.forEach(it => {
       const node = el('div', 'fnode ' + it.state);
       node.dataset.id = it.id;
+      node.style.gridColumn = String(it.col + 1);
       const circle = el('div', 'node', NODE_ICON[it.state] || '○');
       if (it.state === 'now') circle.appendChild(el('i', 'orbit'));
       node.appendChild(circle);
@@ -1214,7 +1208,7 @@ body:not([data-view]) #orient, body[data-view="full"] #orient { display: none; }
       const a = items.find(i => i.id === pair[0]), b = items.find(i => i.id === pair[1]);
       let d;
       if (Math.abs(p.x - q.x) < 1) {
-        // Mobile nodes have a dedicated icon column, so the line never crosses text.
+        // Explicit cross-lane connections may share an x coordinate; same-lane nodes stay horizontal.
         const sign = q.y >= p.y ? 1 : -1;
         d = `M${p.x} ${p.y + sign * (p.r + 4)} L${q.x} ${q.y - sign * (q.r + 4)}`;
       } else {

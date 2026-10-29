@@ -1,4 +1,4 @@
-"""공개 GitHub 기록을 조회해 deadhd 상태판 두 개를 site/ 에 만든다.
+"""공개 GitHub 기록을 조회해 deadhd 상태판을 site/ 에 만든다.
 
 - 수동 정리 내용은 content/*.base.json 에 있다(정리 기준 SHA 시점의 공개 문서).
 - 자동 조회는 main HEAD·최근 병합 PR·열린 PR·main CI 와, 카드에 연결된 PR 의
@@ -11,6 +11,7 @@
 - 로컬 경로·IP·토큰·비공개 링크는 쓰지 않는다. 토큰은 요청 헤더에만 쓴다.
 """
 import json
+from html import escape
 import os
 import re
 import subprocess
@@ -44,6 +45,8 @@ PROJECTS = [
      'repos': [{'id': 'official', 'repo': 'th0oel/AdversarialAI_Security', 'lane': 1, 'label': '공식'},
                {'id': 'fork', 'repo': 'heechan9/AdversarialAI_Security', 'lane': 2, 'label': '개인 포크',
                 'upstream': 'th0oel/AdversarialAI_Security'}]},
+    {'slug': 'fabguard-ai', 'name': 'FabGuard AI',
+     'repos': [{'id': 'official', 'repo': 'heechan9/fabguard-ai', 'lane': 1, 'label': '공식'}]},
 ]
 
 
@@ -479,6 +482,41 @@ COMPLETION_JS = r"""
 """
 
 
+
+def project_summary_html(summary):
+    """Evidence categories are independent; never sum into a completion ratio."""
+    parts = ['<section id="projectSummary" class="research-scope-note project-summary" aria-label="확인 범위별 현황">',
+             '<h2>' + escape(summary['title']) + '</h2>',
+             '<p>' + escape(summary['note']) + '</p>',
+             '<p class="summary-checked">근거 검토 시각 ' + escape(summary['checkedAt']) + '</p>',
+             '<div class="summary-groups">']
+    for group in summary['groups']:
+        members = group['items']
+        done = sum(item['state'] == 'done' for item in members)
+        if any(item['state'] not in ('done', 'unverified') for item in members):
+            raise ValueError('invalid project summary state')
+        parts += ['<article class="summary-group" data-group="' + escape(group['id'], quote=True) + '">',
+                  '<h3>' + escape(group['label']) + ' <b>' + str(done) + '/' + str(len(members)) + '</b></h3>', '<ul>']
+        for item in members:
+            state = '확인됨' if item['state'] == 'done' else '미확인'
+            parts += ['<li><strong>' + escape(item['label']) + '</strong> · ' + state,
+                      '<p>' + escape(item['detail']) + '</p>']
+            for evidence in item['evidence']:
+                label = escape(evidence['label'])
+                href = evidence.get('href', '')
+                if href.startswith(('https://', 'http://')):
+                    parts.append('<a target="_blank" rel="noopener" href="' + escape(href, quote=True) + '">' + label + '</a> ')
+                else:
+                    parts.append('<span>' + label + '</span> ')
+            parts.append('</li>')
+        parts.append('</ul></article>')
+    parts.append('</div><h3>별도 확인할 사항</h3><ul>')
+    for item in summary.get('remaining', []):
+        parts.append('<li><strong>' + escape(item['label']) + '</strong> · ' + escape(item['detail']) + '</li>')
+    parts.append('</ul></section>')
+    return ''.join(parts)
+
+
 def render(data, out):
     vendor = os.path.join(ROOT, 'vendor', 'deadhd')
     with tempfile.TemporaryDirectory() as tmp:
@@ -535,6 +573,24 @@ def render(data, out):
     html = html.replace('<div class="tally" id="tally"></div>', '<div id="completionSummary" class="research-scope-note completion-summary" hidden></div><p class="research-scope-note">아래 상태별 집계도 이번 제출 필수 항목 기준입니다.</p><div class="tally" id="tally"></div>')
     html = html.replace('<div id="compact" hidden></div>', '''<aside class="research-scope-note">이번 최종제출 필수 항목만 집계하며 연구 완성률은 아닙니다. 완료한 본 연구와 현재 주장에 영향을 주는 미해결 검증은 포함합니다. 제출 이후 연구·새 기능과 자동 Git·CI 참고 정보는 집계에서 제외합니다.</aside>
 <div id="compact" hidden></div>''')
+    if data.get('currentProjectSummary'):
+        # Keep the immutable legacy cards, but do not portray their old tally as
+        # today's project completion ratio, in any original/compact view.
+        html = html.replace(COMPLETION_JS, '')
+        html = html.replace("$('countB').textContent = requiredDone + '/' + requiredTotal;", "$('countB').textContent = '';" )
+        html = html.replace('<b>${requiredDone}/${requiredTotal}</b>', '')
+        html = html.replace('</head>', '<style id="project-summary-style">.progress,#tally,#completionSummary,.cx-count,.cx-bar,.cc-ring,.cc-seg{display:none!important}.summary-groups{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,250px),1fr));gap:16px}.summary-group{border:1px solid var(--card-line);border-radius:14px;padding:16px;background:var(--card);min-width:0;overflow-wrap:anywhere}.summary-group h3{margin:0}.summary-group ul{padding-left:18px}.summary-group li{margin:14px 0}.summary-group p{margin:5px 0}.summary-group a{color:var(--done-2)}.project-summary h2{margin-top:12px}.summary-checked{font-size:12px}</style></head>')
+        html = html.replace('<div id="compact" hidden></div>', project_summary_html(data['currentProjectSummary']) + '<div id="compact" hidden></div>')
+        html = html.replace('이번 최종제출 필수 항목만 집계하며 연구 완성률은 아닙니다. 완료한 본 연구와 현재 주장에 영향을 주는 미해결 검증은 포함합니다. 제출 이후 연구·새 기능과 자동 Git·CI 참고 정보는 집계에서 제외합니다.', '현재 프로젝트는 아래 세 가지 확인 범위를 따로 표시합니다. 합산 완료율은 사용하지 않습니다. 아래 기존 그래프·카드는 근거와 과거 판정을 보존한 이력이며 최신 전체 진행률이 아닙니다.')
+        html = html.replace('아래 상태별 집계도 이번 제출 필수 항목 기준입니다.', '아래는 기존 카드의 근거·판정 이력입니다. 지난 ACK 일정과 과거 팀 자료 취합을 현재 프로젝트 완료율에 합산하지 않습니다.')
+        html = html.replace("countDone: '제출 필수 완료'", "countDone: '과거 카드 판정'")
+    if data.get('evidenceOnly'):
+        # No submission contract exists for this evidence page. Do not display a
+        # fictitious 0/0 completion rate or empty submission-only compact views.
+        html = html.replace('</head>', '<style id="evidence-only-style">.progress,#tally,#completionSummary,.viewbar .seg-ctl,#compact{display:none!important}body[data-view] main{display:block!important}</style></head>')
+        html = html.replace('이번 최종제출 필수 항목만 집계하며 연구 완성률은 아닙니다. 완료한 본 연구와 현재 주장에 영향을 주는 미해결 검증은 포함합니다. 제출 이후 연구·새 기능과 자동 Git·CI 참고 정보는 집계에서 제외합니다.', '근거별 상태판입니다. 제출 완료율·연구 완성률은 집계하지 않습니다. 합성 3D 시연, 미병합 Draft, 실제 현장 검증을 구분합니다.')
+        html = html.replace('아래 상태별 집계도 이번 제출 필수 항목 기준입니다.', '자동 Git/CI 조회와 수동 내용 검토 시각을 구분합니다.')
+        html = html.replace('참고 정보 · 자동 Git/CI·검증 이력 (필수 집계 제외)', '구현·Draft·검증 근거와 남은 한계')
     with open(out, 'w', encoding='utf-8') as fh:
         fh.write(html)
 
@@ -551,6 +607,7 @@ footer a{{color:#9ab}}</style></head><body><main>
 <p><small>마지막 조회 {at}{fail}. 공개 GitHub 기록만 사용하며 1시간마다 갱신한다.</small></p>
 <a class="card" href="bunkering-ai.html"><b>병커시유</b><br><small>heechan9/bunkering-ai</small></a>
 <a class="card" href="adversarial-ai.html"><b>적대적 AI</b><br><small>th0oel/AdversarialAI_Security · 개인 포크 heechan9/AdversarialAI_Security</small></a>
+<a class="card" href="fabguard-ai.html"><b>FabGuard AI</b><br><small>합성 3D 시연 · 센서 기록 Draft · 검증 한계</small></a>
 <footer>페이지 디자인: <a href="https://github.com/lcalmsky/deadhd">deadhd</a> v1.9.0 (MIT License, © 2026 lcalmsky).
 병합·CI 성공은 연구 완료를 뜻하지 않는다.</footer>
 </main></body></html>
@@ -579,3 +636,4 @@ def main():
 
 if __name__ == '__main__':
     main()
+
