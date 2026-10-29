@@ -31,7 +31,7 @@ class ReviewedMapping(unittest.TestCase):
         self.assertIn('20dd1c4', done['label'])
         self.assertIn('1280/360/390px', done['label'])
         self.assertTrue(any('JSON' in x and '다운로드' in x for x in item['completion']['remaining']))
-        self.assertEqual(tally(data), (7, 13))
+        self.assertEqual(tally(data), (9, 13))
 
     def test_team_acceptance_is_formal_receipt_only(self):
         spec = load_spec()['cards']['submission-team-intake']
@@ -147,3 +147,4 @@ class ReviewedLogicAndRendering(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
+

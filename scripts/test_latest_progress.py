@@ -10,8 +10,8 @@ class LatestProgress(unittest.TestCase):
         self.assertEqual(cards['draft-work']['completion']['done'], 4)
         self.assertEqual(cards['draft-work']['completion']['total'], 5)
         self.assertEqual(cards['draft-work']['state'], 'side')
-        self.assertEqual(tally(data), (7, 13))
-        for cid in ('submission-video','submission-project-report','n-web'):
+        self.assertEqual(tally(data), (9, 13))
+        for cid in ('submission-project-report','n-web'):
             self.assertNotEqual(cards[cid]['state'], 'done')
 
     def test_current_merged_fixture_changes_only_code_children(self):
@@ -24,7 +24,7 @@ class LatestProgress(unittest.TestCase):
         cards = by_id(data)
         self.assertEqual(cards['draft-work']['completion']['done'], 4)
         self.assertEqual(cards['submission-research-remaining']['state'], 'done')
-        self.assertEqual(tally(data), (7, 13))
+        self.assertEqual(tally(data), (9, 13))
 
     def test_report_and_project_video_do_not_satisfy_ack_or_official_submission(self):
         spec = load_spec()['cards']
@@ -34,7 +34,8 @@ class LatestProgress(unittest.TestCase):
         self.assertIn('18쪽', subs['report-15p-draft']['label'])
         for key in ('report-final-check','report-owner-confirm','report-forms-submit'):
             self.assertEqual(subs[key]['rule']['status'], 'left')
-        self.assertTrue(all(s['rule']['status']=='left' for s in spec['submission-video']['subtasks']))
+        self.assertEqual([s['rule']['status'] for s in spec['submission-video']['subtasks']], ['done'])
+        self.assertEqual([s['rule']['status'] for s in spec['submission-video']['milestones']], ['left','left'])
         video = report['milestones'][1]
         self.assertIn('4분 36초', video['label'])
         self.assertIn('YouTube',video['label'])
@@ -61,7 +62,7 @@ class LatestProgress(unittest.TestCase):
         review = cards['submission-research-remaining']
         self.assertEqual((review['state'], review['completion']['status']), ('done', 'complete'))
         self.assertEqual((review['completion']['done'], review['completion']['total']), (1, 1))
-        self.assertEqual(tally(data), (7, 13))
+        self.assertEqual(tally(data), (9, 13))
         self.assertEqual(cards['submission-project-report']['state'], 'left')
         with tempfile.TemporaryDirectory() as tmp:
             output = str(Path(tmp, 'status.html'))
@@ -72,3 +73,4 @@ class LatestProgress(unittest.TestCase):
             self.assertIn(text, html)
 
 if __name__ == '__main__': unittest.main()
+
