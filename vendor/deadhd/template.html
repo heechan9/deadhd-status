@@ -657,6 +657,27 @@ body:not([data-view]) #orient, body[data-view="full"] #orient { display: none; }
 .status-ended { opacity: .6; }
 [data-theme="ink"] .status-waiting_permission { background-image: repeating-linear-gradient(-45deg, color-mix(in srgb, var(--ink) 7%, transparent) 0 6px, transparent 6px 12px); box-shadow: none; border-color: var(--ink); }
 [data-theme="ink"] .status-waiting_permission .status-main { display: inline-flex; padding: 4px 10px; margin-left: -10px; border-radius: 8px; background: var(--bg); }
+
+/* The status lanes are content, not a fixed-width drawing. Let text determine
+   their height and wrap nodes into rows; narrow screens get a readable list. */
+.responsive-timeline { width: max(100%, calc(var(--timeline-cols) * 146px)); display: grid; gap: 12px; min-width: 0; }
+.responsive-timeline .lane-band { position: relative; inset: auto; padding: 14px; min-width: 0; }
+.responsive-timeline .lane-label { position: static; margin: 0 0 18px; max-width: 100%; flex-wrap: wrap; border-radius: 12px; overflow-wrap: anywhere; }
+.responsive-timeline .lane-label::before { flex: 0 0 6px; }
+.responsive-timeline .lane-nodes { display: grid; grid-template-columns: repeat(var(--timeline-cols), minmax(0, 1fr)); gap: 24px 16px; }
+.responsive-timeline .fnode { position: relative; transform: none; width: auto; min-width: 0; overflow-wrap: anywhere; }
+.responsive-timeline .fnode .node { flex-shrink: 0; }
+.responsive-timeline .fnode .sub { line-height: 1.55; }
+.card, .card p, .card h3 { min-width: 0; overflow-wrap: anywhere; }
+@media (max-width: 600px) {
+  .flow { padding: 12px; }
+  .responsive-timeline { width: 100%; }
+  .responsive-timeline .lane-band { padding: 14px 12px; }
+  .responsive-timeline .lane-nodes { grid-template-columns: minmax(0, 1fr); gap: 20px; }
+  .responsive-timeline .fnode { display: grid; grid-template-columns: 52px minmax(0, 1fr); text-align: left; align-items: start; column-gap: 16px; row-gap: 5px; }
+  .responsive-timeline .fnode .node { grid-column: 1; grid-row: 1 / span 3; }
+  .responsive-timeline .fnode .label, .responsive-timeline .fnode .sub, .responsive-timeline .fnode .when { grid-column: 2; }
+}
 </style>
 </head>
 <body data-fx="max">
@@ -1138,94 +1159,97 @@ body:not([data-view]) #orient, body[data-view="full"] #orient { display: none; }
     blockedList.forEach(it => blockedWrap.appendChild(cardEl(it, it.state)));
   }
 
-  // ---- 흐름도 ----
-  const cols = items.reduce((m, i) => Math.max(m, i.col), 0) + 1;
-  const avail = $('flow').clientWidth - 32;
-  const COLW = avail > 0 ? Math.max(118, Math.min(150, Math.floor(avail / cols))) : 150;
-  const PADX = COLW / 2, NODE_R = 26;
-  const LABEL_DY = lanes.some(name => name) ? 14 : 0;
-  const NODE_DY = 62 + LABEL_DY;
-  const LANEH = (items.some(it => nodeWhen(it)) ? 184 : 150) + LABEL_DY;
+  // ---- 흐름도: intrinsic lane/card sizing, no fixed-height text overlap ----
   const canvasEl = $('canvas');
-  const pos = {};
-
+  canvasEl.classList.add('responsive-timeline');
+  const cols = Math.max(1, ...Object.values(perLane).map(lane => lane.length));
+  canvasEl.style.setProperty('--timeline-cols', cols);
+  let doneIndex = 0;
   Array.from({ length: laneCount }, (_, i) => lanes[i] || '').forEach((name, i) => {
-    const inLane = items.filter(it => it.lane === i);
+    const inLane = items.filter(it => it.lane === i).sort((a, b) => a.col - b.col);
     const cls = inLane.some(it => it.state === 'blocked') ? 'blocked'
       : inLane.some(it => it.state === 'now') ? 'live'
       : (inLane.length && inLane.every(it => it.state === 'done')) ? 'done' : '';
-    const band = el('div', 'lane-band' + (cls ? ' ' + cls : ''));
-    band.style.top = (i * LANEH + 4) + 'px';
-    band.style.height = (LANEH - 8) + 'px';
-    if (name) band.appendChild(el('span', 'lane-label', name));
+    const band = el('section', 'lane-band' + (cls ? ' ' + cls : ''));
+    band.dataset.lane = i;
+    if (name) band.appendChild(el('h3', 'lane-label', name));
+    const nodes = el('div', 'lane-nodes');
+    inLane.forEach(it => {
+      const node = el('div', 'fnode ' + it.state);
+      node.dataset.id = it.id;
+      const circle = el('div', 'node', NODE_ICON[it.state] || '○');
+      if (it.state === 'now') circle.appendChild(el('i', 'orbit'));
+      node.appendChild(circle);
+      if (it.state === 'done') node.style.setProperty('--i', doneIndex++);
+      node.appendChild(el('div', 'label', it.label));
+      node.appendChild(el('div', 'sub', it.sub || ''));
+      const when = nodeWhen(it);
+      if (when) node.appendChild(el('div', when.pending ? 'when when-now' + (when.past ? ' when-past' : '') : 'when', when.text));
+      nodes.appendChild(node);
+    });
+    band.appendChild(nodes);
     canvasEl.appendChild(band);
   });
 
-  const W = PADX * 2 + (cols - 1) * COLW;
-  const H = laneCount * LANEH;
-  canvasEl.style.width = W + 'px';
-  canvasEl.style.height = H + 'px';
-  items.forEach(it => { pos[it.id] = { x: PADX + it.col * COLW, y: it.lane * LANEH + NODE_DY }; });
-
+  // Preserve the original graph connections/animations, but derive coordinates
+  // from laid-out circles after text/font/viewport changes instead of fixed rows.
   const svg = document.createElementNS(NS, 'svg');
   svg.setAttribute('class', 'edges');
-  svg.setAttribute('width', W);
-  svg.setAttribute('height', H);
-  edges.forEach((pair, index) => {
-    const p = pos[pair[0]], q = pos[pair[1]];
-    if (!p || !q) return;
-    const x1 = p.x + NODE_R + 4, x2 = q.x - NODE_R - 4, y1 = p.y, y2 = q.y;
-    const a = items.find(i => i.id === pair[0]), b = items.find(i => i.id === pair[1]);
-    const gx = q.x - COLW / 2;
-    const blocked = items.some(it => it.lane === a.lane && it.col > a.col && it.col < b.col);
-    let d;
-    if (y1 === y2) d = `M${x1} ${y1} L${x2} ${y2}`;
-    else if (b.col - a.col >= 2 && !blocked) {
-      const w = 22;
-      d = `M${x1} ${y1} L${gx - w} ${y1} C${gx} ${y1}, ${gx} ${y2}, ${gx + w} ${y2} L${x2} ${y2}`;
-    } else {
-      const mx = (x1 + x2) / 2;
-      d = `M${x1} ${y1} C${mx} ${y1}, ${mx} ${y2}, ${x2} ${y2}`;
-    }
-    const from = a.state;
-    const to = b.state;
-    const cls = (from === 'blocked' || to === 'blocked') ? 'blocked'
-      : (from === 'done' && to === 'done') ? 'done'
-      : (from === 'done' && to === 'now') ? 'active'
-      : (from === 'side' || to === 'side') ? 'side' : 'left';
-    const delay = (-(index * 0.37) % 1.8).toFixed(2) + 's';
-    const path = document.createElementNS(NS, 'path');
-    path.setAttribute('d', d);
-    path.setAttribute('class', 'edge ' + cls);
-    path.style.animationDelay = delay;
-    svg.appendChild(path);
-    if (cls === 'done') {
-      const flow = document.createElementNS(NS, 'path');
-      flow.setAttribute('d', d);
-      flow.setAttribute('class', 'edge-flow');
-      flow.style.animationDelay = delay;
-      svg.appendChild(flow);
-    }
-  });
+  svg.setAttribute('aria-hidden', 'true');
   canvasEl.appendChild(svg);
-
-  let doneIndex = 0;
-  items.forEach(it => {
-    const node = el('div', 'fnode ' + it.state);
-    node.dataset.id = it.id;
-    node.style.left = pos[it.id].x + 'px';
-    node.style.top = pos[it.id].y + 'px';
-    node.style.width = (COLW - 16) + 'px';
-    const circle = el('div', 'node', NODE_ICON[it.state] || '○');
-    if (it.state === 'now') circle.appendChild(el('i', 'orbit'));
-    node.appendChild(circle);
-    if (it.state === 'done') node.style.setProperty('--i', doneIndex++);
-    node.appendChild(el('div', 'label', it.label));
-    node.appendChild(el('div', 'sub', it.sub || ''));
-    const when = nodeWhen(it);
-    if (when) node.appendChild(el('div', when.pending ? 'when when-now' + (when.past ? ' when-past' : '') : 'when', when.text));
-    canvasEl.appendChild(node);
-  });
+  function drawEdges() {
+    const canvasRect = canvasEl.getBoundingClientRect();
+    svg.setAttribute('width', canvasEl.clientWidth);
+    svg.setAttribute('height', canvasEl.clientHeight);
+    const pos = {};
+    canvasEl.querySelectorAll('.fnode').forEach(node => {
+      const r = node.querySelector('.node').getBoundingClientRect();
+      pos[node.dataset.id] = { x: r.left - canvasRect.left + r.width / 2,
+        y: r.top - canvasRect.top + r.height / 2, r: r.width / 2 };
+    });
+    svg.replaceChildren();
+    edges.forEach((pair, index) => {
+      const p = pos[pair[0]], q = pos[pair[1]];
+      if (!p || !q) return;
+      const a = items.find(i => i.id === pair[0]), b = items.find(i => i.id === pair[1]);
+      let d;
+      if (Math.abs(p.x - q.x) < 1) {
+        // Mobile nodes have a dedicated icon column, so the line never crosses text.
+        const sign = q.y >= p.y ? 1 : -1;
+        d = `M${p.x} ${p.y + sign * (p.r + 4)} L${q.x} ${q.y - sign * (q.r + 4)}`;
+      } else {
+        const x1 = p.x + p.r + 4, x2 = q.x - q.r - 4;
+        const mx = (x1 + x2) / 2;
+        d = `M${x1} ${p.y} C${mx} ${p.y}, ${mx} ${q.y}, ${x2} ${q.y}`;
+      }
+      const cls = (a.state === 'blocked' || b.state === 'blocked') ? 'blocked'
+        : (a.state === 'done' && b.state === 'done') ? 'done'
+        : (a.state === 'done' && b.state === 'now') ? 'active'
+        : (a.state === 'side' || b.state === 'side') ? 'side' : 'left';
+      const delay = (-(index * 0.37) % 1.8).toFixed(2) + 's';
+      const path = document.createElementNS(NS, 'path');
+      path.setAttribute('d', d);
+      path.setAttribute('class', 'edge ' + cls);
+      path.style.animationDelay = delay;
+      svg.appendChild(path);
+      if (cls === 'done') {
+        const flow = document.createElementNS(NS, 'path');
+        flow.setAttribute('d', d);
+        flow.setAttribute('class', 'edge-flow');
+        flow.style.animationDelay = delay;
+        svg.appendChild(flow);
+      }
+    });
+  }
+  let edgeFrame;
+  function scheduleEdges() {
+    cancelAnimationFrame(edgeFrame);
+    edgeFrame = requestAnimationFrame(drawEdges);
+  }
+  new ResizeObserver(scheduleEdges).observe(canvasEl);
+  window.addEventListener('resize', scheduleEdges);
+  if (document.fonts) document.fonts.ready.then(scheduleEdges);
+  scheduleEdges();
 
   // ---- 카드 ----
   const cards = $('cards');
@@ -1584,3 +1608,4 @@ body:not([data-view]) #orient, body[data-view="full"] #orient { display: none; }
 </script>
 </body>
 </html>
+
