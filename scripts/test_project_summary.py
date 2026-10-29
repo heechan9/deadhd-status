@@ -40,15 +40,15 @@ class CurrentProjectSummary(unittest.TestCase):
         data,_=build_with(PROJECT,OSError('offline'))
         cards=by_id(data)
         self.assertIn('currentProjectSummary',data)
-        self.assertEqual(tally(data),(7,13)) # historical card tally, not current project ratio
+        self.assertEqual(tally(data),(9,13)) # historical card tally, not current project ratio
         self.assertIn('과거 기록',cards['submission-team-intake']['title'])
         self.assertIn('최신 팀원 작업 미완료로 해석하지 않습니다',cards['submission-team-intake']['body'])
-        for key in ('submission-project-report','submission-video','n-web'):
+        for key in ('submission-project-report','n-web'):
             self.assertNotEqual(cards[key]['state'],'done')
         self.assertEqual(cards['c-ulsan']['state'],'blocked')
         self.assertEqual([i['state'] for i in data['currentProjectSummary']['groups'][2]['items']],['unverified']*3)
 
-    def test_rendered_summary_in_all_views_without_global_completion_ratio(self):
+    def test_evidence_summary_supplements_original_scoped_checklist(self):
         import tempfile
         import build
         data,_=build_with(PROJECT,OSError('offline'))
@@ -57,12 +57,18 @@ class CurrentProjectSummary(unittest.TestCase):
         self.assertIn('id="projectSummary"',html)
         for label, ratio in [('개발·통합·배포 확인','3/3'),('보고서·영상 제작 확인','2/2'),('제출 절차 확인','0/3')]:
             self.assertIn(label+' <b>'+ratio+'</b>',html)
-        self.assertNotIn('<b>${requiredDone}/${requiredTotal}</b>',html)
-        self.assertNotIn("$('countB').textContent = requiredDone + '/' + requiredTotal",html)
-        self.assertIn('.progress,#tally,#completionSummary,.cx-count,.cx-bar,.cc-ring,.cc-seg{display:none!important}',html)
+        self.assertIn('<b>${requiredDone}/${requiredTotal}</b>',html)
+        self.assertIn("$('countB').textContent = requiredDone + '/' + requiredTotal",html)
+        self.assertNotIn('.progress,#tally,#completionSummary,.cx-count,.cx-bar,.cc-ring,.cc-seg{display:none!important}',html)
+        self.assertEqual(html.count('data-checklist-id='),13)
+        self.assertIn('최신 개발 통합이 빠졌다는 뜻이 아닙니다',html)
+        checklist=build.checklist_html(data['items'])
+        self.assertEqual(checklist.count(' · 확인 완료'),9)
+        self.assertNotIn('작업 미완료',checklist)
+        self.assertIn('기존 체크리스트 확인 완료',html)
         self.assertLess(html.index('id="projectSummary"'),html.index('<div id="compact"'))
         self.assertIn('미확인은 미수행을 뜻하지 않습니다',html)
-        self.assertIn('과거 판정을 보존한 이력',html)
+        self.assertIn('체크리스트에는 지난 ACK 일정·접수 이력이 포함',html)
 
     def test_summary_escapes_untrusted_labels_and_links(self):
         import copy

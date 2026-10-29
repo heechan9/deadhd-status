@@ -28,23 +28,45 @@
   },
   "submission-final-paper": {
    "target": "final-submission",
-   "criterion": "ACK 최종본 제출과 논문별 발표자 등록이 공식 절차(마감 10/19 23:59 KST)로 끝났다는 확인. 이 기록에는 그 확인이 없다.",
+   "criterion": "ACK 최종본 제출과 논문별 발표자 등록 여부 확인. 최종본 제출은 사용자 확인(2026-10-18 KST), 발표자 등록은 사용자 확인(2026-10-20 KST)을 근거로 완료 판정한다. 공식 접수증·파일 해시·실제 결제 완료를 독립 검증했다는 뜻은 아니다.",
    "evidenceLevel": "curated-only",
-   "checkedAt": "2026-10-27 14:57 KST",
+   "checkedAt": "2026-10-30 01:37 KST",
    "subtasks": [
     {
      "id": "final-paper-upload",
-     "label": "ACK 최종본 제출",
+     "label": "ACK 최종본 제출 · 사용자 확인(2026-10-18 KST)",
      "kind": "final-submission",
+     "rule": {
+      "type": "manual",
+      "status": "done"
+     },
+     "checkedAt": "2026-10-30 01:37 KST"
+    },
+    {
+     "id": "presenter-registration",
+     "label": "논문별 발표자 등록 · 사용자 확인(결제 완료 단정 아님)",
+     "kind": "final-submission",
+     "rule": {
+      "type": "manual",
+      "status": "done"
+     },
+     "checkedAt": "2026-10-30 01:37 KST"
+    }
+   ],
+   "milestones": [
+    {
+     "id": "paper-receipt-hash",
+     "label": "참고 · 공식 접수증·제출 파일 해시 독립 대조(사용자 제출 확인과 별개)",
+     "kind": "record-history",
      "rule": {
       "type": "manual",
       "status": "left"
      }
     },
     {
-     "id": "presenter-registration",
-     "label": "논문별 발표자 등록",
-     "kind": "final-submission",
+     "id": "registration-payment",
+     "label": "참고 · 실제 결제 완료 독립 확인(등록 확인·결제 신청과 별개)",
+     "kind": "record-history",
      "rule": {
       "type": "manual",
       "status": "left"
@@ -54,13 +76,25 @@
   },
   "submission-video": {
    "target": "final-submission",
-   "criterion": "논문별 10~15분 발표영상(MP4·300MB 이하)의 제작·형식 확인과 공식 업로드(마감 10/20 23:59 KST). 업로드 완료 확인이 없다. 별도 4분 36초 프로젝트 보고/시연 영상의 전달 보고는 ACK 요구 충족으로 세지 않는다.",
+   "criterion": "해당 ACK 영상 제출 여부 확인. 사용자 제출 확인(2026-10-21 KST)을 제출 이벤트의 근거로 인정한다. 형식 준수와 공식 접수증 독립 검증은 참고 검증으로 남기며 제출 여부 확인의 추가 완료 조건으로 섞지 않는다.",
    "evidenceLevel": "curated-only",
-   "checkedAt": "2026-10-29 13:58 KST",
+   "checkedAt": "2026-10-30 01:35 KST",
    "subtasks": [
     {
+     "id": "video-upload",
+     "label": "ACK 영상 제출 · 사용자 확인(공식 접수증 독립 확인 아님)",
+     "kind": "final-submission",
+     "rule": {
+      "type": "manual",
+      "status": "done"
+     },
+     "checkedAt": "2026-10-30 01:35 KST"
+    }
+   ],
+   "milestones": [
+    {
      "id": "video-production",
-     "label": "영상 제작·형식 확인",
+     "label": "참고 · ACK 영상 형식 독립 검증(제출 확인 완료 조건 아님)",
      "kind": "draft-prepared",
      "rule": {
       "type": "manual",
@@ -68,9 +102,9 @@
      }
     },
     {
-     "id": "video-upload",
-     "label": "공식 업로드",
-     "kind": "final-submission",
+     "id": "video-official-receipt",
+     "label": "참고 · 공식 접수증 독립 확인(사용자 제출 확인과 별개)",
+     "kind": "record-history",
      "rule": {
       "type": "manual",
       "status": "left"

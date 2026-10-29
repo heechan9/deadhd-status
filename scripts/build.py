@@ -483,6 +483,27 @@ COMPLETION_JS = r"""
 
 
 
+
+def checklist_html(items):
+    """Explain the existing denominator without changing any completion rule."""
+    required = [item for item in items if item.get('countScope') == 'submission']
+    parts = ['<details id="originalChecklist" class="research-scope-note"><summary>기존 ' + str(len(required)) + '개 체크리스트 · 항목별 확인 근거/남은 확인</summary><ol>']
+    for item in required:
+        result = item.get('completion', {})
+        status = '확인 완료' if item['state'] == 'done' else ('부분 확인 · 추가 확인 필요' if result.get('status') == 'partial' else '완료 미확인')
+        parts.append('<li data-checklist-id="' + escape(item['id'], quote=True) + '"><strong>' + escape(item['label']) + '</strong> · ' + status)
+        if item['state'] == 'done':
+            parts.append('<p>' + escape(item.get('countScopeReason', '해당 카드의 명시된 범위 확인')) + '</p>')
+        else:
+            remaining = result.get('remaining', [])
+            parts.append('<p>남은 확인: ' + escape(' / '.join(remaining) if remaining else item.get('sub', '근거 확인 필요')) + '</p>')
+        if item['id'] == 'submission-team-intake':
+            parts.append('<p>최신 main 통합 확인과 별개인 10/27 과거 접수 명단 대조입니다. 최신 개발 통합이 빠졌다는 뜻이 아닙니다.</p>')
+        parts.append('</li>')
+    parts.append('</ol><p>과거 일정의 경과나 코드 병합만으로 제출·등록·업로드 완료를 가정하지 않습니다.</p></details>')
+    return ''.join(parts)
+
+
 def project_summary_html(summary):
     """Evidence categories are independent; never sum into a completion ratio."""
     parts = ['<section id="projectSummary" class="research-scope-note project-summary" aria-label="확인 범위별 현황">',
@@ -575,16 +596,16 @@ def render(data, out):
     html = html.replace('<div id="compact" hidden></div>', '''<aside class="research-scope-note">이번 최종제출 필수 항목만 집계하며 연구 완성률은 아닙니다. 완료한 본 연구와 현재 주장에 영향을 주는 미해결 검증은 포함합니다. 제출 이후 연구·새 기능과 자동 Git·CI 참고 정보는 집계에서 제외합니다.</aside>
 <div id="compact" hidden></div>''')
     if data.get('currentProjectSummary'):
-        # Keep the immutable legacy cards, but do not portray their old tally as
-        # today's project completion ratio, in any original/compact view.
-        html = html.replace(COMPLETION_JS, '')
-        html = html.replace("$('countB').textContent = requiredDone + '/' + requiredTotal;", "$('countB').textContent = '';" )
-        html = html.replace('<b>${requiredDone}/${requiredTotal}</b>', '')
-        html = html.replace('</head>', '<style id="project-summary-style">.progress,#tally,#completionSummary,.cx-count,.cx-bar,.cc-ring,.cc-seg{display:none!important}.summary-groups{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,250px),1fr));gap:16px}.summary-group{border:1px solid var(--card-line);border-radius:14px;padding:16px;background:var(--card);min-width:0;overflow-wrap:anywhere}.summary-group h3{margin:0}.summary-group ul{padding-left:18px}.summary-group li{margin:14px 0}.summary-group p{margin:5px 0}.summary-group a{color:var(--done-2)}.project-summary h2{margin-top:12px}.summary-checked{font-size:12px}</style></head>')
+        # The original 13-card checklist is a scoped feature, not an overall
+        # research completion percentage. Keep it alongside the evidence groups.
+        html = html.replace('</head>', '<style id="project-summary-style">.summary-groups{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,250px),1fr));gap:16px}.summary-group{border:1px solid var(--card-line);border-radius:14px;padding:16px;background:var(--card);min-width:0;overflow-wrap:anywhere}.summary-group h3{margin:0}.summary-group ul{padding-left:18px}.summary-group li{margin:14px 0}.summary-group p{margin:5px 0}.summary-group a{color:var(--done-2)}.project-summary h2{margin-top:12px}.summary-checked{font-size:12px}</style></head>')
         html = html.replace('<div id="compact" hidden></div>', project_summary_html(data['currentProjectSummary']) + '<div id="compact" hidden></div>')
-        html = html.replace('이번 최종제출 필수 항목만 집계하며 연구 완성률은 아닙니다. 완료한 본 연구와 현재 주장에 영향을 주는 미해결 검증은 포함합니다. 제출 이후 연구·새 기능과 자동 Git·CI 참고 정보는 집계에서 제외합니다.', '현재 프로젝트는 아래 세 가지 확인 범위를 따로 표시합니다. 합산 완료율은 사용하지 않습니다. 아래 기존 그래프·카드는 근거와 과거 판정을 보존한 이력이며 최신 전체 진행률이 아닙니다.')
-        html = html.replace('아래 상태별 집계도 이번 제출 필수 항목 기준입니다.', '아래는 기존 카드의 근거·판정 이력입니다. 지난 ACK 일정과 과거 팀 자료 취합을 현재 프로젝트 완료율에 합산하지 않습니다.')
-        html = html.replace("countDone: '제출 필수 완료'", "countDone: '과거 카드 판정'")
+        html = html.replace('이번 최종제출 필수 항목만 집계하며 연구 완성률은 아닙니다. 완료한 본 연구와 현재 주장에 영향을 주는 미해결 검증은 포함합니다. 제출 이후 연구·새 기능과 자동 Git·CI 참고 정보는 집계에서 제외합니다.', '기존 13개 체크리스트의 확인 완료 수와 아래 세 가지 근거 범위를 함께 표시합니다. 체크리스트에는 지난 ACK 일정·접수 이력이 포함되며 연구 완성률이나 현재 프로젝트 전체 완료율이 아닙니다. 세 근거 그룹은 보충 정보이며 하나의 비율로 합산하지 않습니다.')
+        html = html.replace('아래 상태별 집계도 이번 제출 필수 항목 기준입니다.', '기존 13개 체크리스트 기준입니다. 지난 ACK 일정·과거 팀 자료 취합을 포함하며 미확인은 미수행을 뜻하지 않습니다. 각 항목의 범위와 남은 확인을 아래에서 볼 수 있습니다.')
+        html = html.replace("countDone: '제출 필수 완료'", "countDone: '기존 13개 점검표 확인 완료(ACK+프로젝트 포함)'")
+        html = html.replace("let h = '<b>완료 판정</b> 필수 '", "let h = '<b>기존 체크리스트 확인 완료</b> '")
+        html = html.replace('<div class="tally" id="tally"></div>', '<div class="tally" id="tally"></div>' + checklist_html(data['items']))
+
     if data.get('evidenceOnly'):
         # No submission contract exists for this evidence page. Do not display a
         # fictitious 0/0 completion rate or empty submission-only compact views.

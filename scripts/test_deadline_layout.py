@@ -19,11 +19,15 @@ class DeadlineLayout(unittest.TestCase):
             card = cards[cid]
             self.assertGreater(card['lane'], 0)
             self.assertIn('지난 ACK 마감', base['lanes'][card['lane']])
-            self.assertIn('지난 마감', card['label'])
-            self.assertIn('미확인', card['sub'])
-            self.assertNotEqual(card['state'], 'done')
+            if cid == 'submission-final-paper':
+                self.assertIn('최종본', card['label'])
+                self.assertIn('사용자 확인', card['sub'])
+            else:
+                self.assertIn('사용자 확인', card['label'])
+                self.assertNotIn('업로드 미확인', card['sub'])
+            self.assertEqual(card['state'], 'done')
             self.assertEqual(card['countScope'], 'submission')
-        self.assertEqual(tally(data), (7, 13))
+        self.assertEqual(tally(data), (9, 13))
         self.assertEqual(len(base['items']), 32)
         self.assertIn('업데이트 날짜가 아니며', base['goal'])
         self.assertEqual(base['curatedAt'], '2026-10-29 13:58 KST')

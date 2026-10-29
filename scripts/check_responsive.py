@@ -42,7 +42,8 @@ with sync_playwright() as p:
    if slug == 'bunkering-ai':
     assert result['first'] == 'submission-project-report', result
     assert page.locator('#projectSummary .summary-group').count() == 3
-    assert not page.locator('.progress').is_visible()
+    assert page.locator('.progress').is_visible()
+    assert page.locator('#originalChecklist li').count() == 13
    # View toggles, repeated transitions and resize must keep the graph intact.
    for button in page.locator('.viewbar button[data-v]').all():
     button.click()
