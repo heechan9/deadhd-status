@@ -3,7 +3,19 @@ import unittest
 from unittest.mock import patch
 import build
 
+def offline_pr(repo, number):
+    """네트워크 없이 쓰는 연결 PR 조회 대체값(열림·Draft·CI 기록 없음)."""
+    return dict(repo=repo, n=number, title='stub', url=f'https://github.com/{repo}/pull/{number}', state='open',
+                draft=True, merged=False, mergedAt=None, mergeSha='', headSha='c' * 40, baseRef='main',
+                updatedAt='2026-10-27T00:00:00Z', ci=[])
+
+
 class ReviewTracking(unittest.TestCase):
+    def setUp(self):
+        patcher = patch.object(build, 'fetch_pr', side_effect=offline_pr)
+        patcher.start()
+        self.addCleanup(patcher.stop)
+
     def test_review_drift_and_failure(self):
         project=build.PROJECTS[1]
         import json

@@ -1,21 +1,28 @@
 """공개 GitHub 기록을 조회해 deadhd 상태판 두 개를 site/ 에 만든다.
 
 - 수동 정리 내용은 content/*.base.json 에 있다(정리 기준 SHA 시점의 공개 문서).
-- 자동 조회는 main HEAD·최근 병합 PR·열린 PR·main CI 만 다룬다.
-  병합이나 CI 성공은 코드 반영·자동 검사 범위의 기록이며, 연구 완료로 표시하지 않는다.
+- 자동 조회는 main HEAD·최근 병합 PR·열린 PR·main CI 와, 카드에 연결된 PR 의
+  Draft·병합 여부·head CI 결과를 다룬다.
+- 카드 완료는 content/<slug>.completion.json 의 규칙(scripts/completion.py)으로만 바뀐다.
+  자동 완료는 '코드 반영(main 병합)'을 명시한 카드·하위 작업에 한정되고, countScope 는 바꾸지 않는다.
+  병합이나 CI 성공은 연구 성과·팀원 본인 확인·계약 채택·최종 제출의 완료로 표시하지 않는다.
 - 조회가 실패하면 직전 배포의 state.json 에서 마지막 성공 결과를 가져와 유지하고,
   실패 사실을 맨 위 줄에 표시한다.
 - 로컬 경로·IP·토큰·비공개 링크는 쓰지 않는다. 토큰은 요청 헤더에만 쓴다.
 """
 import json
 import os
+import re
 import subprocess
 import sys
 import tempfile
 import urllib.error
 import urllib.request
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from zoneinfo import ZoneInfo
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import completion  # noqa: E402
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SITE = os.path.join(ROOT, 'site')
@@ -24,6 +31,11 @@ API = 'https://api.github.com/'
 PAGES_URL = os.environ.get('PAGES_URL', '').rstrip('/')
 TOKEN = os.environ.get('GITHUB_TOKEN', '')
 NOTE = '병합·CI 성공은 코드 반영과 자동 검사 범위의 기록이며 실험·연구 완료를 뜻하지 않는다.'
+LIVE_NOTE = '이 줄은 PR 상태와 해당 head 의 자동 검사 기록일 뿐 연구 성과·팀원 본인 확인·계약 채택·최종 제출의 완료를 뜻하지 않는다. 카드 상태는 명시된 완료 규칙을 따르며 코드 반영(main 병합) 대상만 자동 완료될 수 있다.'
+AUTO_STALE_HOURS = 3      # 매시간 조회하므로 3시간 넘게 갱신되지 못한 자동 기록은 '오래됨'
+CURATED_STALE_DAYS = 3    # 수동 내용 검토가 이보다 오래되면 '오래됨'
+MAX_LINKED_PRS = 60       # 한 프로젝트에서 조회할 연결 PR 상한(API 한도 보호)
+PR_URL_RE = re.compile(r'^https://github\.com/([^/\s]+/[^/\s]+)/pull/(\d+)/?$')
 
 PROJECTS = [
     {'slug': 'bunkering-ai', 'name': '병커시유',
@@ -98,7 +110,175 @@ def ci_state(ci):
     bad = [r for r in ci if r['conclusion'] not in ('success', 'skipped', 'neutral')]
     if bad:
         return 'blocked', '실패 ' + ', '.join(r['name'] for r in bad)
+    if any(r['conclusion'] != 'success' for r in ci):
+        return 'side', '성공 미확인(skipped/neutral 포함)'
     return 'done', '성공'
+
+
+def err_reason(e):
+    return type(e).__name__ + (f' {e.code}' if isinstance(e, urllib.error.HTTPError) else '')
+
+
+def parse_kst(text):
+    """'YYYY-MM-DD HH:MM KST' 또는 시차 있는 ISO 시각 → aware datetime. 해석할 수 없으면 None."""
+    if not isinstance(text, str):
+        return None
+    t = text.strip()
+    try:
+        if t.endswith(' KST'):
+            return datetime.strptime(t[:-4], '%Y-%m-%d %H:%M').replace(tzinfo=KST)
+        dt = datetime.fromisoformat(t.replace('Z', '+00:00'))
+    except ValueError:
+        return None
+    return dt if dt.tzinfo else None
+
+
+def age_text(delta):
+    hours = int(delta.total_seconds() // 3600)
+    return f'{hours // 24}일 전' if hours >= 48 else f'{max(hours, 0)}시간 전'
+
+
+def is_stale(iso, at, hours=AUTO_STALE_HOURS):
+    when = parse_kst(iso)
+    return when is None or at - when > timedelta(hours=hours)
+
+
+# ---- 카드에 연결된 PR 의 실제 상태 ---------------------------------------------------------
+def pr_key(repo, number):
+    return f'{repo}#{number}'
+
+
+def linked_prs(item):
+    """카드에 연결된 PR [(repo, number)]. linkedPrs 가 있으면 그것만, 없으면 evidence 의 PR 링크.
+
+    liveStatus: false 이면 이 카드는 자동 갱신하지 않는다."""
+    if item.get('liveStatus') is False:
+        return []
+    found = []
+    if item.get('linkedPrs') is not None:
+        for e in item['linkedPrs']:
+            if isinstance(e, str):
+                m = re.fullmatch(r'([^/\s#]+/[^/\s#]+)#(\d+)', e.strip())
+                pair = (m.group(1), int(m.group(2))) if m else None
+            elif isinstance(e, dict) and isinstance(e.get('repo'), str) and isinstance(e.get('number'), int):
+                pair = (e['repo'], e['number'])
+            else:
+                pair = None
+            if pair is None:
+                raise ValueError(f'{item.get("id")}: linkedPrs 형식 오류 {e!r} ("owner/repo#N" 또는 {{repo, number}})')
+            found.append(pair)
+    else:
+        for ev in item.get('evidence') or []:
+            m = PR_URL_RE.match(ev.get('href') or '') if isinstance(ev, dict) else None
+            if m:
+                found.append((m.group(1), int(m.group(2))))
+    return list(dict.fromkeys(found))
+
+
+def fetch_pr(repo, number):
+    """PR 하나의 Draft·병합 여부와 현재 head 의 워크플로 결과."""
+    p = get(f'repos/{repo}/pulls/{number}')
+    head = p['head']['sha']
+    runs = get(f'repos/{repo}/actions/runs?head_sha={head}&per_page=50').get('workflow_runs', [])
+    latest = {}
+    for r in runs:  # 워크플로마다 가장 최근 실행 하나
+        if r['name'] not in latest or r['created_at'] > latest[r['name']]['created_at']:
+            latest[r['name']] = r
+    merged = bool(p.get('merged_at'))
+    return {
+        'repo': repo, 'n': number, 'title': p['title'][:100], 'url': p['html_url'],
+        'state': p['state'], 'draft': bool(p.get('draft')), 'merged': merged, 'mergedAt': p.get('merged_at'),
+        'mergeSha': (p.get('merge_commit_sha') or '')[:7] if merged else '',
+        'headSha': head, 'baseRef': p['base']['ref'], 'updatedAt': p.get('updated_at'),
+        'ci': [{'name': r['name'], 'status': r['status'], 'conclusion': r['conclusion'], 'url': r['html_url'],
+                'event': r['event'], 'at': r['created_at']} for r in sorted(latest.values(), key=lambda r: r['name'])],
+    }
+
+
+def refresh_prs(pairs, prev_prs, at):
+    """연결 PR 을 조회한다. 실패하면 직전 성공 기록을 유지하되 ok=False 로 표시한다."""
+    out = {}
+    stamp = at.isoformat(timespec='seconds')
+    for i, (repo, number) in enumerate(pairs):
+        key = pr_key(repo, number)
+        prev = (prev_prs or {}).get(key) or {}
+        if i >= MAX_LINKED_PRS:
+            out[key] = dict(prev, ok=False, failedAt=stamp, error='조회 상한 초과')
+            continue
+        try:
+            out[key] = {'ok': True, 'fetchedAt': stamp, 'data': fetch_pr(repo, number)}
+        except Exception as e:  # 네트워크·권한·한도·응답 형식 오류
+            out[key] = dict(prev, ok=False, failedAt=stamp, error=err_reason(e))
+    return out
+
+
+def pr_state_word(r):
+    if r['merged']:
+        return '병합됨 ' + fmt(r['mergedAt'])
+    if r['state'] == 'closed':
+        return '닫힘(미병합)'
+    return '열림·Draft' if r['draft'] else '열림(Draft 아님)'
+
+
+def pr_ci_word(r):
+    _, word = ci_state(r['ci'])
+    if r['ci'] and word in ('성공', '실행 중'):
+        word += '(' + ', '.join(c['name'] for c in r['ci']) + ')'
+    return word
+
+
+def pr_short(entry, at):
+    """증거 링크 뒤에 붙이는 짧은 자동 상태."""
+    d = entry.get('data')
+    if not d:
+        return '조회 실패·이전 기록 없음'
+    text = pr_state_word(d) + ' · CI ' + pr_ci_word(d)
+    if not entry.get('ok'):
+        when = parse_kst(entry.get('fetchedAt'))
+        text += ' · 조회 실패, ' + (age_text(at - when) + ' 기록' if when else '기록 시각 불명')
+    return text
+
+
+def pr_line(repo, number, entry, at, default_repo, curated_head=None):
+    ref = f'#{number}' if repo == default_repo else f'{repo}#{number}'
+    d = (entry or {}).get('data')
+    if not d:
+        reason = (entry or {}).get('error', '기록 없음')
+        return f'{ref} 조회 실패({reason}) · 이전 성공 기록 없음'
+    line = f'{ref} {pr_state_word(d)} · head {d["headSha"][:7]} · CI {pr_ci_word(d)}'
+    if curated_head and curated_head != d['headSha']:
+        line += f' · 수동 검토 head {curated_head[:7]} 이후 변경'
+    if not entry.get('ok'):
+        when = parse_kst(entry.get('fetchedAt'))
+        line += f' · 조회 실패({entry.get("error")}), 마지막 성공 ' + (
+            f'{fmt(entry["fetchedAt"])} 기록({age_text(at - when)}' + (' · 오래됨)' if is_stale(entry['fetchedAt'], at) else ')')
+            if when else '시각 불명')
+    return line
+
+
+def overlay_live(items, prs, at, default_repo, curated_heads):
+    """수동 카드에 연결 PR 의 실제 상태를 덧붙인다. state·countScope·badge 등은 건드리지 않는다.
+
+    반환값은 덧붙인 카드 수. linkedPrs·liveStatus 같은 내부 키는 렌더 전에 지운다."""
+    touched = 0
+    stamp = at.strftime('%m-%d %H:%M KST')
+    for item in items:
+        pairs = linked_prs(item)
+        item.pop('linkedPrs', None)
+        item.pop('liveStatus', None)
+        if not pairs:
+            continue
+        lines = []
+        for repo, number in pairs:
+            entry = prs.get(pr_key(repo, number))
+            lines.append(pr_line(repo, number, entry, at, default_repo, curated_heads.get((repo, number))))
+            for ev in item.get('evidence') or []:
+                m = PR_URL_RE.match(ev.get('href') or '') if isinstance(ev, dict) else None
+                if m and (m.group(1), int(m.group(2))) == (repo, number) and entry:
+                    ev['text'] = f'{ev["text"]} ｜자동: {pr_short(entry, at)}'
+        item['body'] = (item.get('body') or '').rstrip() + f' [자동 조회 {stamp}] ' + ' / '.join(lines) + '. ' + LIVE_NOTE
+        touched += 1
+    return touched
 
 
 def auto_items(spec, f, project_name):
@@ -177,7 +357,7 @@ def build_project(project, prev, at):
             f = fetch_repo(spec)
             entry = {'ok': True, 'fetchedAt': at.isoformat(timespec='seconds'), 'data': f}
         except Exception as e:  # 네트워크·권한·한도 오류
-            reason = type(e).__name__ + (f' {e.code}' if isinstance(e, urllib.error.HTTPError) else '')
+            reason = err_reason(e)
             failures.append((spec, reason, prev_repo))
             entry = dict(prev_repo or {}, ok=False, failedAt=at.isoformat(timespec='seconds'), error=reason)
             f = (prev_repo or {}).get('data')
@@ -188,7 +368,8 @@ def build_project(project, prev, at):
             meta.append({'text': label, 'href': f['head']['url']})
             last_ok = entry.get('fetchedAt')
             if last_ok:
-                meta.append(f'{spec["label"]} 마지막 성공 조회 ' + datetime.fromisoformat(last_ok).astimezone(KST).strftime('%Y-%m-%d %H:%M KST'))
+                meta.append(f'{spec["label"]} 마지막 성공 조회 ' + datetime.fromisoformat(last_ok).astimezone(KST).strftime('%Y-%m-%d %H:%M KST')
+                            + ('' if entry.get('ok') else f' ({age_text(at - parse_kst(last_ok))}' + (' · 오래됨)' if is_stale(last_ok, at) else ')')))
             reference = curated_refs.get(spec['id'])
             if reference:
                 meta.append({'text': f'{spec["label"]} 수동 검토 SHA {reference[:7]} ({curated_at})', 'href': f'https://github.com/{key}/commit/{reference}'})
@@ -200,23 +381,68 @@ def build_project(project, prev, at):
                     'body': f'아래 수동 정리 항목은 {reference[:7]}({curated_at}) 기준이다. main 은 지금 {f["head"]["sha"][:7]} 이므로 새 기록은 다시 검토해야 반영된다.',
                     'evidence': [{'icon': 'link', 'text': f'{reference[:7]}…{f["head"]["sha"][:7]} 비교',
                                   'href': f'https://github.com/{spec["repo"]}/compare/{reference}...{f["head"]["sha"]}'}]})
+    default_repo = project['repos'][0]['repo']
+    first_lane = project['repos'][0]['lane']
+    curated_heads = {(r['repo'], r['number']): r['sha'] for r in curated_prs}
+    spec = completion.load_spec(ROOT, project['slug'])
+    if spec:
+        completion.validate_spec(spec, base['items'])  # 구성 오류는 조용히 넘기지 않고 빌드를 멈춘다
+    pairs = []
+    for card in base['items']:
+        pairs += linked_prs(card)
+    pairs += list(curated_heads)
+    if spec:
+        pairs += completion.rule_prs(spec)
+    pairs = list(dict.fromkeys(pairs))
+    prs = refresh_prs(pairs, (prev.get(project['slug']) or {}).get('prs', {}), at)
+    pstate['prs'] = prs
+    if spec:
+        results = completion.apply(spec, base['items'], prs, at, parse_kst, CURATED_STALE_DAYS)
+        pstate['completion'] = {cid: {k: r[k] for k in ('status', 'done', 'total', 'state', 'target')}
+                                for cid, r in results.items()}
+    overlay_live(base['items'], prs, at, default_repo, curated_heads)
+    pr_failed = [k for k, e in prs.items() if not e.get('ok')]
+    if pr_failed:
+        shown = pr_failed[:10]
+        auto.insert(0, {
+            'id': 'pr-live-failed', 'lane': first_lane, 'label': 'PR 상태 갱신 실패', 'sub': f'{len(pr_failed)}건',
+            'state': 'blocked', 'badge': '자동 조회 실패',
+            'title': '카드에 연결된 PR 조회 실패',
+            'body': (f'{at.strftime("%Y-%m-%d %H:%M KST")} 연결 PR {len(pairs)}건 중 {len(pr_failed)}건을 조회하지 못했다. '
+                     '해당 카드에는 마지막 성공 기록과 경과 시간을 표시하거나, 기록이 없음을 표시한다. 조회 실패를 PR 상태나 CI 결과로 해석하지 않는다.'),
+            'evidence': [{'text': k, 'href': f'https://github.com/{k.split("#")[0]}/pull/{k.split("#")[1]}'} for k in shown]})
+    curated_dt = parse_kst(curated_at)
+    curated_stale = curated_dt is None or at - curated_dt > timedelta(days=CURATED_STALE_DAYS)
+    if curated_stale:
+        auto.append({
+            'id': 'curated-stale', 'lane': first_lane, 'label': '수동 검토 오래됨',
+            'sub': '시각 해석 불가' if curated_dt is None else age_text(at - curated_dt),
+            'state': 'side', 'badge': '자동 조회',
+            'title': '수동 내용 검토 시각이 오래됐다',
+            'body': (f'수동 내용 검토 시각 {curated_at}'
+                     + (' 을(를) 해석할 수 없다.' if curated_dt is None else f' 이후 {CURATED_STALE_DAYS}일이 넘었다.')
+                     + ' 아래 수동 정리 항목은 다시 검토해야 최신 근거로 볼 수 있다. 자동 조회 결과로 수동 항목을 갱신하거나 완료 처리하지 않는다.')})
     for review in curated_prs:
         entry = pstate['repos'].get(review['repo'], {})
         current = next((p for p in entry.get('data', {}).get('open', []) if p['n'] == review['number']), None)
         meta.append({'text': '수동 검토 PR' + f" #{review['number']} @ {review['sha'][:7]}", 'href': f"https://github.com/{review['repo']}/commit/{review['sha']}"})
         if entry.get('ok') and (not current or current.get('headSha') != review['sha']):
             lane = next(s['lane'] for s in project['repos'] if s['repo'] == review['repo'])
-            auto.append({'id': f"pr-drift-{review['repo'].split('/')[0]}-{review['number']}", 'lane': lane, 'label': 'PR 정리 이후 변경', 'sub': '검토 필요', 'state': 'side', 'title': f"PR #{review['number']} 수동 기록 재검토 필요", 'body': '검토한 head와 달라졌거나 열린 PR 목록에서 사라졌다. 병합·완료로 자동 승격하지 않는다.', 'evidence': [{'text': 'PR 상태 확인', 'href': f"https://github.com/{review['repo']}/pull/{review['number']}"}]})
+            auto.append({'id': f"pr-drift-{review['repo'].split('/')[0]}-{review['number']}", 'lane': lane, 'label': 'PR 정리 이후 변경', 'sub': '검토 필요', 'state': 'side', 'title': f"PR #{review['number']} 수동 기록 재검토 필요", 'body': '검토한 head와 달라졌거나 열린 PR 목록에서 사라졌다.' + (' 현재 자동 조회: ' + pr_line(review['repo'], review['number'], prs.get(pr_key(review['repo'], review['number'])), at, default_repo) + '.' if prs.get(pr_key(review['repo'], review['number'])) else '') + ' 병합·완료로 자동 승격하지 않는다.', 'evidence': [{'text': 'PR 상태 확인', 'href': f"https://github.com/{review['repo']}/pull/{review['number']}"}]})
     for spec, reason, prev_repo in failures:
         when = (prev_repo or {}).get('fetchedAt')
-        kept = ('직전 성공 조회(' + datetime.fromisoformat(when).astimezone(KST).strftime('%Y-%m-%d %H:%M KST') + ') 내용을 유지한다.') if when else '유지할 이전 조회 결과가 없다.'
+        kept = ('직전 성공 조회(' + datetime.fromisoformat(when).astimezone(KST).strftime('%Y-%m-%d %H:%M KST')
+                + ', ' + age_text(at - parse_kst(when)) + (' · 오래됨' if is_stale(when, at) else '') + ') 내용을 유지한다.') if when else '유지할 이전 조회 결과가 없다.'
         auto.insert(0, {'id': f'{spec["id"]}-fail', 'lane': spec['lane'], 'label': '갱신 실패', 'sub': reason,
                         'state': 'blocked', 'badge': '자동 조회 실패',
                         'title': f'{spec["repo"]} 조회 실패',
                         'body': f'{at.strftime("%Y-%m-%d %H:%M KST")} 조회가 실패했다({reason}). {kept}'})
     data = base
     data['updated'] = at.strftime('%Y-%m-%d %H:%M KST')
-    data['meta'] = ([f'자동 조회 시각 {data["updated"]}' + (' · 일부 실패' if failures else ''), f'수동 내용 검토 시각 {curated_at}'] + meta)
+    pr_ok = len(prs) - len(pr_failed)
+    data['meta'] = ([f'자동 조회 시각 {data["updated"]}' + (' · 일부 실패' if failures or pr_failed else ''),
+                     f'수동 내용 검토 시각 {curated_at}' + (' · 오래됨' if curated_stale else '')]
+                    + ([f'카드 연결 PR 조회 {pr_ok}/{len(prs)}' + (' · 일부 실패' if pr_failed else '')] if prs else []) + meta)
     lanes_used = {}
     items = auto + data['items']
     for i in items:  # 같은 줄 안에서 차례대로 칸을 매긴다
@@ -225,6 +451,32 @@ def build_project(project, prev, at):
     data['items'] = items
     pstate['curatedSha'] = curated
     return data, pstate
+
+
+COMPLETION_JS = r"""
+  (function () {
+    const escC = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+    const box = document.getElementById('completionSummary');
+    const judged = items.filter(i => i.completion);
+    if (!box || !judged.length) return;
+    const sub = judged.filter(i => i.completion.total > 0);
+    const req = sub.filter(i => i.countScope === 'submission' && i.completion.status !== 'complete');
+    const other = sub.filter(i => i.countScope !== 'submission' && i.completion.status === 'partial');
+    const unverified = judged.reduce((n, i) => n + (i.completion.unverified || 0), 0);
+    const conflicts = judged.filter(i => i.completion.conflict).length;
+    const line = i => '<li>' + escC(i.label) + ' <b>' + i.completion.done + '/' + i.completion.total + '</b> 하위 조건 완료'
+      + (i.completion.milestonesTotal ? ' · 참고 진행 ' + i.completion.milestonesDone + '/' + i.completion.milestonesTotal + ' (부모 완료 조건 아님)' : '')
+      + (i.completion.remaining.length ? ' · 남은: ' + i.completion.remaining.slice(0, 4).map(escC).join(' / ') + (i.completion.remaining.length > 4 ? ' 외 ' + (i.completion.remaining.length - 4) + '건' : '') : '') + '</li>';
+    let h = '<b>완료 판정</b> 필수 ' + requiredDone + '/' + requiredTotal + ' 완료. 하위 조건 일부만 끝난 항목은 완료 수에 넣지 않고 아래에 따로 보인다.';
+    if (req.length) h += '<ul>' + req.map(line).join('') + '</ul>';
+    if (other.length) h += '<div>필수 집계 밖 부분 진행</div><ul>' + other.map(line).join('') + '</ul>';
+    if (unverified) h += '<div class="warn">자동 확인 불가·오래된 기록 하위 조건 ' + unverified + '건: 새 완료로 세지 않았다.</div>';
+    if (conflicts) h += '<div class="warn">수동 정리와 자동 조회가 어긋난 카드 ' + conflicts + '건: 자동으로 되돌리지 않고 재검토를 요청한다.</div>';
+    h += '<div>코드 반영(main 병합)만 자동으로 완료가 된다. 연구 성과·담당자 본인 확인·계약 채택·최종 제출은 CI 성공이나 병합으로 완료가 되지 않는다.</div>';
+    box.innerHTML = h;
+    box.hidden = false;
+  })();
+"""
 
 
 def render(data, out):
@@ -244,6 +496,10 @@ def render(data, out):
         html = fh.read()
     html = html.replace('</head>', '''<style id="research-scope-style">
 .research-scope-note{max-width:1100px;margin:16px auto;padding:12px 18px;color:#9aa3b2;font:14px/1.6 system-ui,sans-serif}
+.completion-summary b{color:#e7e9ee}.completion-summary ul{margin:6px 0 0;padding-left:20px}.completion-summary .warn{color:#e5b567}
+.fnode.partial .node{border-style:dashed;border-width:3px;border-color:var(--now);color:var(--now)}
+.fnode.partial .sub{color:var(--now);font-weight:500}
+.cc-seg span.partial{box-shadow:inset 0 -3px 0 var(--now)}
 </style></head>''')
     html = html.replace('const total = items.length;', '''const total = items.length;
   const requiredItems = items.filter(i => i.countScope === 'submission');
@@ -252,7 +508,10 @@ def render(data, out):
     html = html.replace('const byState = st => items.filter(i => i.state === st);',
                         "const byState = st => items.filter(i => i.state === st && i.countScope === 'submission');")
     html = html.replace("$('countB').textContent = doneList.length + '/' + total;",
-                        "$('countB').textContent = requiredDone + '/' + requiredTotal;")
+                        "$('countB').textContent = requiredDone + '/' + requiredTotal;\n" + COMPLETION_JS)
+    # 부분 완료(하위 조건 일부만 충족)는 노드·점에 따로 표시한다. state 와 필수 집계는 바꾸지 않는다.
+    html = html.replace("const node = el('div', 'fnode ' + it.state);",
+                        "const node = el('div', 'fnode ' + it.state + (it.completion && it.completion.status === 'partial' ? ' partial' : ''));")
     html = html.replace("countDone: '완료'", "countDone: '제출 필수 완료'")
     html = html.replace('<b>${doneList.length}/${total}</b>', '<b>${requiredDone}/${requiredTotal}</b>')
     html = html.replace('const pct = total ? (doneList.length / total * 100) : 0;',
@@ -260,7 +519,7 @@ def render(data, out):
     html = html.replace('const C = 2 * Math.PI * 15, f = total ? doneList.length / total * C : 0;',
                         'const C = 2 * Math.PI * 15, f = requiredTotal ? requiredDone / requiredTotal * C : 0;')
     html = html.replace('${items.map(i => `<span class="${i.state}" title="${esc(i.label)}"></span>`)',
-                        '${requiredItems.map(i => `<span class="${i.state}" title="${esc(i.label)}"></span>`)')
+                        '${requiredItems.map(i => `<span class="${i.state}${i.completion && i.completion.status === \'partial\' ? \' partial\' : \'\'}" title="${esc(i.label)}"></span>`)')
     html = html.replace('blockedList.forEach(it => blockedWrap', "blockedList.filter(i => i.countScope === 'submission').forEach(it => blockedWrap")
     html = html.replace("L.secDone, doneList, () => 'done'", "L.secDone, doneList.filter(i => i.countScope === 'submission'), () => 'done'")
     html = html.replace('const rest = sideList.concat(leftList);', "const rest = sideList.concat(leftList).filter(i => i.countScope === 'submission');")
@@ -273,7 +532,7 @@ def render(data, out):
   const afterSubmission = items.filter(i => i.countScope === 'after-submission');
   if (afterSubmission.length) section('left', '○', '제출 이후 · 확장·후속 작업 (필수 집계 제외)', afterSubmission, i => i.state);
   if (Array.isArray(data.changes)''')
-    html = html.replace('<div class="tally" id="tally"></div>', '<p class="research-scope-note">아래 상태별 집계도 이번 제출 필수 항목 기준입니다.</p><div class="tally" id="tally"></div>')
+    html = html.replace('<div class="tally" id="tally"></div>', '<div id="completionSummary" class="research-scope-note completion-summary" hidden></div><p class="research-scope-note">아래 상태별 집계도 이번 제출 필수 항목 기준입니다.</p><div class="tally" id="tally"></div>')
     html = html.replace('<div id="compact" hidden></div>', '''<aside class="research-scope-note">이번 최종제출 필수 항목만 집계하며 연구 완성률은 아닙니다. 완료한 본 연구와 현재 주장에 영향을 주는 미해결 검증은 포함합니다. 제출 이후 연구·새 기능과 자동 Git·CI 참고 정보는 집계에서 제외합니다.</aside>
 <div id="compact" hidden></div>''')
     with open(out, 'w', encoding='utf-8') as fh:
@@ -306,7 +565,8 @@ def main():
     any_fail = False
     for project in PROJECTS:
         data, pstate = build_project(project, prev, at)
-        any_fail = any_fail or any(not r.get('ok') for r in pstate['repos'].values())
+        any_fail = any_fail or any(not r.get('ok') for r in pstate['repos'].values()) \
+            or any(not r.get('ok') for r in pstate.get('prs', {}).values())
         state[project['slug']] = pstate
         render(data, os.path.join(SITE, project['slug'] + '.html'))
     with open(os.path.join(SITE, 'state.json'), 'w', encoding='utf-8') as fh:
