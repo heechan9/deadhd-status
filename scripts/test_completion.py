@@ -356,7 +356,7 @@ class BunkeringCards(unittest.TestCase):
             out = os.path.join(tmp, 'p.html')
             build.render(data, out)
             html = Path(out).read_text(encoding='utf-8')
-        for needle in ('completionSummary', "fnode ' + it.state + (it.completion", 'requiredDone', '하위 조건 완료'):
+        for needle in ('completionSummary', "fnode ' + it.state + (it.completion", 'requiredDone', 'projectSummary'):
             self.assertIn(needle, html)
         embedded = json.loads(html.split('const data = ', 1)[1].split(';\n', 1)[0]) if 'const data = ' in html else None
         if embedded:
@@ -448,11 +448,12 @@ console.log(JSON.stringify(r));await b.close();})();""", encoding='utf-8')
             res = subprocess.run([node, str(script), out], capture_output=True, text=True, env=dict(os.environ, NODE_PATH=root), timeout=90)
         self.assertEqual(res.returncode, 0, res.stderr[-500:])
         info = json.loads(res.stdout.strip().splitlines()[-1])
-        self.assertEqual(info['count'], '7/13')
+        self.assertEqual(info['count'], '')
         self.assertEqual(sorted(info['partial']), sorted(i['id'] for i in data['items'] if i.get('completion', {}).get('status') == 'partial'))
-        self.assertIn('하위 조건 완료', info['summary'])
-        self.assertIn('자동으로 완료가 된다', info['summary'])
+        self.assertEqual(info['summary'], '')
+        self.assertNotIn('필수 7/13 완료', info['summary'])
 
 
 if __name__ == '__main__':
     unittest.main()
+

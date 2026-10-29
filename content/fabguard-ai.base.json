@@ -1,0 +1,262 @@
+{
+ "key": "FabGuard AI",
+ "keyHref": "https://github.com/heechan9/fabguard-ai",
+ "title": "FabGuard · 3D 시연과 실제 데이터 검증 현황",
+ "goal": "R-01 합성 3D 이송·분류 시연의 main 반영과 최근 센서 기록·분석 보고서 Draft를 구분한다. 현재 main은 cce8360f(2026-10-25 KST)이며 10/30은 상태판 근거 확인일이지 새 3D 배포일이 아니다. 가상 시연·자동 검사·실제 현장 성능은 서로 다른 근거다. 제출 일정이나 연구 완료율은 정하지 않는다.",
+ "doneWhen": "3D 시제품의 명시된 동작 검증과 실제 장비의 이상 탐지 성능 검증은 별개다. Draft 병합·운영 배포·현장 성능 승인·Claude 검토 완료를 자동으로 추정하지 않는다.",
+ "lang": "ko",
+ "evidenceOnly": true,
+ "links": {
+  "프로젝트": "https://fabguard-ai.vercel.app",
+  "3D 시연": "https://fabguard-ai.vercel.app/smt/",
+  "저장소": "https://github.com/heechan9/fabguard-ai",
+  "상태판 허브": "https://heechan9.github.io/deadhd-status/"
+ },
+ "curatedSha": "cce8360fba1920fa8465da79dbd3b35cee2c4ae8",
+ "curatedAt": "2026-10-30 00:53 KST",
+ "lanes": [
+  "main 반영 · 합성 3D 시제품",
+  "자동 조회 · 공식 main",
+  "미병합 Draft · 별도 검토",
+  "검증 범위 · 남은 한계"
+ ],
+ "items": [
+  {
+   "id": "r01-3d",
+   "lane": 0,
+   "col": 0,
+   "label": "R-01 · 집기→이송→분류",
+   "title": "R-01 · 집기→이송→분류",
+   "sub": "2026-10-30 KST 공개 근거 대조",
+   "state": "done",
+   "badge": "반영 근거 확인",
+   "body": "PR #176이 main에 반영됐다. 기존 실장 헤드와 분리된 가상 R-01이 최종 검사 뒤 기판을 집어 이송하고 합성 AOI 정상/불량 및 측정 누락 보류 위치로 나눈다. 재생·정지·초기화와 시뮬레이션 시각을 공유한다. 제조사 CAD, 실제 UR3 동작 재현, 물리·역기구학 검증이나 장비 제어가 아니다.",
+   "evidence": [
+    {
+     "text": "PR #176",
+     "href": "https://github.com/heechan9/fabguard-ai/pull/176"
+    },
+    {
+     "text": "web/smt/robot-cell-model.mjs",
+     "href": "https://github.com/heechan9/fabguard-ai/blob/cce8360fba1920fa8465da79dbd3b35cee2c4ae8/web/smt/robot-cell-model.mjs"
+    },
+    {
+     "text": "web/smt/robot-cell-view.mjs",
+     "href": "https://github.com/heechan9/fabguard-ai/blob/cce8360fba1920fa8465da79dbd3b35cee2c4ae8/web/smt/robot-cell-view.mjs"
+    }
+   ],
+   "countScope": "reference",
+   "countScopeReason": "근거별 상태이며 제출·연구 완료율로 합산하지 않는다."
+  },
+  {
+   "id": "geometry-source",
+   "lane": 0,
+   "col": 0,
+   "label": "3D 형상 출처·라이선스",
+   "title": "3D 형상 출처·라이선스",
+   "sub": "2026-10-30 KST 공개 근거 대조",
+   "state": "done",
+   "badge": "반영 근거 확인",
+   "body": "R-01은 저장소 코드에서 Three.js 상자·원통과 두 링크로 조립한 개념 형상이다. 외부 CAD/GLB 모델을 가져왔다는 근거는 이 R-01 구현에 없다. 프로젝트 Apache-2.0과 vendored Three.js MIT 고지를 구분하며, 실제 장비 형상·권리 또는 제조사 인증을 뜻하지 않는다. MIT 고지는 vendor/THREE-LICENSE.txt 및 vendored 라이브러리의 별도 고지이며, 운영 16파일 해시 대조가 이 두 vendor 파일까지 검증했다는 뜻은 아니다.",
+   "evidence": [
+    {
+     "text": "web/smt/robot-cell-view.mjs",
+     "href": "https://github.com/heechan9/fabguard-ai/blob/cce8360fba1920fa8465da79dbd3b35cee2c4ae8/web/smt/robot-cell-view.mjs"
+    },
+    {
+     "text": "web/smt/vendor/THREE-LICENSE.txt",
+     "href": "https://github.com/heechan9/fabguard-ai/blob/cce8360fba1920fa8465da79dbd3b35cee2c4ae8/web/smt/vendor/THREE-LICENSE.txt"
+    },
+    {
+     "text": "LICENSE",
+     "href": "https://github.com/heechan9/fabguard-ai/blob/cce8360fba1920fa8465da79dbd3b35cee2c4ae8/LICENSE"
+    }
+   ],
+   "countScope": "reference",
+   "countScopeReason": "근거별 상태이며 제출·연구 완료율로 합산하지 않는다."
+  },
+  {
+   "id": "maintenance-review",
+   "lane": 0,
+   "col": 0,
+   "label": "정비 이력·기준선 보류",
+   "title": "정비 이력·기준선 보류",
+   "sub": "2026-10-30 KST 공개 근거 대조",
+   "state": "done",
+   "badge": "반영 근거 확인",
+   "body": "PR #177은 정비·교정·레시피 이력 대조, 기준선 적용 보류, 사람 검토 초안 다운로드를 연결했다. 보류 항목의 해제·해결은 차단하며 원본 재계산 감사는 Python CLI에서 한다. 실제 장비 제어·인증된 승인·웹 백엔드는 아니다.",
+   "evidence": [
+    {
+     "text": "PR #177",
+     "href": "https://github.com/heechan9/fabguard-ai/pull/177"
+    },
+    {
+     "text": "docs/MAINTENANCE_CONTEXT_REVIEW.md",
+     "href": "https://github.com/heechan9/fabguard-ai/blob/cce8360fba1920fa8465da79dbd3b35cee2c4ae8/docs/MAINTENANCE_CONTEXT_REVIEW.md"
+    }
+   ],
+   "countScope": "reference",
+   "countScopeReason": "근거별 상태이며 제출·연구 완료율로 합산하지 않는다."
+  },
+  {
+   "id": "offline-report-draft",
+   "lane": 2,
+   "col": 0,
+   "label": "저장 보고서의 웹 표시 · #179",
+   "title": "저장 보고서의 웹 표시 · #179",
+   "sub": "2026-10-30 KST 공개 근거 대조",
+   "state": "side",
+   "badge": "Draft · 미병합",
+   "body": "SPC 저장 summary.json/report.json 자체는 이미 main에 있다. 미병합 Draft #179(9d55b1fa)는 이를 합성 CSV 시연과 분리해 웹에서 읽기 전용 표·JSON·해시로 표시하는 변경이다. 누락·손상·해시 불일치 시 보류하며 렌더러 404가 CSV 초기화를 막지 않도록 분리했다. 새 분석·실시간 센서 연결·원본 시계열 재생이 아니다. 이 웹 표시 변경을 main 배포 완료로 쓰지 않는다.",
+   "evidence": [
+    {
+     "text": "PR #179",
+     "href": "https://github.com/heechan9/fabguard-ai/pull/179"
+    },
+    {
+     "text": "main의 기존 SPC summary.json",
+     "href": "https://github.com/heechan9/fabguard-ai/blob/cce8360fba1920fa8465da79dbd3b35cee2c4ae8/docs/review/pr173-validation-20261024/robot_spc_results/summary.json"
+    }
+   ],
+   "countScope": "reference",
+   "countScopeReason": "근거별 상태이며 제출·연구 완료율로 합산하지 않는다."
+  },
+  {
+   "id": "ur3-replay-draft",
+   "lane": 2,
+   "col": 0,
+   "label": "UR3 센서 기록 재생 · #180",
+   "title": "UR3 센서 기록 재생 · #180",
+   "sub": "2026-10-30 KST 공개 근거 대조",
+   "state": "side",
+   "badge": "Draft · 미병합",
+   "body": "미병합 stacked Draft #180(0314ae31), base는 #179이다. UCI UR3 CobotOps의 7,409행·24열 중 19 센서 채널을 시간순 탐색·재생하고 결측·공백·보호 정지/그립 손실을 구분한다. CC BY 4.0 출처·변환 표시와 원본 해시가 기록돼 있다. 실제 동작 3D 재현·실시간 센서 연결·모델 예측·제어가 아니다. R-01 합성 장면이나 기존 IMAD 결과와 합산하지 않는다. PR Preview가 있는 것과 production 반영은 구분한다.",
+   "evidence": [
+    {
+     "text": "PR #180",
+     "href": "https://github.com/heechan9/fabguard-ai/pull/180"
+    }
+   ],
+   "countScope": "reference",
+   "countScopeReason": "근거별 상태이며 제출·연구 완료율로 합산하지 않는다."
+  },
+  {
+   "id": "documentation-drafts",
+   "lane": 2,
+   "col": 0,
+   "label": "최근 문서·입력 자격 감사",
+   "title": "최근 문서·입력 자격 감사",
+   "sub": "2026-10-30 KST 공개 근거 대조",
+   "state": "side",
+   "badge": "Draft · 미병합",
+   "body": "미병합 #178은 V1 대비 발전/한계, #181은 FDC 경보 해석·근거 추적, #182는 BOSCH 실측 파일 및 voraus-AD 입력 자격 감사다. 제품에 3D 기능이 추가 배포됐다는 근거가 아니며 새 독립 탐지 성능도 아니다. #178·#181·#182는 main 기준 별도 Draft, #180만 #179 위에 쌓인 관계다.",
+   "evidence": [
+    {
+     "text": "PR #178",
+     "href": "https://github.com/heechan9/fabguard-ai/pull/178"
+    },
+    {
+     "text": "PR #181",
+     "href": "https://github.com/heechan9/fabguard-ai/pull/181"
+    },
+    {
+     "text": "PR #182",
+     "href": "https://github.com/heechan9/fabguard-ai/pull/182"
+    }
+   ],
+   "countScope": "reference",
+   "countScopeReason": "근거별 상태이며 제출·연구 완료율로 합산하지 않는다."
+  },
+  {
+   "id": "release-render-evidence",
+   "lane": 3,
+   "col": 0,
+   "label": "과거 운영 렌더·자동 검사 근거",
+   "title": "과거 운영 렌더·자동 검사 근거",
+   "sub": "2026-10-30 KST 공개 근거 대조",
+   "state": "done",
+   "badge": "반영 근거 확인",
+   "body": "2026-10-25 KST 기록: main cce8360f의 CI와 운영 브라우저 workflow가 success임을 이번에 재조회했다. PR #176/#177 완료 기록은 운영 16파일 소스 해시 일치, PC 1366×900·390×900·360×900에서 WebGL 집기/이송/정상·불량·누락 보류, 재생/정지/초기화, 키보드·동작 줄이기, 정비 초안 다운로드→CLI 감사 통과를 보고한다. 이번 상태판 갱신에서 FabGuard 운영 화면을 새로 렌더 검사한 것은 아니다. 기존 문서의 Draft 문구는 병합 전 이력이므로 PR 최상단 완료 기록과 구분한다.",
+   "evidence": [
+    {
+     "text": "정확한 main CI",
+     "href": "https://github.com/heechan9/fabguard-ai/actions/runs/40108975187"
+    },
+    {
+     "text": "정확한 main 운영 브라우저 실행",
+     "href": "https://github.com/heechan9/fabguard-ai/actions/runs/40108975237"
+    },
+    {
+     "text": "PR #176",
+     "href": "https://github.com/heechan9/fabguard-ai/pull/176"
+    },
+    {
+     "text": "PR #177",
+     "href": "https://github.com/heechan9/fabguard-ai/pull/177"
+    }
+   ],
+   "countScope": "reference",
+   "countScopeReason": "근거별 상태이며 제출·연구 완료율로 합산하지 않는다."
+  },
+  {
+   "id": "field-validation",
+   "lane": 3,
+   "col": 0,
+   "label": "현장 성능·실물 검증은 남음",
+   "title": "현장 성능·실물 검증은 남음",
+   "sub": "2026-10-30 KST 공개 근거 대조",
+   "state": "blocked",
+   "badge": "미검증",
+   "body": "정상 개발자료 2그룹·7파일·1,043개 평가 가능 창·52.15초의 SPC raw 경보는 Shewhart 9 / EWMA 0 / CUSUM 3, episode는 6 / 0 / 2다. exploratory_alarm_activity_only이며 적은 경보가 더 좋은 방법이라는 결론은 없다. 독립 onset/end 라벨과 안정 정상 조건이 확립되지 않아 재현율·오탐률·미탐률·지연은 null이다. 전체 아카이브 해시도 미검증이다. 독립 이상 사례/현장 효과, 실제 휴대전화·스크린리더·물리 로봇 검증은 남아 있다. 3D 시연 및 브라우저 자동 검사는 이 한계를 해결하지 않는다.",
+   "evidence": [
+    {
+     "text": "raw·episode·null·해시 한계 원문",
+     "href": "https://github.com/heechan9/fabguard-ai/blob/cce8360fba1920fa8465da79dbd3b35cee2c4ae8/docs/review/pr173-validation-20261024/robot_spc_results/summary.json"
+    },
+    {
+     "text": "docs/review/pr173-validation-20261024/REPORT.md",
+     "href": "https://github.com/heechan9/fabguard-ai/blob/cce8360fba1920fa8465da79dbd3b35cee2c4ae8/docs/review/pr173-validation-20261024/REPORT.md"
+    },
+    {
+     "text": "docs/review/ROBOT_SORT_CELL_20261024.md",
+     "href": "https://github.com/heechan9/fabguard-ai/blob/cce8360fba1920fa8465da79dbd3b35cee2c4ae8/docs/review/ROBOT_SORT_CELL_20261024.md"
+    }
+   ],
+   "countScope": "reference",
+   "countScopeReason": "근거별 상태이며 제출·연구 완료율로 합산하지 않는다."
+  }
+ ],
+ "curatedPrs": [
+  {
+   "repo": "heechan9/fabguard-ai",
+   "number": 178,
+   "sha": "2833b66b61e46b7de9fb83ad5167838c7643f53c"
+  },
+  {
+   "repo": "heechan9/fabguard-ai",
+   "number": 179,
+   "sha": "9d55b1fa7f77f30d489b404e2b306a424a5fb566"
+  },
+  {
+   "repo": "heechan9/fabguard-ai",
+   "number": 180,
+   "sha": "0314ae31ac36a5abc2208866cfeb2e7e82784e11"
+  },
+  {
+   "repo": "heechan9/fabguard-ai",
+   "number": 181,
+   "sha": "33a38ac443f397bca44020f5eeb339682316893f"
+  },
+  {
+   "repo": "heechan9/fabguard-ai",
+   "number": 182,
+   "sha": "b10b684e9e5094311a32055bde26c22fe99e46e6"
+  }
+ ],
+ "changes": [
+  {
+   "title": "2026-10-30 KST · 공개 근거 상태판 추가",
+   "body": "현재 main/PR/정확한 실행 SHA를 다시 대조했다. 신규 제품 기능·병합·배포·실험은 수행하지 않았으며 별도 독립 검토 완료를 추정하지 않는다. Claude의 독립 공개 근거 검토를 받아 기존 main 보고서/새 Draft 웹 표시, raw/episode 경보, vendor 고지와 운영 해시 검증 범위를 명확히 했다. 검토는 상태 주장 대조이며 최종 상태판 패치·실제 장비 승인이나 신규 운영 렌더 검증이 아니다."
+  }
+ ]
+}

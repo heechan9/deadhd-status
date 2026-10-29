@@ -37,11 +37,17 @@ class DeadlineLayout(unittest.TestCase):
                     build.render(data, str(out))
                     html = out.read_text()
                 self.assertIn("canvasEl.classList.add('responsive-timeline')", html)
-                self.assertIn('grid-template-columns: minmax(0, 1fr)', html)
+                self.assertIn('grid-template-columns: repeat(var(--timeline-cols), minmax(0, 1fr))', html)
+                self.assertNotIn('.responsive-timeline { width: 100%; }', html)
+                self.assertNotIn('grid-template-columns: 52px minmax(0, 1fr)', html)
                 self.assertIn('overflow-wrap: anywhere', html)
                 self.assertNotIn('band.style.height =', html)
                 self.assertNotIn('canvasEl.style.width =', html)
                 self.assertIn('new ResizeObserver(scheduleEdges)', html)
+                self.assertIn('node.style.gridColumn = String(it.col + 1)', html)
+                for lane in {i['lane'] for i in data['items']}:
+                    cols = [i['col'] for i in data['items'] if i['lane'] == lane]
+                    self.assertEqual(cols, list(range(len(cols))))
                 self.assertIn("svg.setAttribute('class', 'edges')", html)
                 self.assertIn("flow.setAttribute('class', 'edge-flow')", html)
 

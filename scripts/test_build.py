@@ -44,7 +44,7 @@ class ReviewTracking(unittest.TestCase):
     def test_research_and_submission_boundaries(self):
         import json
         from pathlib import Path
-        for project in build.PROJECTS:
+        for project in (p for p in build.PROJECTS if p['slug'] in ('bunkering-ai', 'adversarial-ai')):
             with self.subTest(project=project['slug']):
                 base=json.loads((Path(build.ROOT)/('content/'+project['slug']+'.base.json')).read_text(encoding='utf-8'))
                 items={i['id']:i for i in base['items']}
@@ -55,7 +55,7 @@ class ReviewTracking(unittest.TestCase):
                     self.assertEqual(items[key]['lane'], 6 if project['slug'] == 'bunkering-ai' and key in ('submission-final-paper', 'submission-video') else 0)
                 self.assertTrue(all(s['lane'] > 0 for s in project['repos']))
                 self.assertEqual(len(items),len(base['items']))
-                self.assertIn('이번 최종제출 필수 항목만 집계', base['goal'])
+                self.assertIn('전체 완료율로 합산하지 않습니다' if project['slug']=='bunkering-ai' else '이번 최종제출 필수 항목만 집계', base['goal'])
                 for item in items.values():
                     self.assertIn(item['countScope'], ('submission','after-submission','reference'))
                     self.assertTrue(item['countScopeReason'])

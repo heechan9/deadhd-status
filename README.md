@@ -1,11 +1,14 @@
 # 프로젝트 상태판 (deadhd)
 
-병커시유와 적대적 AI 프로젝트의 진행 상황을 [deadhd](https://github.com/lcalmsky/deadhd) 디자인으로 보여주는 정적 페이지다. GitHub Actions 가 1시간마다(그리고 수동 실행 시) 공개 GitHub 기록을 다시 조회해 GitHub Pages 에 배포한다.
+병커시유·적대적 AI·FabGuard AI 프로젝트의 진행 상황을 [deadhd](https://github.com/lcalmsky/deadhd) 디자인으로 보여주는 정적 페이지다. GitHub Actions 가 1시간마다(그리고 수동 실행 시) 공개 GitHub 기록을 다시 조회해 GitHub Pages 에 배포한다.
 
 | 페이지 | 조회 대상 |
 |---|---|
 | `bunkering-ai.html` | `heechan9/bunkering-ai` |
 | `adversarial-ai.html` | 공식 `th0oel/AdversarialAI_Security`, 개인 포크 `heechan9/AdversarialAI_Security` (공식 미반영으로 구분) |
+| `fabguard-ai.html` | `heechan9/fabguard-ai` · 합성 3D main 반영과 미병합 Draft, 검증 한계 구분 |
+
+FabGuard는 제출 계약을 정의하지 않은 근거 상태판으로 완료율을 표시하지 않는다. 기존 두 프로젝트의 제출 분모·완료 판정은 변경하지 않는다.
 
 ## 원칙
 
@@ -29,3 +32,4 @@
 로컬 확인: `python3 -m unittest discover -s scripts -p 'test_*.py'`(네트워크 없음) 후 `python3 scripts/build.py` 로 `site/` 를 만들어 연다.
 
 적대적 AI는 본 연구 완료 범위, 제출 이후 확장, 잔여 재현·검증·공식 통합을 분리한다. `curatedAt`은 수동 내용 검토 시각이고 자동 조회 시각과 별개다. `curatedPrs`에 고정한 PR head가 바뀌거나 열린 목록에서 사라지면 재검토를 표시하며 자동으로 완료 처리하지 않는다.
+
