@@ -31,6 +31,10 @@ class CurrentProjectSummary(unittest.TestCase):
         self.assertIn('전달 기록',str(groups[1]))
         self.assertNotIn('chatgpt.com/api/library',str(s))
         self.assertNotIn('libfile_',str(s))
+        self.assertIn('비공개 검토·전달 기록 기준', groups[1]['note'])
+        self.assertIn('보고서 제작 당시 별도 Claude 검토 기록', groups[1]['items'][0]['detail'])
+        self.assertIn('열거한 3개 항목 기준', groups[0]['note'])
+        self.assertIn('공개 URL 자체는 사이트 존재 근거', groups[0]['items'][2]['detail'])
 
     def test_history_not_relabelled_as_new_success(self):
         data,_=build_with(PROJECT,OSError('offline'))

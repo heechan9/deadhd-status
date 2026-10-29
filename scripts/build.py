@@ -496,7 +496,8 @@ def project_summary_html(summary):
         if any(item['state'] not in ('done', 'unverified') for item in members):
             raise ValueError('invalid project summary state')
         parts += ['<article class="summary-group" data-group="' + escape(group['id'], quote=True) + '">',
-                  '<h3>' + escape(group['label']) + ' <b>' + str(done) + '/' + str(len(members)) + '</b></h3>', '<ul>']
+                  '<h3>' + escape(group['label']) + ' <b>' + str(done) + '/' + str(len(members)) + '</b></h3>',
+                  '<p class="summary-basis">' + escape(group.get('note', '')) + '</p>', '<ul>']
         for item in members:
             state = '확인됨' if item['state'] == 'done' else '미확인'
             parts += ['<li><strong>' + escape(item['label']) + '</strong> · ' + state,
