@@ -296,7 +296,7 @@ class BuildProject(unittest.TestCase):
         project = build.PROJECTS[0]
         d, _ = build_with(project, lambda repo, n: pr_record(n, repo))
         self.assertNotIn('curated-stale', [i['id'] for i in d['items']])
-        d, _ = build_with(project, lambda repo, n: pr_record(n, repo), at=AT + timedelta(days=4))
+        d, _ = build_with(project, lambda repo, n: pr_record(n, repo), at=AT + timedelta(days=7))
         item = {i['id']: i for i in d['items']}['curated-stale']
         self.assertNotIn('countScope', item)
         self.assertIn('다시 검토', item['body'])

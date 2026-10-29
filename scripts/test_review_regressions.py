@@ -31,7 +31,7 @@ class ReviewedMapping(unittest.TestCase):
         self.assertIn('20dd1c4', done['label'])
         self.assertIn('1280/360/390px', done['label'])
         self.assertTrue(any('JSON' in x and '다운로드' in x for x in item['completion']['remaining']))
-        self.assertEqual(tally(data), (6, 13))
+        self.assertEqual(tally(data), (7, 13))
 
     def test_team_acceptance_is_formal_receipt_only(self):
         spec = load_spec()['cards']['submission-team-intake']
@@ -135,7 +135,7 @@ class ReviewedLogicAndRendering(unittest.TestCase):
             self.skipTest('Node unavailable; no installation attempted')
         data, _ = build_with(PROJECT, gen_mapping.codex_report)
         by_id(data)['draft-work']['label'] = '<img src=x onerror=alert(1)>'
-        script = "const items=" + json.dumps(data['items']) + ";const requiredDone=6,requiredTotal=13;const box={};const document={getElementById:()=>box};" + build.COMPLETION_JS + ";console.log(JSON.stringify(box));"
+        script = "const items=" + json.dumps(data['items']) + ";const requiredDone=7,requiredTotal=13;const box={};const document={getElementById:()=>box};" + build.COMPLETION_JS + ";console.log(JSON.stringify(box));"
         result = subprocess.run([node], input=script, text=True, capture_output=True, timeout=20)
         self.assertEqual(result.returncode, 0, result.stderr)
         box = json.loads(result.stdout)

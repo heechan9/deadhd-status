@@ -124,6 +124,7 @@ def generate():
         '- 필수 집계(countScope=submission): 전 ' + f'{sum(i["state"] == "done" for i in required)}/{len(required)}, 후 A '
         + f'{sum(a[i["id"]]["state"] == "done" for i in required)}/{len(required)}, 후 B {sum(b[i["id"]]["state"] == "done" for i in required)}/{len(required)}. 분모와 countScope 는 모든 카드에서 바뀌지 않는다.',
         '- 판정: 완료=모든 하위 조건 충족, 부분 완료=일부만 충족(완료 수에 넣지 않음), 대기=충족 없음, 차단=차단 상태. 하위 조건이 없는 카드는 수동 정리 state 를 따른다.',
+        '- A는 현재 수동 검토 기준(10/29 확인된 네 병합 포함)의 fallback이다. B의 10/27 PR 응답은 역사적 반대 상황 fixture로, 현재 실제 Git 상태가 아니다. 두 경우 모두 현재 수동 내용과 결합한 회귀 시나리오이며 최신 운영 현황 표가 아니다.',
         '- 근거 확인 시각이 `미확인` 이거나 URL 이 없으면 공개 근거로 확인되지 않은 수동 정리다.',
         '- 참고 진행(milestones)은 별도 하위 작업 이력이며 부모의 완료 조건·분모에 추가하지 않는다. 고정 head CI 기록은 현재 head CI·병합·채택 완료와 구분한다.',
         '',

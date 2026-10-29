@@ -275,7 +275,7 @@ class BunkeringCards(unittest.TestCase):
         self.assertEqual(got['draft-work']['state'], 'done')                # 코드 반영 카드는 모두 병합되면 완료
         self.assertEqual(got['draft-work']['completion']['status'], 'complete')
         self.assertEqual(state['completion']['draft-work']['state'], 'done')
-        self.assertEqual(tally(data), (6, 13))                              # 필수 집계는 그대로
+        self.assertEqual(tally(data), (7, 13))                              # 필수 집계는 그대로
         for cid in ('submission-final-paper', 'submission-video', 'submission-project-report', 'submission-team-intake',
                     'submission-research-remaining', 'c-ulsan', 'n-web', 'fair', 'realship', 'wait', 'o-ops'):
             self.assertEqual(got[cid]['state'], next(i['state'] for i in self.base['items'] if i['id'] == cid), cid)
@@ -290,7 +290,7 @@ class BunkeringCards(unittest.TestCase):
                          ['done', 'left', 'left', 'left', 'left'])
         self.assertIn('하위 1/5 완료', dw['sub'])
         self.assertIn('#119', dw['body'])
-        self.assertEqual(tally(data), (6, 13))
+        self.assertEqual(tally(data), (7, 13))
 
     def test_required_cards_never_become_done_from_any_pr_or_ci_combination(self):
         base_req = {i['id']: i['state'] for i in required(self.base['items'])}
@@ -305,7 +305,7 @@ class BunkeringCards(unittest.TestCase):
             got = by_id(data)
             for cid, st in base_req.items():
                 self.assertEqual(got[cid]['state'], st, cid)
-            self.assertEqual(tally(data), (6, 13))
+            self.assertEqual(tally(data), (7, 13))
 
     def test_compound_cards_show_sub_items_and_pending_reasons(self):
         data, _ = build_with(PROJECT, gen_mapping.codex_report)
@@ -319,12 +319,12 @@ class BunkeringCards(unittest.TestCase):
         self.assertTrue(any('기예 Python' in s['label'] and s['state'] == 'now' for s in intake['substeps']))
         self.assertTrue(any('기예 pnpm' in s['label'] and s['state'] == 'left' for s in intake['substeps']))
         report = got['submission-project-report']
-        self.assertTrue(any('초안' in s['label'] and s['state'] == 'left' for s in report['substeps']))   # 15쪽 초안: 공개 근거 미확인
+        self.assertTrue(any('18쪽' in s['label'] and s['state'] == 'done' for s in report['substeps']))   # v9 작성 완료와 HWP 최종 승인은 별개
         self.assertTrue(any('Forms' in s['label'] and s['state'] == 'left' for s in report['substeps']))
-        self.assertEqual(report['completion']['done'], 1)
+        self.assertEqual(report['completion']['done'], 2)
         self.assertEqual(got['c-ulsan']['state'], 'blocked')
         self.assertEqual(got['c-ulsan']['completion']['done'], 2)
-        for cid in ('submission-team-intake', 'submission-project-report', 'submission-research-remaining', 'c-ulsan'):
+        for cid in ('submission-team-intake', 'submission-project-report', 'c-ulsan'):
             self.assertIn('남은 조건', got[cid]['body'])
 
     def test_countscope_preserved_on_every_card_and_denominator_fixed(self):
@@ -379,11 +379,11 @@ class BunkeringCards(unittest.TestCase):
         d, s = build_with(PROJECT, urllib.error.HTTPError('u', 403, 'forbidden', {}, None), prev={SLUG: s_ok})
         got = by_id(d)
         self.assertEqual(got['draft-work']['state'], 'side')               # 오래된 캐시로는 완료를 만들지 않는다
-        self.assertEqual(got['draft-work']['completion']['unverified'], 5)  # 5건 모두 자동 확인 불가(#126 은 수동 정리 완료만 유지)
-        self.assertEqual(got['draft-work']['completion']['done'], 1)
+        self.assertEqual(got['draft-work']['completion']['unverified'], 5)  # 자동 조회는 5건 모두 불가; 10/29 수동 확인된 네 병합은 유지
+        self.assertEqual(got['draft-work']['completion']['done'], 4)
         self.assertIn('조회 실패', got['draft-work']['body'])
         self.assertIn('pr-live-failed', got)
-        self.assertEqual(tally(d), (6, 13))
+        self.assertEqual(tally(d), (7, 13))
         # 이미 완료로 정리된 코드 반영 카드(time-intake)는 조회 실패로 되돌아가지 않지만 확인 불가가 보인다
         self.assertEqual(got['time-intake']['state'], 'done')
         self.assertEqual(got['time-intake']['completion']['unverified'], 5)
@@ -398,7 +398,7 @@ class BunkeringCards(unittest.TestCase):
 
     def test_existing_dones_have_explicit_basis(self):
         base_done = [i['id'] for i in required(self.base['items']) if i['state'] == 'done']
-        self.assertEqual(sorted(base_done), sorted(['accept', 'overview', 'official', 'seeds', 'public', 'submission-raw-recheck']))
+        self.assertEqual(sorted(base_done), sorted(['accept', 'overview', 'official', 'seeds', 'public', 'submission-raw-recheck', 'submission-research-remaining']))
         for cid in base_done:
             card = self.spec['cards'][cid]
             self.assertIn(card['evidenceLevel'], ('public', 'curated-only'))
@@ -448,7 +448,7 @@ console.log(JSON.stringify(r));await b.close();})();""", encoding='utf-8')
             res = subprocess.run([node, str(script), out], capture_output=True, text=True, env=dict(os.environ, NODE_PATH=root), timeout=90)
         self.assertEqual(res.returncode, 0, res.stderr[-500:])
         info = json.loads(res.stdout.strip().splitlines()[-1])
-        self.assertEqual(info['count'], '6/13')
+        self.assertEqual(info['count'], '7/13')
         self.assertEqual(sorted(info['partial']), sorted(i['id'] for i in data['items'] if i.get('completion', {}).get('status') == 'partial'))
         self.assertIn('하위 조건 완료', info['summary'])
         self.assertIn('자동으로 완료가 된다', info['summary'])
