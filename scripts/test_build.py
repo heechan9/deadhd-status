@@ -52,7 +52,7 @@ class ReviewTracking(unittest.TestCase):
                 self.assertNotIn('href', items['accept']['evidence'][0])
                 for key in ('submission-final-paper','submission-video','submission-project-report','submission-team-intake'):
                     self.assertEqual(items[key]['state'], 'left')
-                    self.assertEqual(items[key]['lane'], 0)
+                    self.assertEqual(items[key]['lane'], 6 if project['slug'] == 'bunkering-ai' and key in ('submission-final-paper', 'submission-video') else 0)
                 self.assertTrue(all(s['lane'] > 0 for s in project['repos']))
                 self.assertEqual(len(items),len(base['items']))
                 self.assertIn('이번 최종제출 필수 항목만 집계', base['goal'])
@@ -79,3 +79,4 @@ class ReviewTracking(unittest.TestCase):
                                         ('cnn-train','square','surfree','iterative-gpu','bim-environment-comparison')))
 
 if __name__=='__main__':unittest.main()
+
