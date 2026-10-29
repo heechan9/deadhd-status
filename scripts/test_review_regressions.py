@@ -136,7 +136,7 @@ class ReviewedLogicAndRendering(unittest.TestCase):
         data, _ = build_with(PROJECT, gen_mapping.codex_report)
         by_id(data)['draft-work']['label'] = '<img src=x onerror=alert(1)>'
         script = "const items=" + json.dumps(data['items']) + ";const requiredDone=6,requiredTotal=13;const box={};const document={getElementById:()=>box};" + build.COMPLETION_JS + ";console.log(JSON.stringify(box));"
-        result = subprocess.run([node, '-e', script], text=True, capture_output=True, timeout=20)
+        result = subprocess.run([node], input=script, text=True, capture_output=True, timeout=20)
         self.assertEqual(result.returncode, 0, result.stderr)
         box = json.loads(result.stdout)
         self.assertFalse(box['hidden'])
